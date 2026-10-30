@@ -67,3 +67,4 @@ Gleicher Ablauf in allen Schwesterprojekten (Eilwacht, Einspeisewacht, Speicherw
 - Shell-Heredocs mit Anführungszeichen scheitern: Bearbeitungsskripte als Datei in den Scratchpad schreiben. Python schreibt unter Windows mit `write_text` CRLF: `write_bytes(text.encode())` oder `newline="\n"`.
 - **Nie committen, wenn ein Test rot ist.** Ergebnis in eine Datei schreiben, auf „ failed“ prüfen, erst dann committen.
 - Release-Titel ohne „v“ (`0.2.0`), Tag mit (`v0.2.0`).
+- Config-Flow: `NumberSelector` lehnt `step` unter 0,001 ab (dann `"any"`).
