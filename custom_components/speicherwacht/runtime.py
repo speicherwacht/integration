@@ -40,7 +40,7 @@ from .const import (
     CONF_WARRANTY_MWH,
     DOMAIN,
 )
-from .counter import UNIT_FACTORS
+from .counter import UNIT_FACTORS, CounterEvent
 from .hours import Series, SocRow, build
 from .model import Boundary, Signal
 from .profiles import TEMPLATES
@@ -71,6 +71,11 @@ NOT_ANALYSED = "not_analysed_yet"
 ISSUE_MISSING = "missing_entity"
 ISSUE_UNAVAILABLE = "source_unavailable"
 ISSUE_UNIT = "source_unit"
+ISSUE_RESETS = "counter_resets"
+# A counter that starts anew this often within a week behaves like a day
+# counter (own assumption; a lifetime counter resets at most on replacement).
+RESETS_PER_WEEK = 3
+RESET_WINDOW = timedelta(days=7)
 
 
 class StorageRuntime:
@@ -112,7 +117,10 @@ class StorageRuntime:
     async def async_start(self) -> None:
         @callback
         def _refresh(_now: datetime) -> None:
-            self.hass.async_create_task(self.async_refresh())
+            # Bound to the entry: an unload cancels a running first read.
+            self.entry.async_create_background_task(
+                self.hass, self.async_refresh(), "speicherwacht_refresh"
+            )
 
         self._unsubscribe = [
             async_call_later(
@@ -169,6 +177,7 @@ class StorageRuntime:
                 now,
             )
             self.problem = None
+            self._check_resets(now)
         except Exception:  # keep running; the sensors stay as they were
             _LOGGER.exception("Analysing the storage statistics failed")
         finally:
@@ -193,13 +202,15 @@ class StorageRuntime:
 
     @property
     def lifetime_discharged(self) -> float | None:
-        """Energy discharged since commissioning (kWh): the latest reading of
-        a lifetime counter, the sum of the statistics for day counters."""
-        if self.day_values:
-            return self.analysis.discharged_total if self.analysis else None
-        if not self._discharged:
+        """Energy discharged since commissioning (kWh): the first reading of a
+        lifetime counter plus the increments the counter module booked, so a
+        glitch of the latest reading never shows; for day counters the sum of
+        the statistics."""
+        if self.analysis is None or self.series is None:
             return None
-        return self._discharged[max(self._discharged)]
+        if self.day_values or self.series.first_discharged is None:
+            return self.analysis.discharged_total
+        return self.series.first_discharged + self.analysis.discharged_total
 
     async def _async_read(self, start: datetime, end: datetime) -> None:
         counters = {self.entities[Signal.CHARGED], self.entities[Signal.DISCHARGED]}
@@ -268,6 +279,24 @@ class StorageRuntime:
             minutes=str(int(UNAVAILABLE_AFTER.total_seconds() // 60)),
         )
         self._issue(ISSUE_UNIT, unit)
+
+    def _check_resets(self, now: datetime) -> None:
+        """Repair issue for counters that start anew again and again (a day
+        counter mapped as lifetime counter books nothing after its first
+        day)."""
+        if self.day_values or self.series is None:
+            return
+        since = now - RESET_WINDOW
+        counts: dict[str, int] = {}
+        for issue in self.series.issues:
+            if issue.event is CounterEvent.RESET and issue.hour >= since:
+                counts[issue.signal] = counts.get(issue.signal, 0) + 1
+        frequent = [
+            self.entities[Signal(signal)]
+            for signal, count in counts.items()
+            if count >= RESETS_PER_WEEK
+        ]
+        self._issue(ISSUE_RESETS, frequent)
 
     def _issue(self, key: str, entities: list[str], **placeholders: str) -> None:
         issue_id = f"{self.entry.entry_id}_{key}"

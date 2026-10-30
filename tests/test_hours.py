@@ -95,3 +95,14 @@ def test_day_counter_starts_anew_at_local_midnight() -> None:
         pytest.approx(0.5),
     ]
     assert series.issues == []
+
+
+def test_read_flags_and_first_discharge_reading() -> None:
+    series = build(
+        {h(0): 100.0, h(1): 101.0},
+        {h(1): 80.0, h(2): 81.0},
+        soc(50, 51, 52),
+        CAPACITY,
+    )
+    assert [hour.read for hour in series.hours] == [False, True, False]
+    assert series.first_discharged == 80.0

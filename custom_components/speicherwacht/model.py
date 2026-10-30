@@ -46,6 +46,7 @@ class Hour:
     soc_min: float | None = None
     soc_max: float | None = None
     gap: bool = False
+    read: bool = False
 
     @property
     def complete(self) -> bool:

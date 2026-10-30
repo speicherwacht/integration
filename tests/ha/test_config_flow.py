@@ -136,9 +136,10 @@ async def test_detected_fronius_storage(hass: HomeAssistant) -> None:
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["data"][CONF_TEMPLATE] == "fronius"
-    assert result["result"].unique_id == choice
+    # The charge counter identifies the storage, whichever way it was chosen.
+    assert result["result"].unique_id == values["charged"]
 
-    # The same storage again: refused.
+    # The same storage again, by template or by hand: refused.
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_USER}
     )
@@ -149,8 +150,8 @@ async def test_detected_fronius_storage(hass: HomeAssistant) -> None:
         result["flow_id"],
         {**values, CONF_CAPACITY: 10.24, CONF_BOUNDARY: "battery"},
     )
-    assert result["type"] is FlowResultType.ABORT
-    assert result["reason"] == "already_configured"
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": "counter_in_use"}
 
 
 async def test_reconfigure(hass: HomeAssistant) -> None:
@@ -177,3 +178,35 @@ async def test_reconfigure(hass: HomeAssistant) -> None:
     assert result["reason"] == "reconfigure_successful"
     assert entry.data[CONF_CAPACITY] == 9.5
     assert entry.data[CONF_BOUNDARY] == "system"
+
+
+async def test_reconfigure_keeps_its_own_counters(hass: HomeAssistant) -> None:
+    """Its own charge counter is no conflict; another entry's is."""
+    set_sources(hass)
+    hass.states.async_set("sensor.other_charged", "5.0", ENERGY)
+    data = {
+        "name": "Akku",
+        CONF_TEMPLATE: "manual",
+        CONF_ENTITIES: {"charged": CHARGED, "discharged": DISCHARGED, "soc": SOC},
+        CONF_CAPACITY: 10.0,
+        CONF_BOUNDARY: "battery",
+    }
+    other = MockConfigEntry(
+        domain=DOMAIN,
+        title="Zweiter",
+        data={
+            **data,
+            CONF_ENTITIES: {**data[CONF_ENTITIES], "charged": "sensor.other_charged"},
+        },
+    )
+    other.add_to_hass(hass)
+    entry = MockConfigEntry(domain=DOMAIN, title="Akku", data=data)
+    entry.add_to_hass(hass)
+    result = await entry.start_reconfigure_flow(hass)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {**MANUAL, "charged": "sensor.other_charged"}
+    )
+    assert result["errors"] == {"base": "counter_in_use"}
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], MANUAL)
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "reconfigure_successful"

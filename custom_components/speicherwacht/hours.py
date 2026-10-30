@@ -50,6 +50,9 @@ class Series:
 
     hours: list[Hour] = field(default_factory=list)
     issues: list[CounterIssue] = field(default_factory=list)
+    # First reading of the discharge counter (kWh): with the booked
+    # increments it gives the lifetime discharge without the raw glitches.
+    first_discharged: float | None = None
 
 
 def _booked(
@@ -108,6 +111,9 @@ def build(
                 soc_min=row.low if row else None,
                 soc_max=row.high if row else None,
                 gap=hour in into_gaps or hour in out_gaps,
+                read=hour in charged and hour in discharged,
             )
         )
+    if discharged:
+        series.first_discharged = discharged[min(discharged)]
     return series

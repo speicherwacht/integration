@@ -114,6 +114,14 @@ ENTITIES = {
     },
 }
 ERRORS = {
+    "counter_in_use": (
+        "This charge counter already belongs to another Speicherwacht entry.",
+        "Dieser Ladezähler gehört schon zu einem anderen Speicherwacht-Eintrag.",
+    ),
+    "day_counter": (
+        "A counter fell back several times in the last days: it looks like a day counter (energy today). Speicherwacht needs lifetime counters (total energy).",
+        "Ein Zähler ist in den letzten Tagen mehrmals zurückgefallen: Er sieht nach einem Tageszähler aus (Energie heute). Speicherwacht braucht Lebenszeit-Zähler (Gesamtenergie).",
+    ),
     "same_entity": (
         "Choose three different entities.",
         "Wähle drei verschiedene Entitäten.",
@@ -161,6 +169,12 @@ BOUNDARY = {
     ),
 }
 ISSUES = {
+    "counter_resets": (
+        "Speicherwacht: counter starts anew again and again",
+        "Speicherwacht: Zähler beginnt immer wieder neu",
+        "These counters of {name} started anew at least 3 times in the last 7 days: {entities}. That is how a day counter (energy today) behaves; Speicherwacht then counts too little. Choose lifetime counters (total energy) under Settings → Devices & services → Speicherwacht → ⋮ → Reconfigure.",
+        "Diese Zähler von {name} haben in den letzten 7 Tagen mindestens 3-mal neu begonnen: {entities}. So verhält sich ein Tageszähler (Energie heute); Speicherwacht zählt dann zu wenig. Wähle unter Einstellungen → Geräte & Dienste → Speicherwacht → ⋮ → Neu konfigurieren Lebenszeit-Zähler (Gesamtenergie).",
+    ),
     "missing_entity": (
         "Speicherwacht: entity missing",
         "Speicherwacht: Entität fehlt",

@@ -7,7 +7,7 @@ assumptions: docs/ENTWICKLUNG.md, section 3.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date, datetime, timedelta, tzinfo
 from statistics import median
 
@@ -68,6 +68,9 @@ class Efficiency:
     rest_days: int
     rest_loss: float  # kWh lost on rest days (charged − discharged − stored)
     days_without_soc: int = 0
+    # Days the counters did not cover from midnight to midnight (first day
+    # of the counters, missing readings): left out like days without SoC.
+    incomplete_days: int = 0
     reason: str | None = None
     first_day: date | None = None
 
@@ -118,8 +121,11 @@ def efficiency(
 ) -> Efficiency:
     """Efficiency over the given days (with energy figures)."""
     charged = discharged = stored = rest_loss = 0.0
-    operating = rest = without_soc = 0
+    operating = rest = without_soc = incomplete = 0
     for day in selected:
+        if not (day.covered_start and day.covered_end):
+            incomplete += 1
+            continue
         day_stored = _stored(day, capacity)
         if day_stored is None:
             # No state of charge at a midnight: the day cannot be corrected
@@ -138,7 +144,7 @@ def efficiency(
     reason = None
     if not selected:
         reason = NO_DATA
-    elif not operating and without_soc:
+    elif not operating and (without_soc or incomplete):
         reason = NO_SOC
     elif charged < min_charge * capacity:
         reason = TOO_LITTLE_CHARGE
@@ -151,6 +157,7 @@ def efficiency(
         rest_days=rest,
         rest_loss=rest_loss,
         days_without_soc=without_soc,
+        incomplete_days=incomplete,
         reason=reason,
         first_day=first,
     )
@@ -235,7 +242,7 @@ def capacity_estimate(
 
 
 def _close_today(day_list: list[Day], hours: Sequence[Hour], today: date) -> None:
-    """The open day ends with the latest hour."""
+    """The open day ends with the latest hour (and is covered up to it)."""
     if not day_list or day_list[-1].day != today or day_list[-1].soc_end is not None:
         return
     with_soc = [h for h in hours if h.soc is not None]
@@ -243,16 +250,11 @@ def _close_today(day_list: list[Day], hours: Sequence[Hour], today: date) -> Non
         return
     end = with_soc[-1].start + timedelta(hours=1)
     last = soc_at(end, {h.start: h for h in with_soc[-2:]})
-    day = day_list[-1]
-    day_list[-1] = Day(
-        day.day,
-        day.charged,
-        day.discharged,
-        day.soc_start,
-        last,
-        day.complete_hours,
-        day.length_hours,
-        day.energy_hours,
+    latest = hours[-1] if hours else None
+    day_list[-1] = replace(
+        day_list[-1],
+        soc_end=last,
+        covered_end=latest is not None and latest.read,
     )
 
 

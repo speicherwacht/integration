@@ -13,9 +13,11 @@ from homeassistant.components.recorder.models import (
     StatisticMetaData,
 )
 from homeassistant.components.recorder.statistics import async_import_statistics
+from homeassistant.config_entries import SOURCE_USER
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import issue_registry as ir
+from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     async_fire_time_changed,
@@ -204,3 +206,83 @@ async def test_unload_and_remove(hass: HomeAssistant) -> None:
     assert await hass.config_entries.async_unload(entry.entry_id)
     await hass.async_block_till_done()
     assert await hass.config_entries.async_remove(entry.entry_id)
+
+
+def import_day_counter(hass: HomeAssistant, days: int) -> None:
+    """A counter of today's energy: 0 … 5 kWh every day, as a statistic of
+    the charge entity; discharge and SoC plain."""
+    now = dt_util.utcnow().replace(minute=0, second=0, microsecond=0)
+    start = now - timedelta(days=days)
+    charged, discharged, soc = [], [], []
+    hour, out = start, 0.0
+    while hour < now:
+        today = (hour.hour + 1) * 0.2  # restarts at 0 UTC each day
+        out += 0.1
+        charged.append(StatisticData(start=hour, state=today, sum=0.0))
+        discharged.append(StatisticData(start=hour, state=out, sum=out))
+        soc.append(StatisticData(start=hour, mean=50.0, min=50.0, max=50.0))
+        hour += timedelta(hours=1)
+    for statistic_id, rows in ((CHARGED, charged), (DISCHARGED, discharged)):
+        async_import_statistics(
+            hass,
+            StatisticMetaData(
+                mean_type=StatisticMeanType.NONE,
+                has_sum=True,
+                name=None,
+                source="recorder",
+                statistic_id=statistic_id,
+                unit_class="energy",
+                unit_of_measurement="kWh",
+            ),
+            rows,
+        )
+    async_import_statistics(
+        hass,
+        StatisticMetaData(
+            mean_type=StatisticMeanType.ARITHMETIC,
+            has_sum=False,
+            name=None,
+            source="recorder",
+            statistic_id=SOC,
+            unit_class=None,
+            unit_of_measurement="%",
+        ),
+        soc,
+    )
+
+
+async def test_day_counter_is_refused_in_the_setup(hass: HomeAssistant) -> None:
+    import_day_counter(hass, 4)
+    await async_wait_recording_done(hass)
+    set_sources(hass)
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": SOURCE_USER}
+    )
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {"name": "Akku", "source": "manual"}
+    )
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        {
+            "charged": CHARGED,
+            "discharged": DISCHARGED,
+            "soc": SOC,
+            CONF_CAPACITY: 10.0,
+            CONF_BOUNDARY: "battery",
+        },
+    )
+    assert result["errors"] == {"base": "day_counter"}
+
+
+async def test_day_counter_gives_a_repair_issue(hass: HomeAssistant) -> None:
+    """An entry made before the check (or with a counter that changed)."""
+    import_day_counter(hass, 6)
+    await async_wait_recording_done(hass)
+    entry = await setup_entry(hass)
+    await entry.runtime_data.async_refresh()
+    await hass.async_block_till_done()
+    issue = ir.async_get(hass).async_get_issue(
+        DOMAIN, f"{entry.entry_id}_counter_resets"
+    )
+    assert issue is not None
+    assert issue.translation_placeholders["entities"] == CHARGED

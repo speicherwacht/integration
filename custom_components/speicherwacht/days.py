@@ -42,31 +42,47 @@ def period_start(period: Period, now: datetime, tz: tzinfo) -> date | None:
     return None
 
 
-def soc_at(boundary: datetime, by_start: dict[datetime, Hour]) -> float | None:
-    """State of charge at an hour boundary.
+def _hour_of(moment: datetime) -> datetime:
+    """Start of the UTC hour containing `moment`."""
+    return moment.replace(minute=0, second=0, microsecond=0)
 
-    The statistics only hold hourly means, each taken half an hour from the
-    boundary: the mean of the hour before and the hour after is the best
-    estimate. At the edge of the data (first hour, latest hour) the trend of
-    the two nearest hours is extended by half an hour.
+
+def soc_at(boundary: datetime, by_start: dict[datetime, Hour]) -> float | None:
+    """State of charge at a moment, usually local midnight.
+
+    The statistics only hold hourly means; a mean stands for the middle of
+    its hour. Between the two middles around the moment the value is
+    interpolated (at a full hour: the mean of the hour before and after;
+    time zones with a half-hour offset fall between). At the edge of the
+    data (first hour, latest hour) the trend of the two nearest hours is
+    extended.
     """
 
     def soc(start: datetime) -> float | None:
         hour = by_start.get(start)
         return hour.soc if hour is not None else None
 
-    before, after = soc(boundary - HOUR), soc(boundary)
+    half = HOUR / 2
+    before_start = _hour_of(boundary - half)  # its middle is at or before
+    after_start = before_start + HOUR
+    weight = (boundary - (before_start + half)) / HOUR  # 0 … 1
+    before, after = soc(before_start), soc(after_start)
     if before is not None and after is not None:
-        return (before + after) / 2
+        return before + (after - before) * weight
     if after is not None:
-        further = soc(boundary + HOUR)
-        edge = after if further is None else after - (further - after) / 2
+        further = soc(after_start + HOUR)
+        edge = after if further is None else after - (further - after) * (1 - weight)
     elif before is not None:
-        further = soc(boundary - 2 * HOUR)
-        edge = before if further is None else before + (before - further) / 2
+        further = soc(before_start - HOUR)
+        edge = before if further is None else before + (before - further) * weight
     else:
         return None
     return min(100.0, max(0.0, edge))
+
+
+def last_hour_before(moment: datetime) -> datetime:
+    """Start of the last statistics hour that begins before `moment`."""
+    return _hour_of(moment - timedelta(microseconds=1))
 
 
 @dataclass(frozen=True, slots=True)
@@ -85,6 +101,11 @@ class Day:
     # figures at all (statistics of the state of charge often reach further
     # back than those of the counters).
     energy_hours: int = 0
+    # Both counters had a reading at both ends of the day: only then does the
+    # day's energy belong to the same span as its change of charge (the
+    # counters may start in the middle of a day, readings may be missing).
+    covered_start: bool = False
+    covered_end: bool = False
 
     @property
     def complete(self) -> bool:
@@ -120,6 +141,13 @@ def days(hours: Iterable[Hour], tz: tzinfo) -> list[Day]:
                     for h in members
                     if h.charged is not None and h.discharged is not None
                 ),
+                covered_start=_read(by_start, last_hour_before(start)),
+                covered_end=_read(by_start, last_hour_before(end)),
             )
         )
     return result
+
+
+def _read(by_start: dict[datetime, Hour], start: datetime) -> bool:
+    hour = by_start.get(start)
+    return hour is not None and hour.read

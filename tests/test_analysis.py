@@ -103,7 +103,7 @@ def test_days_without_counters_do_not_count() -> None:
     hours = simulate(JUNE, 10, rest_watts=0.0)
     early = at(date(2026, 6, 4), 0)
     hours = [
-        replace(h, charged=None, discharged=None) if h.start < early else h
+        replace(h, charged=None, discharged=None, read=False) if h.start < early else h
         for h in hours
     ]
     result = analyse(hours, 10.0, BERLIN, at(date(2026, 6, 10), 23) + HALF)
@@ -149,3 +149,46 @@ def test_without_data_everything_is_unknown() -> None:
     assert result.rest.reason == TOO_FEW_REST_HOURS
     assert result.capacity.reason == TOO_FEW_DISCHARGES
     assert result.first_day is None
+
+
+def test_counters_starting_mid_day_leave_that_day_out() -> None:
+    """Fronius: the counters start with Modbus, the SoC reaches further back.
+
+    The first day's change of charge would include energy the counters never
+    saw (review 2026-10-30: 92 % instead of 90 % over a month).
+    """
+    hours = simulate(JUNE, 30, rest_watts=0.0)
+    begin = at(JUNE, 15)
+    hours = [
+        replace(h, charged=None, discharged=None, read=False)
+        if h.start < begin
+        else (replace(h, charged=None) if h.start == begin else h)
+        for h in hours
+    ]
+    result = analyse(hours, 10.0, BERLIN, END)
+    month = result.efficiency[Period.MONTH]
+    assert month.incomplete_days == 1
+    assert month.operating_days == 29
+    assert month.ratio == pytest.approx(0.9, abs=0.005)
+
+
+def test_a_day_with_missing_readings_at_midnight_is_left_out() -> None:
+    hours = simulate(JUNE, 10, rest_watts=0.0)
+    gap = {at(date(2026, 6, 5), 23), at(date(2026, 6, 6), 0)}
+    hours = [replace(h, read=False) if h.start in gap else h for h in hours]
+    month = analyse(hours, 10.0, BERLIN, at(date(2026, 6, 10), 23) + HALF).efficiency[
+        Period.MONTH
+    ]
+    assert month.incomplete_days == 2  # 5 June ends, 6 June starts without
+    assert month.ratio == pytest.approx(0.9, abs=0.01)
+
+
+@pytest.mark.parametrize("zone", ["Asia/Kolkata", "Australia/Adelaide"])
+def test_half_hour_time_zones_get_an_efficiency(zone: str) -> None:
+    """Their midnight falls between two statistics hours (review M3)."""
+    from zoneinfo import ZoneInfo
+
+    hours = simulate(JUNE, 30, rest_watts=0.0)
+    tz = ZoneInfo(zone)
+    total = analyse(hours, 10.0, tz, END).efficiency[Period.TOTAL]
+    assert total.ratio == pytest.approx(0.9, abs=0.01)

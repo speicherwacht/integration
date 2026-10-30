@@ -78,3 +78,19 @@ def test_period_start_is_local() -> None:
     assert period_start(Period.MONTH, now, BERLIN) == date(2026, 6, 1)
     assert period_start(Period.YEAR, now, BERLIN) == date(2026, 1, 1)
     assert period_start(Period.TOTAL, now, BERLIN) is None
+
+
+def test_soc_between_hour_middles_for_half_hour_offsets() -> None:
+    """Midnight in Kolkata is 18:30 UTC, the middle of the 18:00 hour."""
+    h18 = datetime(2026, 6, 1, 18, 0, tzinfo=UTC)
+    by_start = {h18: Hour(h18, 0, 0, 40.0), h18 + HOUR: Hour(h18 + HOUR, 0, 0, 44.0)}
+    # Middles at 18:30 and 19:30; in between linear.
+    assert soc_at(datetime(2026, 6, 1, 18, 30, tzinfo=UTC), by_start) == pytest.approx(
+        40.0
+    )
+    assert soc_at(datetime(2026, 6, 1, 19, 0, tzinfo=UTC), by_start) == pytest.approx(
+        42.0
+    )
+    assert soc_at(datetime(2026, 6, 1, 19, 15, tzinfo=UTC), by_start) == pytest.approx(
+        43.0
+    )

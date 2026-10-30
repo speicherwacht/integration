@@ -47,6 +47,8 @@
       }
     },
     "error": {
+      "counter_in_use": "Dieser Ladezähler gehört schon zu einem anderen Speicherwacht-Eintrag.",
+      "day_counter": "Ein Zähler ist in den letzten Tagen mehrmals zurückgefallen: Er sieht nach einem Tageszähler aus (Energie heute). Speicherwacht braucht Lebenszeit-Zähler (Gesamtenergie).",
       "same_entity": "Wähle drei verschiedene Entitäten.",
       "entity_missing": "Eine Entität existiert (noch) nicht.",
       "soc_unit": "Der Ladezustand muss in % sein.",
@@ -104,6 +106,10 @@
     }
   },
   "issues": {
+    "counter_resets": {
+      "title": "Speicherwacht: Zähler beginnt immer wieder neu",
+      "description": "Diese Zähler von {name} haben in den letzten 7 Tagen mindestens 3-mal neu begonnen: {entities}. So verhält sich ein Tageszähler (Energie heute); Speicherwacht zählt dann zu wenig. Wähle unter Einstellungen → Geräte & Dienste → Speicherwacht → ⋮ → Neu konfigurieren Lebenszeit-Zähler (Gesamtenergie)."
+    },
     "missing_entity": {
       "title": "Speicherwacht: Entität fehlt",
       "description": "Diese Entitäten von {name} gibt es nicht: {entities}. Wähle unter Einstellungen → Geräte & Dienste → Speicherwacht → ⋮ → Neu konfigurieren andere."

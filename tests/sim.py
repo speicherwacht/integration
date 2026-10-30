@@ -37,14 +37,16 @@ def simulate(
     low: float = 5.0,
     high: float = 95.0,
 ) -> list[Hour]:
-    """Hours from local midnight of `first` for `days` days."""
+    """Hours from local midnight of `first` for `days` days, plus one quiet
+    hour before: the counters already ran, so the first day is covered."""
     hours = []
-    start = local_midnight(first, BERLIN)
+    midnight = local_midnight(first, BERLIN)
+    start = midnight - HOUR
     end = local_midnight(first + timedelta(days=days), BERLIN)
     stored = soc / 100 * capacity
     while start < end:
         local = start.astimezone(BERLIN)
-        power = profile(local.date()).get(local.hour, 0.0)
+        power = profile(local.date()).get(local.hour, 0.0) if start >= midnight else 0.0
         before = stored
         charged = discharged = 0.0
         if power > 0:
@@ -66,6 +68,7 @@ def simulate(
                 soc=mean,
                 soc_min=min(before, after) / capacity * 100,
                 soc_max=max(before, after) / capacity * 100,
+                read=True,
             )
         )
         start += HOUR

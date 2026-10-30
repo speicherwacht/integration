@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.sensor import (
@@ -17,9 +18,10 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.const import PERCENTAGE, UnitOfEnergy, UnitOfPower
+from homeassistant.util import dt as dt_util
 
 from .analysis import Analysis, Efficiency
-from .days import Period
+from .days import Period, local_midnight
 from .entity import StorageEntity
 
 if TYPE_CHECKING:
@@ -34,6 +36,8 @@ if TYPE_CHECKING:
 class StorageSensorDescription(SensorEntityDescription):
     value_fn: Callable[[Analysis, StorageRuntime], float | None]
     attrs_fn: Callable[[Analysis, StorageRuntime], dict[str, Any]] = lambda _a, _r: {}
+    # Starts anew each calendar year (last_reset at local 1 January).
+    yearly: bool = False
 
 
 def _kwh(value: float) -> float:
@@ -61,6 +65,7 @@ def _efficiency_attrs(
             "rest_days": result.rest_days,
             "rest_loss_kwh": _kwh(result.rest_loss),
             "days_without_soc": result.days_without_soc,
+            "incomplete_days": result.incomplete_days,
             "since": result.first_day.isoformat() if result.first_day else None,
             "boundary": runtime.boundary.value,
             "reason": result.reason,
@@ -121,7 +126,9 @@ DESCRIPTIONS = [
     *EFFICIENCY,
     StorageSensorDescription(
         key="full_cycles_total",
-        state_class=SensorStateClass.TOTAL_INCREASING,
+        # Not total_increasing: a new capacity lowers the value, which must
+        # not count as a restart of the counter.
+        state_class=SensorStateClass.TOTAL,
         suggested_display_precision=1,
         value_fn=_lifetime_cycles,
         attrs_fn=lambda a, r: {
@@ -134,7 +141,8 @@ DESCRIPTIONS = [
     ),
     StorageSensorDescription(
         key="full_cycles_year",
-        state_class=SensorStateClass.TOTAL_INCREASING,
+        state_class=SensorStateClass.TOTAL,
+        yearly=True,
         suggested_display_precision=1,
         value_fn=lambda a, _r: round(a.cycles_year, 1),
         attrs_fn=lambda a, _r: {"statistics_since": _since(a)},
@@ -201,6 +209,13 @@ class StorageSensor(StorageEntity, SensorEntity):
         if analysis is None:
             return None
         return self.entity_description.value_fn(analysis, self.runtime)
+
+    @property
+    def last_reset(self) -> datetime | None:
+        if not self.entity_description.yearly:
+            return None
+        today = dt_util.now(self.runtime.tz).date()
+        return local_midnight(today.replace(month=1, day=1), self.runtime.tz)
 
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:

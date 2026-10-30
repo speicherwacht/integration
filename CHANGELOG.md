@@ -2,6 +2,15 @@
 
 ## Unveröffentlicht
 
+Korrekturen nach einer unabhängigen Durchsicht:
+
+- **Teiltage zählen nicht mehr:** Ein Tag geht nur in den Wirkungsgrad ein, wenn die Zähler an beiden Mitternächten einen Wert hatten. Bisher verfälschte der erste Tag der Zähler den Wirkungsgrad, wenn der Ladezustand schon länger aufgezeichnet wurde (bei Fronius typisch: Zähler erst mit Modbus TCP) – in einer Simulation um bis zu 2 Prozentpunkte über einen Monat. Neues Attribut `incomplete_days`.
+- **Tageszähler werden erkannt:** Die Einrichtung lehnt Zähler ab, die in den letzten Tagen mehrmals auf unter die Hälfte gefallen sind (Energie heute statt Gesamtenergie). Für bestehende Einträge gibt es den Reparaturhinweis „Zähler beginnt immer wieder neu“.
+- **Zeitzonen mit Halbstunden-Versatz** (z. B. Indien, Adelaide): Der Ladezustand an Mitternacht wird jetzt zwischen den Stundenmitteln interpoliert; bisher blieben dort alle Wirkungsgrade unbekannt.
+- **Vollzyklen gesamt und Garantie-Durchsatz** rechnen ab dem ersten Zählerstand plus den bereinigten Zuwächsen; ein kurzer Ausreißer des Zählers erscheint nicht mehr. Zustandsklasse `total` (Vollzyklen Jahr mit Rücksetzung am 1. Januar), damit eine geänderte Kapazität nicht als Neustart zählt.
+- Ein Ladezähler kann nur noch zu einem Eintrag gehören, auch wenn derselbe Speicher einmal über die Vorlage und einmal von Hand gewählt wird.
+- Reparaturhinweise verschwinden auch beim Deaktivieren oder Neuladen des Eintrags; Aufräumen, wenn die Einrichtung abbricht.
+
 ## 0.1.0b1 – 2026-10-30
 
 Erste Version (Beta).
