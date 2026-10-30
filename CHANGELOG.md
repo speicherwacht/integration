@@ -1,6 +1,6 @@
 # Changelog
 
-## Unveröffentlicht
+## 0.1.0b3 – 2026-10-30
 
 - **Gesundheits-Check:** drei Problem-Sensoren – „Wirkungsgrad unter Vorjahr“ (letzte 30 Tage mindestens 3 Punkte unter denselben Tagen des Vorjahres), „Kapazität gesunken“ (unter 80 % des Datenblatts oder 10 Punkte unter dem Vorjahr), „Ruheverlust hoch“ (über 64 W oder deutlich über dem Vorjahr) – und der Reparaturhinweis „Zähler und Ladezustand passen nicht zusammen“. Regeln und Quellen in `docs/GESUNDHEITSCHECK.md`.
 - **Neue Vorlagen (Beta, aus dem Quellcode):** GoodWe ET/EH/BT/BH (Core), Victron GX mit Batteriewächter (Core), SolarEdge StorEdge (`solaredge_modbus_multi`, ein Speicher je Batterie), SolaX/Sofar (`solax_modbus`), Sungrow SH (Modbus-YAML von mkaiser), Sigenergy (`sigen`, Zähler der Anlage), Zendure (`zendure_ha`) und Marstek Venus E (`marstek_modbus`, beide Integrationen; Venus A/D werden nicht erkannt). Bei GoodWe ES/EM/BP, Victron ohne Batteriewächter, SolaX mit ausgeschalteten Zählern und Sigenergy mit älterer Firmware zeigt die Einrichtung einen Hinweis; bei Sungrow (Ladezustand im Fenster) und Zendure (Zähler von der Integration gerechnet) erklärt der Zuordnungsschritt die Grenze.
