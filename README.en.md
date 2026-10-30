@@ -11,7 +11,7 @@
 
 **How well does my battery storage really work?** Speicherwacht is a Home Assistant integration that turns the existing counters of your home or balcony battery into its efficiency per month and year, full cycles, rest loss and the capacity you can actually take out – vendor-neutral, read-only, no cloud.
 
-> **Beta.** Speicherwacht is new. The Fronius template is tested on a real installation, the others were built from the source code of the respective integration. Feedback is welcome.
+> **New.** Speicherwacht is a young integration. The Fronius template is tested on a real installation, the others were built from the source code of the respective integration. Feedback is welcome.
 
 ## Contents
 
@@ -150,6 +150,7 @@ Sources and reasons: [docs/ENTWICKLUNG.md](docs/ENTWICKLUNG.md) (German), sectio
 ## Troubleshooting
 
 - **Repair issue "entity missing", "source not available" or "unexpected unit":** check the source integration or choose other entities under *Reconfigure*. The issues disappear by themselves.
+- **Source renamed** (entity ID changed, also via "Recreate entity IDs"): Speicherwacht does not follow it yet and reports "entity missing". Choose the new entity under *Reconfigure*; the history is kept because Home Assistant renames the statistics too.
 - **All values stay unknown:** do the counters and the state of charge have long-term statistics? *Tools → Statistics* (before 2026.8: Developer tools) shows it. Without a state class there are none.
 - **Efficiency above 100 %:** usually the charge and discharge counters measure at different places, or the state of charge is mapped wrongly.
 - **Diagnostics file:** Devices & services → Speicherwacht → ⋮ → *Download diagnostics*; it also lists the values the counter module rejected.

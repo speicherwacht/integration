@@ -11,7 +11,7 @@
 
 **Wie gut arbeitet mein Batteriespeicher wirklich?** Speicherwacht ist eine Home-Assistant-Integration, die aus den vorhandenen Zählern deines Heim- oder Balkonspeichers den Wirkungsgrad je Monat und Jahr, die Vollzyklen, den Ruheverlust und die tatsächlich entnehmbare Kapazität berechnet – herstellerneutral, nur lesend, ohne Cloud.
 
-> **Beta.** Speicherwacht ist neu. Die Vorlage für Fronius ist an einer echten Anlage erprobt, die übrigen stammen aus dem Quellcode der jeweiligen Integration. Rückmeldungen sind willkommen.
+> **Neu.** Speicherwacht ist eine junge Integration. Die Vorlage für Fronius ist an einer echten Anlage erprobt, die übrigen stammen aus dem Quellcode der jeweiligen Integration. Rückmeldungen sind willkommen.
 
 ## Inhalt
 
@@ -150,6 +150,7 @@ Quellen und Begründungen: [docs/ENTWICKLUNG.md](docs/ENTWICKLUNG.md), Abschnitt
 ## Fehlerbehebung
 
 - **Reparaturhinweis „Entität fehlt“, „Quelle nicht erreichbar“ oder „unerwartete Einheit“:** Quell-Integration prüfen oder unter *Neu konfigurieren* andere Entitäten wählen. Die Hinweise verschwinden von selbst.
+- **Quelle umbenannt** (Entity-ID geändert, auch über „Entity-IDs neu erstellen“): Speicherwacht zieht das noch nicht selbst nach und meldet „Entität fehlt“. Unter *Neu konfigurieren* die neue Entität wählen; der Verlauf bleibt erhalten, weil Home Assistant die Statistik mit umbenennt.
 - **Alle Werte bleiben unbekannt:** Haben die Zähler und der Ladezustand Langzeitstatistik? *Werkzeuge → Statistik* (vor 2026.8: Entwicklerwerkzeuge) zeigt es. Ohne Zustandsklasse gibt es keine.
 - **Wirkungsgrad über 100 %:** Meist messen Lade- und Entladezähler an verschiedenen Stellen, oder der Ladezustand ist falsch zugeordnet.
 - **Diagnose-Datei:** Geräte & Dienste → Speicherwacht → ⋮ → *Diagnose herunterladen*; sie enthält auch die vom Zählerbaustein verworfenen Werte.

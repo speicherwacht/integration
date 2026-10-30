@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.1 – 2026-10-30
+
+Erste finale Version, Stand wie 0.1.0b3.
+
+- README mit Bildern von Gerät und Dashboard; Fehlerbehebung: nach dem Umbenennen einer Quelle neu konfigurieren (automatisches Nachziehen folgt).
+
+Was Speicherwacht seit den Betas kann: Wirkungsgrad je Monat, Jahr und gesamt mit Korrektur über den Ladezustand, Ruhetage getrennt; Vollzyklen und Garantie-Durchsatz; Ruheverlust; geschätzte Kapazität; Gesundheits-Check mit drei Problem-Sensoren; Vorlagen für Fronius (erprobt) und 13 weitere Quellen (Beta); alles aus der Langzeitstatistik, auch rückwirkend.
+
 ## 0.1.0b3 – 2026-10-30
 
 - **Gesundheits-Check:** drei Problem-Sensoren – „Wirkungsgrad unter Vorjahr“ (letzte 30 Tage mindestens 3 Punkte unter denselben Tagen des Vorjahres), „Kapazität gesunken“ (unter 80 % des Datenblatts oder 10 Punkte unter dem Vorjahr), „Ruheverlust hoch“ (über 64 W oder deutlich über dem Vorjahr) – und der Reparaturhinweis „Zähler und Ladezustand passen nicht zusammen“. Regeln und Quellen in `docs/GESUNDHEITSCHECK.md`.
