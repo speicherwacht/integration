@@ -30,6 +30,8 @@
 - **Repair issues** when a source is missing, unavailable for long or has a wrong unit.
 - No storage file of its own, no extra write load on SD cards.
 
+<img src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/screenshots/geraet.png" alt="Device of a battery storage with efficiency per month, year and overall, rest loss, estimated capacity, full cycles and the three checks of the health check (German UI)" width="720">
+
 ## Requirements
 
 - Home Assistant **2026.4** or newer, with the recorder.
@@ -108,6 +110,10 @@ Attributes show what a value is made of: charged, discharged, change of stored e
 | `no_soc` | no state of charge at the day boundaries |
 | `too_few_rest_hours` | fewer than 24 rest hours in 30 days |
 | `too_few_discharges` | fewer than three discharges from full to empty in 90 days |
+
+The sensors can go on a dashboard like any other, for example as tiles with a statistics graph of the charge and discharge counters:
+
+<img src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/screenshots/dashboard_energie.png" alt="Dashboard section with efficiency per month, year and overall, rest loss, capacity, state of charge, full cycles and a bar chart of the energy charged and discharged per month (German UI)" width="720">
 
 ## Health check
 

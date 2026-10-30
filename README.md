@@ -30,6 +30,8 @@
 - **Reparaturhinweise**, wenn eine Quelle fehlt, lange nicht verfügbar ist oder eine falsche Einheit hat.
 - Keine eigene Speicherdatei, keine zusätzliche Schreiblast auf SD-Karten.
 
+<img src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/screenshots/geraet.png" alt="Gerät eines Speichers mit Wirkungsgrad Monat, Jahr und gesamt, Ruheverlust, geschätzter Kapazität, Vollzyklen und den drei Prüfungen des Gesundheits-Checks" width="720">
+
 ## Voraussetzungen
 
 - Home Assistant **2026.4** oder neuer, mit Recorder.
@@ -108,6 +110,10 @@ Attribute zeigen, woraus ein Wert entsteht: geladen, entladen, Änderung der ges
 | `no_soc` | kein Ladezustand an den Tagesgrenzen |
 | `too_few_rest_hours` | weniger als 24 Ruhestunden in 30 Tagen |
 | `too_few_discharges` | weniger als drei Entladungen von voll bis leer in 90 Tagen |
+
+Die Sensoren lassen sich wie alle anderen ins Dashboard holen, etwa als Kacheln und mit einem Statistik-Diagramm der Lade- und Entladezähler:
+
+<img src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/screenshots/dashboard_energie.png" alt="Dashboard-Abschnitt mit Wirkungsgrad je Monat, Jahr und gesamt, Ruheverlust, Kapazität, Ladezustand, Vollzyklen und einem Balkendiagramm der monatlich geladenen und entladenen Energie" width="720">
 
 ## Gesundheits-Check
 
