@@ -118,6 +118,18 @@ Erkennung immer über die Entitäten-Registry (Plattform + `unique_id`), nie üb
 - **`anker_solix`** (thomluther/ha-anker-solix 3.9.1, `d510255`, Cloud): unique_id `<Seriennummer klein>_<key>`. Lebenszeitzähler `charged_energy` / `discharged_energy` **nur über MQTT** (Eigentümer-Konto), und neue Einträge schließen die Energie-Kategorie aus – dann gibt es die Zähler gar nicht. Die Einrichtung zeigt dafür einen Hinweis (`counter_hint`). SoC `state_of_charge` (gesamt mit Erweiterungsakkus), Kapazität `number.…_battery_capacity` (Wh, Nennwert × SoH). Ob DC oder AC gezählt wird, ist nicht dokumentiert.
 - **`anker_solix_official`** (v1.5.0, `3ecc42b`, lokal, nur Solarbank 4 E5000 Pro, Max, XE): unique_id `<Config-Entry-ID>_<key>`. `cumulative_charge_energy` / `cumulative_discharge_energy` (0,1 kWh), `battery_soc`, `rated_energy` (fälschlich `total_increasing`, #151).
 
+### Weitere Hersteller (Recherche 29.10.2026, noch ohne Fixture)
+
+Grundlage für die Reihenfolge weiterer Vorlagen; vor dem Bau jeweils am Quellcode und mit Fixture prüfen.
+
+- **Heimspeicher mit Lebenszeitzählern** (geschätzt 55–65 % der verbauten Kapazität): BYD über den Wechselrichter, Sungrow, Huawei, Fox, SMA, Kostal, SolarEdge, GoodWe, Victron, Sigenergy, RCT, SolaX, Deye/solarman. Rücksprünge: `total` ohne `last_reset` bei Huawei (bestätigt, oben), Sungrow und Fox (ungeprüft); SolarEdge-Zähler laufen teils rückwärts (ungeprüft).
+- **Nur Leistung oder Periodenwerte:** E3/DC, sonnen, SENEC (V4 nur Cloud) → Integral-Helfer.
+- **SoH vom BMS:** SolarEdge, Victron, sonnen, RCT, GoodWe, Sungrow, Sigenergy, SolaX, BYD HVS; **Zyklen:** Kostal, sonnen, Victron, Fox, RCT, Varta.
+- **Balkonspeicher:** Lebenszeitzähler bei Indevolt (Core), Marstek Modbus, Solakon, Anker official, Jackery, Anker SB1–3 (MQTT), EcoFlow STREAM. Nur Tageswerte: Hoymiles MS-A2/HiBattery, Marstek B2500, EcoFlow PowerStream. Nur in HA integriert: Zendure, EcoFlow Delta. Ohne Akkuzähler (nur über einen AC-Zähler, Bilanzgrenze „System“): Growatt NOAH, Bluetti, Sunlit, Marstek Local API.
+- **Marktanteile 2025** nach Kapazität (P3/ISEA, pv magazine 26.06.2026): BYD 16,5 %, Sungrow 9,0 %, Huawei 7,8 %, Anker 6,9 %, Fox 5,4 %, E3/DC 4,3 %, sonnen 3,3 %.
+- **Installationen laut HA-Analytics** (29.10.2026): fronius 10.403, solarman 10.503 (davon ~7.200 davidrapan, ~3.170 StephanJoubert), huawei_solar 6.520, anker_solix 6.368, zendure_ha 4.318, ecoflow_cloud 4.299, goodwe 3.726, victron_gx 3.456, solaredge_modbus_multi 3.183, solax_modbus 3.031, sigen 2.736; anker_solix_official 1.159 (30.10.).
+- **Nachfrage:** vor allem Balkonspeicher; Amortisation umstritten (~4 Jahre laut EUPD/Anker gegen > 10 Jahre laut HTW, nicht primär geprüft).
+
 ## 5. Home Assistant – technischer Stand
 
 - Mindestversion **2026.4** (Entitätsauswahl mit Filter nach Einheit), wie Wärmewacht; CI-Job `compat`.
