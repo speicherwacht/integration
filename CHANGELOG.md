@@ -3,6 +3,7 @@
 ## Unveröffentlicht
 
 - **Gesundheits-Check:** drei Problem-Sensoren – „Wirkungsgrad unter Vorjahr“ (letzte 30 Tage mindestens 3 Punkte unter denselben Tagen des Vorjahres), „Kapazität gesunken“ (unter 80 % des Datenblatts oder 10 Punkte unter dem Vorjahr), „Ruheverlust hoch“ (über 64 W oder deutlich über dem Vorjahr) – und der Reparaturhinweis „Zähler und Ladezustand passen nicht zusammen“. Regeln und Quellen in `docs/GESUNDHEITSCHECK.md`.
+- **Neue Vorlagen (Beta, aus dem Quellcode):** GoodWe ET/EH/BT/BH (Core), Victron GX mit Batteriewächter (Core), SolarEdge StorEdge (`solaredge_modbus_multi`, ein Speicher je Batterie) und SolaX/Sofar (`solax_modbus`). Bei GoodWe ES/EM/BP, Victron ohne Batteriewächter und SolaX mit ausgeschalteten Zählern zeigt die Einrichtung einen Hinweis.
 
 ## 0.1.0b2 – 2026-10-30
 

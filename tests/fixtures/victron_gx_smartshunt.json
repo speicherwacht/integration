@@ -1,0 +1,278 @@
+{
+  "platform": "victron_gx",
+  "config_entry_id": "01KVICTRONGX00000000000000",
+  "name_prefix": "SmartShunt 500A/50mV (ID: 279)",
+  "devices": {
+    "smartshunt": {
+      "identifiers": [
+        [
+          "victron_gx",
+          "c0619ab9f0e1_battery_279"
+        ]
+      ],
+      "name": "SmartShunt 500A/50mV (ID: 279)",
+      "manufacturer": "Victron Energy",
+      "model": "SmartShunt 500A/50mV",
+      "via_device": null
+    },
+    "can_bms": {
+      "identifiers": [
+        [
+          "victron_gx",
+          "c0619ab9f0e1_battery_512"
+        ]
+      ],
+      "name": "Pylontech battery (ID: 512)",
+      "manufacturer": "Victron Energy",
+      "model": "Pylontech battery",
+      "via_device": null
+    },
+    "system": {
+      "identifiers": [
+        [
+          "victron_gx",
+          "c0619ab9f0e1_system_0"
+        ]
+      ],
+      "name": "Victron Venus",
+      "manufacturer": "Victron Energy",
+      "model": null,
+      "via_device": null
+    }
+  },
+  "entities": [
+    {
+      "entity_id": "sensor.smartshunt_500a_50mv_id_279_charged_energy",
+      "unique_id": "c0619ab9f0e1_battery_279_battery_charged_energy",
+      "state": "2841.37",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "SmartShunt 500A/50mV (ID: 279) Charged energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "smartshunt"
+    },
+    {
+      "entity_id": "sensor.smartshunt_500a_50mv_id_279_discharged_energy",
+      "unique_id": "c0619ab9f0e1_battery_279_battery_discharged_energy",
+      "state": "2655.08",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "SmartShunt 500A/50mV (ID: 279) Discharged energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "smartshunt"
+    },
+    {
+      "entity_id": "sensor.smartshunt_500a_50mv_id_279_charge",
+      "unique_id": "c0619ab9f0e1_battery_279_battery_soc",
+      "state": "71.4",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "SmartShunt 500A/50mV (ID: 279) Charge"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "smartshunt"
+    },
+    {
+      "entity_id": "sensor.smartshunt_500a_50mv_id_279_capacity",
+      "unique_id": "c0619ab9f0e1_battery_279_battery_capacity",
+      "state": "280.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "Ah",
+        "friendly_name": "SmartShunt 500A/50mV (ID: 279) Capacity"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "smartshunt"
+    },
+    {
+      "entity_id": "sensor.smartshunt_500a_50mv_id_279_consumed_amp_hours",
+      "unique_id": "c0619ab9f0e1_battery_279_battery_consumed_amphours",
+      "state": "-80.1",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "Ah",
+        "friendly_name": "SmartShunt 500A/50mV (ID: 279) Consumed amp-hours"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "smartshunt"
+    },
+    {
+      "entity_id": "sensor.smartshunt_500a_50mv_id_279_power",
+      "unique_id": "c0619ab9f0e1_battery_279_battery_power",
+      "state": "-612.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "SmartShunt 500A/50mV (ID: 279) Power"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "smartshunt"
+    },
+    {
+      "entity_id": "sensor.smartshunt_500a_50mv_id_279_dc_bus_voltage",
+      "unique_id": "c0619ab9f0e1_battery_279_battery_voltage",
+      "state": "52.41",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "V",
+        "device_class": "voltage",
+        "friendly_name": "SmartShunt 500A/50mV (ID: 279) DC bus voltage"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "smartshunt"
+    },
+    {
+      "entity_id": "sensor.smartshunt_500a_50mv_id_279_dc_bus_current",
+      "unique_id": "c0619ab9f0e1_battery_279_battery_current",
+      "state": "-11.7",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "A",
+        "device_class": "current",
+        "friendly_name": "SmartShunt 500A/50mV (ID: 279) DC bus current"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "smartshunt"
+    },
+    {
+      "entity_id": "sensor.smartshunt_500a_50mv_id_279_total_charge_cycles",
+      "unique_id": "c0619ab9f0e1_battery_279_battery_total_charge_cycles",
+      "state": "183",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "cycles",
+        "friendly_name": "SmartShunt 500A/50mV (ID: 279) Total charge cycles"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "smartshunt"
+    },
+    {
+      "entity_id": "sensor.smartshunt_500a_50mv_id_279_cumulative_ah_drawn",
+      "unique_id": "c0619ab9f0e1_battery_279_battery_cumulative_ah_drawn",
+      "state": "-51022.4",
+      "attributes": {
+        "state_class": "total",
+        "unit_of_measurement": "Ah",
+        "friendly_name": "SmartShunt 500A/50mV (ID: 279) Cumulative Ah drawn"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "smartshunt"
+    },
+    {
+      "entity_id": "sensor.pylontech_battery_id_512_charge",
+      "unique_id": "c0619ab9f0e1_battery_512_battery_soc",
+      "state": "72.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Pylontech battery (ID: 512) Charge"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "can_bms"
+    },
+    {
+      "entity_id": "sensor.pylontech_battery_id_512_installed_capacity",
+      "unique_id": "c0619ab9f0e1_battery_512_battery_installed_capacity",
+      "state": "300.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "Ah",
+        "friendly_name": "Pylontech battery (ID: 512) Installed capacity"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "can_bms"
+    },
+    {
+      "entity_id": "sensor.pylontech_battery_id_512_power",
+      "unique_id": "c0619ab9f0e1_battery_512_battery_power",
+      "state": "-598.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Pylontech battery (ID: 512) Power"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "can_bms"
+    },
+    {
+      "entity_id": "sensor.victron_venus_dc_battery_charge",
+      "unique_id": "c0619ab9f0e1_system_0_system_dc_battery_soc",
+      "state": "71.4",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Victron Venus DC battery charge"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "system"
+    },
+    {
+      "entity_id": "sensor.victron_venus_dc_battery_power",
+      "unique_id": "c0619ab9f0e1_system_0_system_dc_battery_power",
+      "state": "-612.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Victron Venus DC battery power"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "system"
+    },
+    {
+      "entity_id": "sensor.victron_venus_dc_battery_charge_energy",
+      "unique_id": "c0619ab9f0e1_system_0_system_dc_battery_charge_energy",
+      "state": "3.214",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Victron Venus DC battery charge energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "system"
+    },
+    {
+      "entity_id": "sensor.victron_venus_dc_battery_discharge_energy",
+      "unique_id": "c0619ab9f0e1_system_0_system_dc_battery_discharge_energy",
+      "state": "2.987",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Victron Venus DC battery discharge energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "system"
+    }
+  ]
+}

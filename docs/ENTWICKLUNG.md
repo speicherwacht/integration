@@ -14,7 +14,7 @@ Speicherwacht wertet aus vorhandenen Home-Assistant-Entitäten aus, wie gut ein 
 - Kapazität (geschätzt) aus Entladungen von voll bis leer.
 - Rückblick: alles aus der Langzeitstatistik, also auch vor der Einrichtung.
 - Reparaturhinweise für Datenfehler (Entität fehlt, Quelle nicht verfügbar, falsche Einheit).
-- Vorlagen: Fronius (echte Anlage), dazu als Beta Huawei Solar, solarman, Anker SOLIX (Cloud) und Anker SOLIX (offiziell, lokal).
+- Vorlagen: Fronius (echte Anlage), dazu als Beta Huawei Solar, solarman, Anker SOLIX (Cloud), Anker SOLIX (offiziell, lokal), GoodWe, Victron GX, SolarEdge (solaredge_modbus_multi) und SolaX (solax_modbus).
 
 **Später** (nicht im MVP): Wirtschaftlichkeit (Ersparnis, Amortisation; Entscheidung 2026-10-30 „später“), Problem-Sensoren (Wirkungsgrad oder Kapazität gesunken, Ruheverlust hoch), Verluste nach Leistungsklassen, Standby-Signal des Wechselrichters, Aktion „Bericht“.
 
@@ -124,6 +124,31 @@ Erkennung immer über die Entitäten-Registry (Plattform + `unique_id`), nie üb
 - **`anker_solix`** (thomluther/ha-anker-solix 3.9.1, `d510255`, Cloud): unique_id `<Seriennummer klein>_<key>`. Lebenszeitzähler `charged_energy` / `discharged_energy` **nur über MQTT** (Eigentümer-Konto), und neue Einträge schließen die Energie-Kategorie aus – dann gibt es die Zähler gar nicht. Die Einrichtung zeigt dafür einen Hinweis (`counter_hint`). SoC `state_of_charge` (gesamt mit Erweiterungsakkus), Kapazität `number.…_battery_capacity` (Wh, Nennwert × SoH). Ob DC oder AC gezählt wird, ist nicht dokumentiert.
 - **`anker_solix_official`** (v1.5.0, `3ecc42b`, lokal, nur Solarbank 4 E5000 Pro, Max, XE): unique_id `<Config-Entry-ID>_<key>`. `cumulative_charge_energy` / `cumulative_discharge_energy` (0,1 kWh), `battery_soc`, `rated_energy` (fälschlich `total_increasing`, #151).
 
+### GoodWe (Core `goodwe`, beta)
+
+- Core 2026.10.4 (`357cae5`), Bibliothek goodwe 0.4.10 (`66dfcdd`); die HACS-Variante mletenay/home-assistant-goodwe-inverter hat dieselbe Domain und dieselben IDs. unique_id `goodwe-<Schlüssel>-<Seriennummer>`, ein Gerät je Config-Entry.
+- `e_bat_charge_total` / `e_bat_discharge_total` (0,1 kWh, `total_increasing`) nur in der ET-Klasse (ET/EH/BT/BH und die Plattformen 205/745/753). ES/EM/BP (Plattform 105) haben nur den SoC `battery_soc` → Hinweis in der Einrichtung (`counter_hint`). Die Tageszähler `e_bat_*_day` sind ebenfalls `total_increasing` und werden nicht genutzt.
+- Gemessen am Batterieanschluss des Wechselrichters (DC; GoodWe-Support in core#168158). Kein Kapazitätssensor. Ein gelesener Wert 0 wird durch den letzten ersetzt (`coordinator.py` Z. 83). Nach Firmware 1230 zählte ein GW10K-ET nur die halbe Ladung (core#138278); bei zwei Akkus unklar, ob die Zähler summieren (core#146383).
+
+### Victron GX (Core `victron_gx`, beta)
+
+- Core seit 2026.5, Bibliothek victron-mqtt 2026.9.5 (`37fbc4d`), MQTT direkt zum GX. unique_id `<VRM-Portal-ID>_battery_<Instanz>_<Schlüssel>`; ein Speicher je Batteriedienst (BMV, SmartShunt, Lynx), ein Config-Entry je Anlage → Gruppierung nach Präfix.
+- `battery_charged_energy` / `battery_discharged_energy` (`History/ChargedEnergy`, kWh, `total_increasing`, DC am Shunt), SoC `battery_soc`. Kapazität nur in Ah → keine Kapazität aus der Vorlage.
+- Die Systemwerte `system_dc_battery_charge_energy` usw. sind Riemann-Summen der Bibliothek und beginnen bei jedem HA-Start bei 0 (core#172369) → nicht genutzt, die Regex trifft sie nicht. CAN-BMS-Akkus haben vermutlich keine Zähler (nicht im Code belegt) → `counter_hint`. „History löschen“ am BMV setzt die Zähler auf 0.
+
+### SolarEdge (HACS `solaredge_modbus_multi`, beta)
+
+- WillCodeForCats/solaredge-modbus-multi 4.0.10 (`70aa159`). Batterie-Entitäten nur mit der Option „Auto-Detect Batteries“ (standardmäßig aus); ohne sie fehlt auch der SoC, ein Hinweis in der Einrichtung greift also nicht → README. unique_id `<Modell>_<Seriennummer>_B<1–3>_<Schlüssel>`, ein Speicher je Batterie.
+- `energy_import` (Laden) / `energy_export` (Entladen), Wh, `total_increasing`; SoC `battery_soe`; Kapazität `max_energy` (aktuelle Maximalenergie, nicht der Nennwert; Zusammenhang mit dem SoH nicht belegt). DC oder AC nicht dokumentiert.
+- **Zähler:** LG und BYD setzen sie auf 0, die SolarEdge Home Battery 48V springt und läuft rückwärts (Wiki „Known Issues“, #273, #606, #1156). Ohne die Option „Allow Battery Energy to Reset“ (Standard) hält die Integration den alten Wert; der Zähler friert dann ein, bis der Rohwert ihn wieder erreicht – Speicherwacht meldet das über `counter_soc_mismatch`. PR #1129 (geplant 4.1.0) summiert künftig selbst, gleiche IDs.
+- Die Core-Integration `solaredge_modbus` (seit 2026.10) ist eine eigene Plattform und nicht untersucht.
+
+### SolaX (HACS `solax_modbus`, beta)
+
+- wills106/homeassistant-solax-modbus 2026.10.02 (`b6880b6`). unique_id `<Hubname>_<Schlüssel>` ohne Seriennummer (Hubname aus der Einrichtung, Standard „SolaX“, darf Leerzeichen enthalten), ein Config-Entry je Wechselrichter → Gruppierung je Entry. Das virtuelle Gerät „Energy Dashboard“ hat nur Tageswerte und wird ausgeschlossen.
+- `battery_input_energy_total` / `battery_output_energy_total` (kWh, 0,1, **`total` ohne `last_reset`**) sind standardmäßig deaktiviert und werden dann nicht einmal abgefragt → `counter_hint`, nach dem Einschalten neu laden. SoC heißt `battery_capacity` (%), bei Sofar `battery_capacity_total`. Kapazität `battery_system_installed_capacity` (Wh, Nennwert, GEN4–6 mit Protokoll ≥ 1.00, deaktiviert).
+- Bei instabiler Verbindung springen die Summen kurz auf 0 und zurück (#2115) – mit `total` als negative und gleich große positive Änderung, das fängt der Zählerbaustein ab. Andere Plugins derselben Domain (AlphaESS, Solis, Growatt …) haben andere Schlüssel; bei AlphaESS ist `battery_capacity` kWh, deshalb nimmt die Vorlage nur SolaX- und Sofar-Schlüssel. DC oder AC nicht dokumentiert.
+
 ### Weitere Hersteller (Recherche 29.10.2026, noch ohne Fixture)
 
 Grundlage für die Reihenfolge weiterer Vorlagen; vor dem Bau jeweils am Quellcode und mit Fixture prüfen.
@@ -147,7 +172,7 @@ Grundlage für die Reihenfolge weiterer Vorlagen; vor dem Bau jeweils am Quellco
 Vom Inhaber am 2026-10-30:
 
 - Name „Speicherwacht“, Domain `speicherwacht`, Repo `github.com/speicherwacht/integration` (Organisation legt der Inhaber an), `codeowners` `@n42net`, MIT.
-- Heim- und Balkonspeicher gleich, Kern herstellerneutral; erste Vorlage Fronius, dazu Huawei Solar, solarman, Anker SOLIX als Beta aus dem Quellcode.
+- Heim- und Balkonspeicher gleich, Kern herstellerneutral; erste Vorlage Fronius, dazu Huawei Solar, solarman, Anker SOLIX als Beta aus dem Quellcode; mit 0.1.0b3 GoodWe, Victron GX, SolarEdge und SolaX (die nächsten nach HA-Analytics).
 - **Nur Langzeitstatistik**: stündlich neu rechnen, keine eigene Speicherdatei, keine Schreiblast; Live und Rückblick rechnen gleich. Reparaturhinweise schauen trotzdem auf die aktuellen Zustände.
 - Zähler Pflicht; wer nur Leistung hat, legt einen Helfer „Integral“ an (README).
 - Bilanzgrenze je Eintrag wählbar (Akku/System).

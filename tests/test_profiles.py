@@ -11,9 +11,13 @@ from custom_components.speicherwacht.profiles import (
     ANKER_SOLIX,
     ANKER_SOLIX_OFFICIAL,
     FRONIUS,
+    GOODWE,
     HUAWEI_SOLAR,
+    SOLAREDGE_MODBUS_MULTI,
     SOLARMAN,
+    SOLAX_MODBUS,
     TEMPLATES,
+    VICTRON_GX,
     RegistryEntry,
 )
 
@@ -122,3 +126,61 @@ def test_anker_solix_official() -> None:
 def test_other_platforms_are_ignored(template) -> None:
     fixture = load_fixture("fronius_gen24_byd_hvs.json")
     assert template.detect(entries(fixture, platform="other")) == {}
+
+
+def test_goodwe_et_uses_lifetime_not_day_counters() -> None:
+    fixture = load_fixture("goodwe_et.json")
+    (storage, (signals, capacity)), *_ = GOODWE.detect(entries(fixture)).items()
+    assert storage == "9010KETU229W9999"
+    assert signals == {
+        Signal.CHARGED: "sensor.goodwe_total_battery_charge",
+        Signal.DISCHARGED: "sensor.goodwe_total_battery_discharge",
+        Signal.SOC: "sensor.goodwe_battery_state_of_charge",
+    }
+    assert capacity is None
+
+
+def test_goodwe_es_without_counters_gets_the_hint() -> None:
+    fixture = load_fixture("goodwe_et.json")
+    soc_only = [e for e in entries(fixture) if "e_bat_" not in e.unique_id]
+    assert GOODWE.detect(soc_only) == {}
+    assert GOODWE.without_counters(soc_only) == ["9010KETU229W9999"]
+
+
+def test_victron_battery_monitor_but_not_can_bms_or_system() -> None:
+    fixture = load_fixture("victron_gx_smartshunt.json")
+    found = VICTRON_GX.detect(entries(fixture))
+    assert list(found) == ["c0619ab9f0e1_battery_279"]
+    signals, capacity = found["c0619ab9f0e1_battery_279"]
+    assert signals[Signal.CHARGED].endswith("_charged_energy")
+    assert capacity is None  # Ah only
+    assert VICTRON_GX.without_counters(entries(fixture)) == ["c0619ab9f0e1_battery_512"]
+
+
+def test_solaredge_one_storage_per_battery() -> None:
+    fixture = load_fixture("solaredge_modbus_multi_storedge.json")
+    found = SOLAREDGE_MODBUS_MULTI.detect(entries(fixture, usable=True))
+    assert sorted(found) == [
+        "SE10K-RWB48BEN4_7E1A2B3C_B1",
+        "SE10K-RWB48BEN4_7E1A2B3C_B2",
+    ]
+    signals, capacity = found["SE10K-RWB48BEN4_7E1A2B3C_B2"]
+    assert signals[Signal.SOC] == "sensor.solaredge_i1_b2_state_of_energy"
+    assert capacity == "sensor.solaredge_i1_b2_maximum_energy"
+
+
+def test_solax_counters_disabled_by_default_get_the_hint() -> None:
+    fixture = load_fixture("solax_modbus_x3_hybrid_g4.json")
+    assert SOLAX_MODBUS.detect(entries(fixture)) == {}
+    assert SOLAX_MODBUS.without_counters(entries(fixture)) == [
+        fixture["config_entry_id"]
+    ]
+    (signals, capacity), *_ = SOLAX_MODBUS.detect(
+        entries(fixture, usable=True)
+    ).values()
+    assert signals == {
+        Signal.CHARGED: "sensor.solax_battery_input_energy_total",
+        Signal.DISCHARGED: "sensor.solax_battery_output_energy_total",
+        Signal.SOC: "sensor.solax_battery_capacity",
+    }
+    assert capacity == "sensor.solax_battery_system_installed_capacity"

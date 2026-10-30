@@ -1,0 +1,163 @@
+{
+  "platform": "solax_modbus",
+  "config_entry_id": "01KZ3QH7M2V9X4T6R8N5B1C0DE",
+  "entities": [
+    {
+      "entity_id": "sensor.solax_battery_capacity",
+      "unique_id": "SolaX_battery_capacity",
+      "state": "64",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "ed_mapping_present": false,
+        "friendly_name": "SolaX Battery Capacity"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solax_battery_input_energy_total",
+      "unique_id": "SolaX_battery_input_energy_total",
+      "state": "4231.7",
+      "attributes": {
+        "state_class": "total",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-arrow-up",
+        "ed_mapping_present": false,
+        "friendly_name": "SolaX Battery Input Energy Total"
+      },
+      "disabled_by_default": true,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solax_battery_output_energy_total",
+      "unique_id": "SolaX_battery_output_energy_total",
+      "state": "3902.4",
+      "attributes": {
+        "state_class": "total",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-arrow-down",
+        "ed_mapping_present": false,
+        "friendly_name": "SolaX Battery Output Energy Total"
+      },
+      "disabled_by_default": true,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solax_battery_input_energy_today",
+      "unique_id": "SolaX_battery_input_energy_today",
+      "state": "7.3",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-arrow-up",
+        "ed_mapping_present": false,
+        "friendly_name": "SolaX Battery Input Energy Today"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solax_battery_output_energy_today",
+      "unique_id": "SolaX_battery_output_energy_today",
+      "state": "6.1",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-arrow-down",
+        "ed_mapping_present": false,
+        "friendly_name": "SolaX Battery Output Energy Today"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solax_battery_power_charge",
+      "unique_id": "SolaX_battery_power_charge",
+      "state": "-1184",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:battery-charging",
+        "ed_mapping_present": false,
+        "friendly_name": "SolaX Battery Power Charge"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solax_battery_total_energy",
+      "unique_id": "SolaX_bms_battery_capacity",
+      "state": "11520",
+      "attributes": {
+        "unit_of_measurement": "Wh",
+        "device_class": "energy",
+        "ed_mapping_present": false,
+        "friendly_name": "SolaX Battery Total Energy"
+      },
+      "disabled_by_default": true,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solax_battery_system_installed_capacity",
+      "unique_id": "SolaX_battery_system_installed_capacity",
+      "state": "11520",
+      "attributes": {
+        "unit_of_measurement": "Wh",
+        "device_class": "energy",
+        "icon": "mdi:battery",
+        "ed_mapping_present": false,
+        "friendly_name": "SolaX Battery System Installed Capacity"
+      },
+      "disabled_by_default": true,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solax_chargeable_battery_energy",
+      "unique_id": "SolaX_chargeable_battery_capacity",
+      "state": "4147",
+      "attributes": {
+        "unit_of_measurement": "Wh",
+        "device_class": "energy",
+        "ed_mapping_present": false,
+        "friendly_name": "SolaX Chargeable Battery Energy"
+      },
+      "disabled_by_default": true,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solax_remaining_battery_energy",
+      "unique_id": "SolaX_remaining_battery_capacity",
+      "state": "7373",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "Wh",
+        "device_class": "energy_storage",
+        "ed_mapping_present": false,
+        "friendly_name": "SolaX Remaining Battery Energy"
+      },
+      "disabled_by_default": true,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solax_battery_state_of_health",
+      "unique_id": "SolaX_battery_soh",
+      "state": "98",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "icon": "mdi:battery-heart",
+        "ed_mapping_present": false,
+        "friendly_name": "SolaX Battery State of Health"
+      },
+      "disabled_by_default": true,
+      "entity_category": null
+    }
+  ]
+}

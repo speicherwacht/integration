@@ -72,6 +72,18 @@ USER = {
     },
 }
 HINTS = {
+    "goodwe": (
+        "GoodWe: an inverter was found without battery lifetime counters. Only the ET family (ET, EH, BT, BH and newer ES/EM G2) provides them; ES, EM and BP show the state of charge only. Map counters yourself, e.g. with Integral helpers.",
+        "GoodWe: Ein Wechselrichter hat keine Lebenszeit-Zähler für den Akku. Nur die ET-Familie (ET, EH, BT, BH und neuere ES/EM G2) liefert sie; ES, EM und BP zeigen nur den Ladezustand. Ordne Zähler selbst zu, z. B. mit Integral-Helfern.",
+    ),
+    "victron_gx": (
+        "Victron: a battery was found without lifetime counters. They come from a battery monitor (SmartShunt, BMV); batteries reporting over a CAN BMS do not have them. Choose the battery monitor, or map counters yourself.",
+        "Victron: Ein Akku hat keine Lebenszeit-Zähler. Sie kommen von einem Batteriemonitor (SmartShunt, BMV); Akkus mit CAN-BMS liefern sie nicht. Wähle den Batteriemonitor oder ordne Zähler selbst zu.",
+    ),
+    "solax_modbus": (
+        "SolaX: the lifetime battery counters are disabled. Enable 'Battery Input Energy Total' and 'Battery Output Energy Total' in the SolaX device, reload the integration, then start this setup again.",
+        "SolaX: Die Lebenszeit-Zähler des Akkus sind deaktiviert. Aktiviere im SolaX-Gerät „Battery Input Energy Total“ und „Battery Output Energy Total“, lade die Integration neu und starte diese Einrichtung erneut.",
+    ),
     "anker_solix": (
         "Anker SOLIX: a Solarbank was found without lifetime counters. They "
         "come only by MQTT with the owner account, and the integration leaves "

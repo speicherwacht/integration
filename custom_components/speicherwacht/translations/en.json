@@ -13,6 +13,42 @@
           "source": "Templates marked (beta) were built from the integration's source code and are not yet confirmed on a real installation."
         }
       },
+      "user_hint_goodwe": {
+        "title": "Battery storage",
+        "description": "Speicherwacht reads the counters of your battery (energy charged and discharged, lifetime) and its state of charge from their long-term statistics. Pick a detected storage or map the entities yourself.\n\nGoodWe: an inverter was found without battery lifetime counters. Only the ET family (ET, EH, BT, BH and newer ES/EM G2) provides them; ES, EM and BP show the state of charge only. Map counters yourself, e.g. with Integral helpers.",
+        "data": {
+          "name": "Name",
+          "source": "Source"
+        },
+        "data_description": {
+          "name": "Name of the device Speicherwacht creates.",
+          "source": "Templates marked (beta) were built from the integration's source code and are not yet confirmed on a real installation."
+        }
+      },
+      "user_hint_victron_gx": {
+        "title": "Battery storage",
+        "description": "Speicherwacht reads the counters of your battery (energy charged and discharged, lifetime) and its state of charge from their long-term statistics. Pick a detected storage or map the entities yourself.\n\nVictron: a battery was found without lifetime counters. They come from a battery monitor (SmartShunt, BMV); batteries reporting over a CAN BMS do not have them. Choose the battery monitor, or map counters yourself.",
+        "data": {
+          "name": "Name",
+          "source": "Source"
+        },
+        "data_description": {
+          "name": "Name of the device Speicherwacht creates.",
+          "source": "Templates marked (beta) were built from the integration's source code and are not yet confirmed on a real installation."
+        }
+      },
+      "user_hint_solax_modbus": {
+        "title": "Battery storage",
+        "description": "Speicherwacht reads the counters of your battery (energy charged and discharged, lifetime) and its state of charge from their long-term statistics. Pick a detected storage or map the entities yourself.\n\nSolaX: the lifetime battery counters are disabled. Enable 'Battery Input Energy Total' and 'Battery Output Energy Total' in the SolaX device, reload the integration, then start this setup again.",
+        "data": {
+          "name": "Name",
+          "source": "Source"
+        },
+        "data_description": {
+          "name": "Name of the device Speicherwacht creates.",
+          "source": "Templates marked (beta) were built from the integration's source code and are not yet confirmed on a real installation."
+        }
+      },
       "user_hint_anker_solix": {
         "title": "Battery storage",
         "description": "Speicherwacht reads the counters of your battery (energy charged and discharged, lifetime) and its state of charge from their long-term statistics. Pick a detected storage or map the entities yourself.\n\nAnker SOLIX: a Solarbank was found without lifetime counters. They come only by MQTT with the owner account, and the integration leaves them out until you allow the energy category: Anker SOLIX → Configure → remove 'solarbank_energy' from the excluded categories, enable MQTT.",

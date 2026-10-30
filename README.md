@@ -58,11 +58,19 @@ Im ersten Schritt zeigt Speicherwacht die Speicher, die es erkannt hat, und „E
 | Deye und andere über Solarman-Logger | [solarman](https://github.com/davidrapan/ha-solarman) | experimentell (beta) |
 | Anker SOLIX Solarbank 1–4 | [anker_solix](https://github.com/thomluther/ha-anker-solix) | experimentell (beta) |
 | Anker SOLIX Solarbank 4, Max, XE | [anker_solix_official](https://github.com/anker-charging/ha-anker-solix-official) | experimentell (beta) |
+| GoodWe ET, EH, BT, BH | Core `goodwe` | experimentell (beta) |
+| Victron mit BMV, SmartShunt oder Lynx | Core `victron_gx` | experimentell (beta) |
+| SolarEdge StorEdge | [solaredge_modbus_multi](https://github.com/WillCodeForCats/solaredge-modbus-multi) | experimentell (beta) |
+| SolaX, Sofar | [solax_modbus](https://github.com/wills106/homeassistant-solax-modbus) | experimentell (beta) |
 | alle anderen | eigene Zuordnung | – |
 
 - **Eigene Zuordnung:** Hast du den Speicher im Energie-Dashboard eingetragen, übernimmt Speicherwacht Zähler, Ladezustand und Kapazität von dort als Vorschlag.
 - **Fronius:** Ohne Modbus TCP liefert die Integration keine Batteriezähler; dann bleibt die eigene Zuordnung (z. B. mit Integral-Helfern).
 - **Anker SOLIX (Cloud):** Die Lebenszeit-Zähler kommen nur per MQTT mit dem Eigentümer-Konto, und die Integration legt sie erst an, wenn du die Kategorie `solarbank_energy` in ihren Optionen nicht mehr ausschließt. Speicherwacht weist in der Einrichtung darauf hin.
+- **GoodWe:** Batteriezähler gibt es nur bei ET, EH, BT und BH; ES, EM und BP liefern nur den Ladezustand.
+- **Victron:** Die Zähler kommen vom Batteriewächter (BMV, SmartShunt, Lynx). Ein Akku, der nur per CAN-BMS angebunden ist, hat keine. Die Werte „DC-Batterie Lade-/Entladeenergie“ des Systems beginnen bei jedem Neustart bei 0 und taugen nicht.
+- **SolarEdge:** Batterie-Entitäten gibt es erst mit der Option „Auto-Detect Batteries“. Bei LG- und BYD-Akkus springen die Zähler manchmal auf 0; die Integration hält dann den alten Wert fest, und Speicherwacht meldet „Zähler und Ladezustand passen nicht zusammen“.
+- **SolaX:** „Battery Input Energy Total“ und „Battery Output Energy Total“ sind ausgeschaltet; einschalten und die Integration neu laden. Speicherwacht weist in der Einrichtung darauf hin.
 - **Die Zähler messen:** *den Akku* (DC, z. B. die Batteriezähler des Wechselrichters) oder *den ganzen Speicher* (AC, z. B. ein Zwischenstecker vor einem Balkonspeicher). Die Werte beider Grenzen sind nicht vergleichbar; AC enthält die Verluste des Wechselrichters.
 - **Garantie-Durchsatz (optional):** die Energie in MWh, die die Garantie abdeckt (Garantiebedingungen deines Speichers). Dann entsteht der Sensor „Garantie-Durchsatz genutzt“.
 - **Neu konfigurieren:** Geräte & Dienste → Speicherwacht → ⋮ → *Neu konfigurieren*.

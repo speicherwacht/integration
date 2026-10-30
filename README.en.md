@@ -58,11 +58,19 @@ The first step lists the storages Speicherwacht detected plus "Map entities myse
 | Deye and others via Solarman logger | [solarman](https://github.com/davidrapan/ha-solarman) | experimental (beta) |
 | Anker SOLIX Solarbank 1–4 | [anker_solix](https://github.com/thomluther/ha-anker-solix) | experimental (beta) |
 | Anker SOLIX Solarbank 4, Max, XE | [anker_solix_official](https://github.com/anker-charging/ha-anker-solix-official) | experimental (beta) |
+| GoodWe ET, EH, BT, BH | core `goodwe` | experimental (beta) |
+| Victron with BMV, SmartShunt or Lynx | core `victron_gx` | experimental (beta) |
+| SolarEdge StorEdge | [solaredge_modbus_multi](https://github.com/WillCodeForCats/solaredge-modbus-multi) | experimental (beta) |
+| SolaX, Sofar | [solax_modbus](https://github.com/wills106/homeassistant-solax-modbus) | experimental (beta) |
 | all others | map entities yourself | – |
 
 - **Own mapping:** if your battery is set up in the energy dashboard, Speicherwacht proposes its counters, state of charge and capacity from there.
 - **Fronius:** without Modbus TCP the integration has no battery counters; then map them yourself (e.g. with Integral helpers).
 - **Anker SOLIX (cloud):** the lifetime counters come only by MQTT with the owner account, and the integration creates them only once you no longer exclude the category `solarbank_energy` in its options. The setup points this out.
+- **GoodWe:** only ET, EH, BT and BH have battery counters; ES, EM and BP report the state of charge only.
+- **Victron:** the counters come from the battery monitor (BMV, SmartShunt, Lynx). A battery connected by CAN-BMS only has none. The system's "DC battery charge/discharge energy" start at 0 after every restart and are not usable.
+- **SolarEdge:** battery entities exist only with the option "Auto-Detect Batteries". With LG and BYD batteries the counters sometimes drop to 0; the integration then holds the old value and Speicherwacht reports "counters and state of charge disagree".
+- **SolaX:** "Battery Input Energy Total" and "Battery Output Energy Total" are disabled; enable them and reload the integration. The setup points this out.
 - **The counters measure:** *the battery* (DC, e.g. the inverter's battery counters) or *the whole storage* (AC, e.g. a plug meter in front of a balcony battery). Values of the two boundaries are not comparable; AC includes the inverter losses.
 - **Warranted throughput (optional):** the energy in MWh your warranty covers. Adds the sensor "Warranted throughput used".
 - **Reconfigure:** Devices & services → Speicherwacht → ⋮ → *Reconfigure*.

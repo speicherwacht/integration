@@ -1,0 +1,485 @@
+{
+  "platform": "solaredge_modbus_multi",
+  "entities": [
+    {
+      "entity_id": "sensor.solaredge_i1_ac_energy",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_ac_energy_kwh",
+      "state": "18342.517",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Solaredge I1 AC Energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_storage_state_of_charge",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_storage_1_soc",
+      "state": "61",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Solaredge I1 Storage State of Charge"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_device",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_device",
+      "state": "BAT-05K48M0B-01",
+      "attributes": {
+        "device_id": 1,
+        "manufacturer": "SolarEdge",
+        "model": "BAT-05K48M0B-01",
+        "parent_device_id": 1,
+        "serial_number": "4B1E0001",
+        "batt_rated_energy": 4600.0,
+        "friendly_name": "Solaredge I1 B1 Device"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_energy_import",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_energy_import",
+      "state": "2154.33",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-charging-100",
+        "friendly_name": "Solaredge I1 B1 Energy Import"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_energy_export",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_energy_export",
+      "state": "1986.712",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-charging-20",
+        "friendly_name": "Solaredge I1 B1 Energy Export"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_state_of_energy",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_battery_soe",
+      "state": "61.5",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Solaredge I1 B1 State of Energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_state_of_health",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_battery_soh",
+      "state": "96.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "icon": "mdi:battery-heart-outline",
+        "friendly_name": "Solaredge I1 B1 State of Health"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_maximum_energy",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_max_energy",
+      "state": "4.416",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Solaredge I1 B1 Maximum Energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_available_energy",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_avail_energy",
+      "state": "2.7",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Solaredge I1 B1 Available Energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_dc_power",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_dc_power",
+      "state": "-812.5",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:lightning-bolt",
+        "friendly_name": "Solaredge I1 B1 DC Power"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_dc_power_inverted",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_dc_power_inverted",
+      "state": "812.5",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:lightning-bolt",
+        "friendly_name": "Solaredge I1 B1 DC Power Inverted"
+      },
+      "disabled_by_default": true,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_dc_voltage",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_dc_voltage",
+      "state": "51.75",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "V",
+        "device_class": "voltage",
+        "friendly_name": "Solaredge I1 B1 DC Voltage"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_dc_current",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_dc_current",
+      "state": "-15.75",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "A",
+        "device_class": "current",
+        "icon": "mdi:current-dc",
+        "friendly_name": "Solaredge I1 B1 DC Current"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_average_temperature",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_avg_temp",
+      "state": "24.5",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Solaredge I1 B1 Average Temperature"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_max_temperature",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_max_temp",
+      "state": "26.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Solaredge I1 B1 Max Temperature"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_max_charge_power",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_max_charge_power",
+      "state": "5000.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Solaredge I1 B1 Max Charge Power"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_max_discharge_power",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_max_discharge_power",
+      "state": "5000.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Solaredge I1 B1 Max Discharge Power"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b1_status",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B1_status",
+      "state": "B_STATUS_DISCHARGE",
+      "attributes": {
+        "device_class": "enum",
+        "options": [
+          "B_STATUS_OFF",
+          "B_STATUS_STANDBY",
+          "B_STATUS_INIT",
+          "B_STATUS_CHARGE",
+          "B_STATUS_DISCHARGE",
+          "B_STATUS_FAULT",
+          "B_STATUS_PRESERVE_CHARGE",
+          "B_STATUS_IDLE",
+          "B_STATUS_POWER_SAVING"
+        ],
+        "status_value": 4,
+        "status_text": "Discharge",
+        "friendly_name": "Solaredge I1 B1 Status"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_device",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_device",
+      "state": "BAT-05K48M0B-01",
+      "attributes": {
+        "device_id": 1,
+        "manufacturer": "SolarEdge",
+        "model": "BAT-05K48M0B-01",
+        "parent_device_id": 1,
+        "serial_number": "4B1E0002",
+        "batt_rated_energy": 4600.0,
+        "friendly_name": "Solaredge I1 B2 Device"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_energy_import",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_energy_import",
+      "state": "2149.876",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-charging-100",
+        "friendly_name": "Solaredge I1 B2 Energy Import"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_energy_export",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_energy_export",
+      "state": "1981.044",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-charging-20",
+        "friendly_name": "Solaredge I1 B2 Energy Export"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_state_of_energy",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_battery_soe",
+      "state": "61.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Solaredge I1 B2 State of Energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_state_of_health",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_battery_soh",
+      "state": "97.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "icon": "mdi:battery-heart-outline",
+        "friendly_name": "Solaredge I1 B2 State of Health"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_maximum_energy",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_max_energy",
+      "state": "4.462",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Solaredge I1 B2 Maximum Energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_available_energy",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_avail_energy",
+      "state": "2.722",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Solaredge I1 B2 Available Energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_dc_power",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_dc_power",
+      "state": "-805.25",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:lightning-bolt",
+        "friendly_name": "Solaredge I1 B2 DC Power"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_dc_power_inverted",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_dc_power_inverted",
+      "state": "805.25",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:lightning-bolt",
+        "friendly_name": "Solaredge I1 B2 DC Power Inverted"
+      },
+      "disabled_by_default": true,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_dc_voltage",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_dc_voltage",
+      "state": "51.75",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "V",
+        "device_class": "voltage",
+        "friendly_name": "Solaredge I1 B2 DC Voltage"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_dc_current",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_dc_current",
+      "state": "-15.5",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "A",
+        "device_class": "current",
+        "icon": "mdi:current-dc",
+        "friendly_name": "Solaredge I1 B2 DC Current"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_average_temperature",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_avg_temp",
+      "state": "24.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Solaredge I1 B2 Average Temperature"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_max_temperature",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_max_temp",
+      "state": "25.5",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Solaredge I1 B2 Max Temperature"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_max_charge_power",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_max_charge_power",
+      "state": "5000.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Solaredge I1 B2 Max Charge Power"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_max_discharge_power",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_max_discharge_power",
+      "state": "5000.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Solaredge I1 B2 Max Discharge Power"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.solaredge_i1_b2_status",
+      "unique_id": "SE10K-RWB48BEN4_7E1A2B3C_B2_status",
+      "state": "B_STATUS_DISCHARGE",
+      "attributes": {
+        "device_class": "enum",
+        "options": [
+          "B_STATUS_OFF",
+          "B_STATUS_STANDBY",
+          "B_STATUS_INIT",
+          "B_STATUS_CHARGE",
+          "B_STATUS_DISCHARGE",
+          "B_STATUS_FAULT",
+          "B_STATUS_PRESERVE_CHARGE",
+          "B_STATUS_IDLE",
+          "B_STATUS_POWER_SAVING"
+        ],
+        "status_value": 4,
+        "status_text": "Discharge",
+        "friendly_name": "Solaredge I1 B2 Status"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    }
+  ]
+}

@@ -308,11 +308,6 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
         step_id = f"user_hint_{hints[0]}" if hints else "user"
         return self.async_show_form(step_id=step_id, data_schema=schema)
 
-    async def async_step_user_hint_anker_solix(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
-        return await self.async_step_user(user_input)
-
     async def async_step_entities(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
@@ -383,3 +378,20 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
 
 def _label(label: str, experimental: bool) -> str:
     return f"{label} (beta)" if experimental else label
+
+
+async def _async_step_user_hint(
+    self: SpeicherwachtConfigFlow, user_input: dict[str, Any] | None = None
+) -> ConfigFlowResult:
+    """The first step again, shown with the counter hint of a template."""
+    return await self.async_step_user(user_input)
+
+
+# One step id per template with a counter hint (its own description text).
+for _template in TEMPLATES.values():
+    if _template.counter_hint:
+        setattr(
+            SpeicherwachtConfigFlow,
+            f"async_step_user_hint_{_template.key}",
+            _async_step_user_hint,
+        )

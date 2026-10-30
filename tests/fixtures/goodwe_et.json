@@ -1,0 +1,212 @@
+{
+  "platform": "goodwe",
+  "name_prefix": "GoodWe",
+  "devices": {
+    "inverter": {
+      "identifiers": [
+        [
+          "goodwe",
+          "9010KETU229W9999"
+        ]
+      ],
+      "name": "GoodWe",
+      "manufacturer": "GoodWe",
+      "model": "GW10K-ET",
+      "via_device": null
+    }
+  },
+  "entities": [
+    {
+      "entity_id": "sensor.goodwe_total_battery_charge",
+      "unique_id": "goodwe-e_bat_charge_total-9010KETU229W9999",
+      "state": "4127.3",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-high",
+        "friendly_name": "GoodWe Total Battery Charge"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "inverter"
+    },
+    {
+      "entity_id": "sensor.goodwe_total_battery_discharge",
+      "unique_id": "goodwe-e_bat_discharge_total-9010KETU229W9999",
+      "state": "3802.6",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-high",
+        "friendly_name": "GoodWe Total Battery Discharge"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "inverter"
+    },
+    {
+      "entity_id": "sensor.goodwe_today_battery_charge",
+      "unique_id": "goodwe-e_bat_charge_day-9010KETU229W9999",
+      "state": "7.4",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-high",
+        "friendly_name": "GoodWe Today Battery Charge"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "inverter"
+    },
+    {
+      "entity_id": "sensor.goodwe_today_battery_discharge",
+      "unique_id": "goodwe-e_bat_discharge_day-9010KETU229W9999",
+      "state": "6.1",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-high",
+        "friendly_name": "GoodWe Today Battery Discharge"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "inverter"
+    },
+    {
+      "entity_id": "sensor.goodwe_battery_state_of_charge",
+      "unique_id": "goodwe-battery_soc-9010KETU229W9999",
+      "state": "58",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "icon": "mdi:battery-high",
+        "friendly_name": "GoodWe Battery State of Charge"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "inverter"
+    },
+    {
+      "entity_id": "sensor.goodwe_battery_state_of_health",
+      "unique_id": "goodwe-battery_soh-9010KETU229W9999",
+      "state": "99",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "icon": "mdi:battery-high",
+        "friendly_name": "GoodWe Battery State of Health"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "inverter"
+    },
+    {
+      "entity_id": "sensor.goodwe_battery_power",
+      "unique_id": "goodwe-pbattery1-9010KETU229W9999",
+      "state": "-1240",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:battery-high",
+        "friendly_name": "GoodWe Battery Power"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "inverter"
+    },
+    {
+      "entity_id": "sensor.goodwe_battery_voltage",
+      "unique_id": "goodwe-vbattery1-9010KETU229W9999",
+      "state": "412.6",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "V",
+        "device_class": "voltage",
+        "icon": "mdi:battery-high",
+        "friendly_name": "GoodWe Battery Voltage"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "inverter"
+    },
+    {
+      "entity_id": "sensor.goodwe_battery_current",
+      "unique_id": "goodwe-ibattery1-9010KETU229W9999",
+      "state": "-3.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "A",
+        "device_class": "current",
+        "icon": "mdi:battery-high",
+        "friendly_name": "GoodWe Battery Current"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "inverter"
+    },
+    {
+      "entity_id": "sensor.goodwe_battery_mode",
+      "unique_id": "goodwe-battery_mode_label-9010KETU229W9999",
+      "state": "Charge",
+      "attributes": {
+        "icon": "mdi:battery-high",
+        "friendly_name": "GoodWe Battery Mode"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "inverter"
+    },
+    {
+      "entity_id": "sensor.goodwe_battery_temperature",
+      "unique_id": "goodwe-battery_temperature-9010KETU229W9999",
+      "state": "23.4",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "icon": "mdi:battery-high",
+        "friendly_name": "GoodWe Battery Temperature"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "inverter"
+    },
+    {
+      "entity_id": "sensor.goodwe_total_pv_generation",
+      "unique_id": "goodwe-e_total-9010KETU229W9999",
+      "state": "18533.9",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:solar-power",
+        "friendly_name": "GoodWe Total PV Generation"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "inverter"
+    },
+    {
+      "entity_id": "number.goodwe_depth_of_discharge_on_grid",
+      "unique_id": "goodwe-battery_discharge_depth-9010KETU229W9999",
+      "state": "90",
+      "attributes": {
+        "min": 0,
+        "max": 99,
+        "step": 1,
+        "mode": "auto",
+        "unit_of_measurement": "%",
+        "friendly_name": "GoodWe Depth of discharge (on-grid)"
+      },
+      "disabled_by_default": false,
+      "entity_category": "config",
+      "device": "inverter"
+    }
+  ]
+}

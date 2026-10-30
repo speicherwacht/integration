@@ -233,7 +233,102 @@ ANKER_SOLIX_OFFICIAL = Template(
     experimental=True,
 )
 
+# Core integration goodwe (marcelblijleven/goodwe 0.4.10, 66dfcdd; same ids in
+# the HACS variant): unique id "goodwe-<sensor id>-<serial>". Only the ET
+# family (ET/EH/BT/BH and platforms 205/745/753) has lifetime counters, DC at
+# the inverter's battery port (0.1 kWh); ES/EM/BP show the SoC only
+# (counter_hint). The day counters are total_increasing too and not used.
+# No capacity entity. Positive battery power is discharging.
+GOODWE = Template(
+    key="goodwe",
+    label="GoodWe ET/EH/BT/BH (goodwe)",
+    platform="goodwe",
+    signals={
+        Signal.CHARGED: ("e_bat_charge_total",),
+        Signal.DISCHARGED: ("e_bat_discharge_total",),
+        Signal.SOC: ("battery_soc",),
+    },
+    id_format=r"goodwe-(?P<key>{key})-(?P<prefix>.+)",
+    experimental=True,
+    counter_hint=True,
+)
+
+# Core integration victron_gx (since 2026.5, victron-mqtt 2026.9.5, 37fbc4d):
+# unique id "<VRM portal id>_battery_<device instance>_<key>". Lifetime
+# counters (History/ChargedEnergy, DischargedEnergy; DC at the shunt) come
+# from battery monitors such as SmartShunt and BMV; batteries with a CAN BMS
+# show the SoC only (counter_hint). The system device's charge/discharge
+# energy is a Riemann sum that starts anew with every restart: not used.
+# Capacity only in Ah, so none is offered.
+VICTRON_GX = Template(
+    key="victron_gx",
+    label="Victron GX: Batteriemonitor (victron_gx)",
+    platform="victron_gx",
+    signals={
+        Signal.CHARGED: ("battery_charged_energy",),
+        Signal.DISCHARGED: ("battery_discharged_energy",),
+        Signal.SOC: ("battery_soc",),
+    },
+    id_format=r"(?P<prefix>[0-9A-Za-z]+_battery_\d+)_(?P<key>{key})",
+    experimental=True,
+    counter_hint=True,
+)
+
+# HACS integration solaredge_modbus_multi (WillCodeForCats 4.0.10, 70aa159):
+# unique id "<inverter model>_<serial>_B<1-3>_<key>", one storage per
+# battery. Battery entities exist only with the option "Auto-Detect
+# Batteries". Lifetime counters in Wh (1 Wh); LG/BYD batteries reset them
+# and the SolarEdge Home Battery runs backwards – without the option
+# "Allow Battery Energy to Reset" the counter freezes instead (#1156), which
+# the repair issue counter_soc_mismatch reveals. Capacity: maximum energy.
+SOLAREDGE_MODBUS_MULTI = Template(
+    key="solaredge_modbus_multi",
+    label="SolarEdge StorEdge (solaredge_modbus_multi)",
+    platform="solaredge_modbus_multi",
+    signals={
+        Signal.CHARGED: ("energy_import",),
+        Signal.DISCHARGED: ("energy_export",),
+        Signal.SOC: ("battery_soe",),
+    },
+    id_format=r"(?P<prefix>.+_B[1-3])_(?P<key>{key})",
+    capacity="max_energy",
+    experimental=True,
+)
+
+# HACS integration solax_modbus (wills106 2026.10.02, b6880b6): unique id
+# "<hub name>_<key>", one inverter per config entry. Lifetime counters are
+# "total" without last_reset, 0.1 kWh, disabled by default and then not even
+# read (counter_hint). "battery_capacity" is the SoC in % for SolaX
+# ("battery_capacity_total" for Sofar); other brands in the same repository
+# use other keys (AlphaESS: capacity in kWh) and are left out. The optional
+# "Energy Dashboard" device holds day values and Riemann sums: excluded.
+SOLAX_MODBUS = Template(
+    key="solax_modbus",
+    label="SolaX, Sofar (solax_modbus)",
+    platform="solax_modbus",
+    signals={
+        Signal.CHARGED: ("battery_input_energy_total",),
+        Signal.DISCHARGED: ("battery_output_energy_total",),
+        Signal.SOC: ("battery_capacity", "battery_capacity_total"),
+    },
+    id_format=r"(?!.* Energy Dashboard_)(?P<prefix>.+)_(?P<key>{key})",
+    group_by=GroupBy.ENTRY,
+    capacity="battery_system_installed_capacity",
+    experimental=True,
+    counter_hint=True,
+)
+
 TEMPLATES: dict[str, Template] = {
     t.key: t
-    for t in (FRONIUS, HUAWEI_SOLAR, SOLARMAN, ANKER_SOLIX, ANKER_SOLIX_OFFICIAL)
+    for t in (
+        FRONIUS,
+        HUAWEI_SOLAR,
+        SOLARMAN,
+        ANKER_SOLIX,
+        ANKER_SOLIX_OFFICIAL,
+        GOODWE,
+        VICTRON_GX,
+        SOLAREDGE_MODBUS_MULTI,
+        SOLAX_MODBUS,
+    )
 }
