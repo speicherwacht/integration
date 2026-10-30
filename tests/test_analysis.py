@@ -118,11 +118,22 @@ def test_cycles_are_discharge_per_capacity() -> None:
     assert result.cycles_year == pytest.approx(result.cycles_total)
 
 
-def test_capacity_estimate_from_large_discharges() -> None:
-    hours = simulate(JUNE, 30, rest_watts=0.0, capacity=10.0)
+SUNNY_DAY = {**SUMMER_DAY, **dict.fromkeys(range(9, 15), 2.0)}
+
+
+def test_capacity_estimate_from_full_to_empty() -> None:
+    hours = simulate(JUNE, 30, rest_watts=0.0, profile=lambda _d: SUNNY_DAY)
     result = analyse(hours, 10.0, BERLIN, END)
     assert result.capacity.kwh == pytest.approx(10.0, rel=0.03)
     assert len(result.capacity.samples) == 10
+
+
+def test_capacity_estimate_needs_full_discharges() -> None:
+    """Charged to 86 % only: the battery's own SoC scale is not trusted."""
+    hours = simulate(JUNE, 30, rest_watts=0.0)
+    result = analyse(hours, 10.0, BERLIN, END)
+    assert result.capacity.kwh is None
+    assert result.capacity.reason == TOO_FEW_DISCHARGES
 
 
 def test_capacity_estimate_follows_an_aged_battery() -> None:

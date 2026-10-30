@@ -2,6 +2,7 @@
   "domain": "speicherwacht",
   "name": "Speicherwacht",
   "after_dependencies": [
+    "energy",
     "recorder"
   ],
   "codeowners": [

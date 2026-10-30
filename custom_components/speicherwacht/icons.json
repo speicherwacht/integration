@@ -1,0 +1,33 @@
+{
+  "entity": {
+    "sensor": {
+      "efficiency_today": {
+        "default": "mdi:battery-charging-high"
+      },
+      "efficiency_month": {
+        "default": "mdi:battery-charging-high"
+      },
+      "efficiency_year": {
+        "default": "mdi:battery-charging-high"
+      },
+      "efficiency_total": {
+        "default": "mdi:battery-charging-high"
+      },
+      "full_cycles_total": {
+        "default": "mdi:battery-sync"
+      },
+      "full_cycles_year": {
+        "default": "mdi:battery-sync"
+      },
+      "rest_loss": {
+        "default": "mdi:battery-clock"
+      },
+      "warranty_used": {
+        "default": "mdi:shield-check-outline"
+      },
+      "capacity_estimate": {
+        "default": "mdi:battery-heart-variant"
+      }
+    }
+  }
+}

@@ -14,5 +14,7 @@ CONF_ENTITIES = "entities"
 CONF_CAPACITY = "capacity"
 # What the counters measure: the battery itself (DC) or the whole system (AC).
 CONF_BOUNDARY = "boundary"
+# Optional: energy throughput the warranty covers, in MWh discharged.
+CONF_WARRANTY_MWH = "warranty_mwh"
 
 TEMPLATE_MANUAL = "manual"

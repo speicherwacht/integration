@@ -32,9 +32,16 @@ from homeassistant.helpers.event import (
 from homeassistant.util import dt as dt_util
 
 from .analysis import Analysis, analyse
-from .const import CONF_BOUNDARY, CONF_CAPACITY, CONF_ENTITIES, CONF_TEMPLATE, DOMAIN
+from .const import (
+    CONF_BOUNDARY,
+    CONF_CAPACITY,
+    CONF_ENTITIES,
+    CONF_TEMPLATE,
+    CONF_WARRANTY_MWH,
+    DOMAIN,
+)
 from .counter import UNIT_FACTORS
-from .hours import HOUR, Series, SocRow, build
+from .hours import Series, SocRow, build
 from .model import Boundary, Signal
 from .profiles import TEMPLATES
 
@@ -81,6 +88,12 @@ class StorageRuntime:
         self.boundary = Boundary(entry.data.get(CONF_BOUNDARY, Boundary.BATTERY))
         template = TEMPLATES.get(entry.data.get(CONF_TEMPLATE) or "")
         self.day_values = template.day_values if template else False
+        # Warranted energy throughput in kWh (optional).
+        self.warranty_kwh: float | None = (
+            entry.data[CONF_WARRANTY_MWH] * 1000
+            if entry.data.get(CONF_WARRANTY_MWH)
+            else None
+        )
         self.analysis: Analysis | None = None
         self.series: Series | None = None
         self.problem: str | None = NOT_ANALYSED
@@ -111,7 +124,10 @@ class StorageRuntime:
                 self.hass, _refresh, minute=REFRESH_MINUTE, second=0
             ),
             async_track_time_interval(
-                self.hass, self._async_check_issues, ISSUE_INTERVAL
+                self.hass,
+                self._async_check_issues,
+                ISSUE_INTERVAL,
+                cancel_on_shutdown=True,
             ),
         ]
 
@@ -143,20 +159,47 @@ class StorageRuntime:
             now = dt_util.utcnow()
             start = EPOCH if self._last_row is None else self._last_row - OVERLAP
             await self._async_read(start, now)
-            self.series = build(
-                self._charged,
-                self._discharged,
-                self._soc,
-                self.capacity,
-                self.tz if self.day_values else None,
+            # Pure functions over all hours (tens of thousands after a few
+            # years): off the event loop, on copies of the hourly readings.
+            self.series, self.analysis = await self.hass.async_add_executor_job(
+                self._compute,
+                dict(self._charged),
+                dict(self._discharged),
+                dict(self._soc),
+                now,
             )
-            self.analysis = analyse(self.series.hours, self.capacity, self.tz, now)
             self.problem = None
         except Exception:  # keep running; the sensors stay as they were
             _LOGGER.exception("Analysing the storage statistics failed")
         finally:
             self._refreshing = False
             self._notify()
+
+    def _compute(
+        self,
+        charged: dict[datetime, float],
+        discharged: dict[datetime, float],
+        soc: dict[datetime, SocRow],
+        now: datetime,
+    ) -> tuple[Series, Analysis]:
+        series = build(
+            charged,
+            discharged,
+            soc,
+            self.capacity,
+            self.tz if self.day_values else None,
+        )
+        return series, analyse(series.hours, self.capacity, self.tz, now)
+
+    @property
+    def lifetime_discharged(self) -> float | None:
+        """Energy discharged since commissioning (kWh): the latest reading of
+        a lifetime counter, the sum of the statistics for day counters."""
+        if self.day_values:
+            return self.analysis.discharged_total if self.analysis else None
+        if not self._discharged:
+            return None
+        return self._discharged[max(self._discharged)]
 
     async def _async_read(self, start: datetime, end: datetime) -> None:
         counters = {self.entities[Signal.CHARGED], self.entities[Signal.DISCHARGED]}
@@ -256,6 +299,3 @@ def _unit_ok(signal: Signal, unit: str | None) -> bool:
     if signal is Signal.SOC:
         return unit == PERCENTAGE
     return unit in UNIT_FACTORS
-
-
-__all__ = ["HOUR", "StorageRuntime"]

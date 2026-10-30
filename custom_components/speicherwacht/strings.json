@@ -1,0 +1,120 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Battery storage",
+        "description": "Speicherwacht reads the counters of your battery (energy charged and discharged, lifetime) and its state of charge from their long-term statistics. Pick a detected storage or map the entities yourself.",
+        "data": {
+          "name": "Name",
+          "source": "Source"
+        },
+        "data_description": {
+          "name": "Name of the device Speicherwacht creates.",
+          "source": "Templates marked (beta) were built from the integration's source code and are not yet confirmed on a real installation."
+        }
+      },
+      "user_hint_anker_solix": {
+        "title": "Battery storage",
+        "description": "Speicherwacht reads the counters of your battery (energy charged and discharged, lifetime) and its state of charge from their long-term statistics. Pick a detected storage or map the entities yourself.\n\nAnker SOLIX: a Solarbank was found without lifetime counters. They come only by MQTT with the owner account, and the integration leaves them out until you allow the energy category: Anker SOLIX → Configure → remove 'solarbank_energy' from the excluded categories, enable MQTT.",
+        "data": {
+          "name": "Name",
+          "source": "Source"
+        },
+        "data_description": {
+          "name": "Name of the device Speicherwacht creates.",
+          "source": "Templates marked (beta) were built from the integration's source code and are not yet confirmed on a real installation."
+        }
+      },
+      "entities": {
+        "title": "Entities and capacity",
+        "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.",
+        "data": {
+          "charged": "Energy charged (lifetime)",
+          "discharged": "Energy discharged (lifetime)",
+          "soc": "State of charge",
+          "capacity": "Usable capacity",
+          "boundary": "The counters measure",
+          "warranty_mwh": "Warranted throughput (optional)"
+        },
+        "data_description": {
+          "charged": "Energy into the battery. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
+          "discharged": "Energy out of the battery.",
+          "soc": "In %.",
+          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
+          "boundary": "Results of the two boundaries are not comparable.",
+          "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+        }
+      }
+    },
+    "error": {
+      "same_entity": "Choose three different entities.",
+      "entity_missing": "An entity does not exist (yet).",
+      "soc_unit": "The state of charge must be in %.",
+      "soc_statistics": "The state of charge has no long-term statistics (state class measurement missing).",
+      "energy_unit": "Counters must be in Wh, kWh or MWh.",
+      "counter_statistics": "A counter has no long-term statistics (state class total or total_increasing missing)."
+    },
+    "abort": {
+      "already_configured": "This storage is already set up.",
+      "reconfigure_successful": "Saved. Speicherwacht reloads."
+    }
+  },
+  "selector": {
+    "source": {
+      "options": {
+        "manual": "Map entities myself"
+      }
+    },
+    "boundary": {
+      "options": {
+        "battery": "the battery (DC, e.g. inverter battery counters)",
+        "system": "the whole storage (AC, e.g. a plug meter in front of it)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "efficiency_today": {
+        "name": "Efficiency today"
+      },
+      "efficiency_month": {
+        "name": "Efficiency month"
+      },
+      "efficiency_year": {
+        "name": "Efficiency year"
+      },
+      "efficiency_total": {
+        "name": "Efficiency total"
+      },
+      "full_cycles_total": {
+        "name": "Full cycles total"
+      },
+      "full_cycles_year": {
+        "name": "Full cycles year"
+      },
+      "rest_loss": {
+        "name": "Rest loss"
+      },
+      "warranty_used": {
+        "name": "Warranted throughput used"
+      },
+      "capacity_estimate": {
+        "name": "Capacity (estimated)"
+      }
+    }
+  },
+  "issues": {
+    "missing_entity": {
+      "title": "Speicherwacht: entity missing",
+      "description": "These entities of {name} do not exist: {entities}. Choose others under Settings → Devices & services → Speicherwacht → ⋮ → Reconfigure."
+    },
+    "source_unavailable": {
+      "title": "Speicherwacht: source not available",
+      "description": "These entities of {name} have been unavailable for more than {minutes} minutes: {entities}. Speicherwacht lacks values meanwhile. Check the source integration. The issue disappears once values arrive again."
+    },
+    "source_unit": {
+      "title": "Speicherwacht: unexpected unit",
+      "description": "These entities of {name} have a unit Speicherwacht cannot use (counters Wh/kWh/MWh, state of charge %): {entities}. Choose others under Reconfigure."
+    }
+  }
+}

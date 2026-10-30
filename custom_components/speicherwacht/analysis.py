@@ -31,9 +31,14 @@ MIN_REST_RUN_HOURS = 3
 # Rest losses over this window, shown from this many rest hours on.
 REST_WINDOW = timedelta(days=30)
 MIN_REST_HOURS = 24
-# Capacity estimate: discharges over at least this many SoC points, the
-# median of the latest ones within the window (own assumptions).
-MIN_SOC_SWING = 40.0
+# Capacity estimate: only discharges from full to empty count (as the field
+# method of Figgener et al. 2024 between end of charge and end of discharge;
+# the battery's own SoC is calculated by its management and would mostly
+# repeat its own capacity model). Limits like the Marstek Capacity Monitor
+# (≥ 95 → ≤ 15 %), a little wider for batteries that stop at 90 % (own
+# assumption). The median of the latest ones within the window counts.
+FULL_SOC = 90.0
+EMPTY_SOC = 15.0
 CAPACITY_SAMPLES = 10
 CAPACITY_WINDOW = timedelta(days=90)
 MIN_CAPACITY_SAMPLES = 3
@@ -211,7 +216,7 @@ def _discharging(hour: Hour, capacity: float) -> bool:
 def capacity_estimate(
     hours: Sequence[Hour], capacity: float, now: datetime
 ) -> CapacityEstimate:
-    """Median energy per 100 % SoC over the latest large discharges."""
+    """Median energy per 100 % SoC over the latest full-to-empty discharges."""
     since = now - CAPACITY_WINDOW
     recent = [h for h in hours if h.start >= since]
     samples = []
@@ -219,7 +224,7 @@ def capacity_estimate(
         first, last = run[0], run[-1]
         high = first.soc_max if first.soc_max is not None else first.soc
         low = last.soc_min if last.soc_min is not None else last.soc
-        if high is None or low is None or high - low < MIN_SOC_SWING:
+        if high is None or low is None or high < FULL_SOC or low > EMPTY_SOC:
             continue
         energy = sum(h.discharged or 0.0 for h in run)
         samples.append(energy / ((high - low) / 100))

@@ -1,0 +1,120 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Batteriespeicher",
+        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.",
+        "data": {
+          "name": "Name",
+          "source": "Quelle"
+        },
+        "data_description": {
+          "name": "Name des Geräts, das Speicherwacht anlegt.",
+          "source": "Mit (beta) markierte Vorlagen stammen aus dem Quellcode der Integration und sind an einer echten Anlage noch nicht bestätigt."
+        }
+      },
+      "user_hint_anker_solix": {
+        "title": "Batteriespeicher",
+        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nAnker SOLIX: Eine Solarbank hat keine Lebenszeit-Zähler. Sie kommen nur per MQTT mit dem Eigentümer-Konto, und die Integration legt sie erst an, wenn du die Energie-Kategorie freigibst: Anker SOLIX → Konfigurieren → „solarbank_energy“ aus den ausgeschlossenen Kategorien nehmen, MQTT einschalten.",
+        "data": {
+          "name": "Name",
+          "source": "Quelle"
+        },
+        "data_description": {
+          "name": "Name des Geräts, das Speicherwacht anlegt.",
+          "source": "Mit (beta) markierte Vorlagen stammen aus dem Quellcode der Integration und sind an einer echten Anlage noch nicht bestätigt."
+        }
+      },
+      "entities": {
+        "title": "Entitäten und Kapazität",
+        "description": "Zähler brauchen eine Zustandsklasse (total oder total_increasing), der Ladezustand die Zustandsklasse measurement: Speicherwacht rechnet aus deren Langzeitstatistik, auch für die Zeit vor der Einrichtung.",
+        "data": {
+          "charged": "Energie geladen (Lebenszeit)",
+          "discharged": "Energie entladen (Lebenszeit)",
+          "soc": "Ladezustand",
+          "capacity": "Nutzbare Kapazität",
+          "boundary": "Die Zähler messen",
+          "warranty_mwh": "Garantie-Durchsatz (optional)"
+        },
+        "data_description": {
+          "charged": "Energie in den Akku. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
+          "discharged": "Energie aus dem Akku.",
+          "soc": "In %.",
+          "capacity": "Laut Datenblatt (nutzbar, nicht brutto). Nötig für die Korrektur über den Ladezustand und die Vollzyklen; die geschätzte Kapazität ersetzt sie nie.",
+          "boundary": "Ergebnisse der beiden Grenzen sind nicht vergleichbar.",
+          "warranty_mwh": "Energie, die die Garantie abdeckt, in MWh entladen (Datenblatt oder Garantiebedingungen). Ergibt den Sensor „Garantie-Durchsatz genutzt“."
+        }
+      }
+    },
+    "error": {
+      "same_entity": "Wähle drei verschiedene Entitäten.",
+      "entity_missing": "Eine Entität existiert (noch) nicht.",
+      "soc_unit": "Der Ladezustand muss in % sein.",
+      "soc_statistics": "Der Ladezustand hat keine Langzeitstatistik (Zustandsklasse measurement fehlt).",
+      "energy_unit": "Zähler müssen in Wh, kWh oder MWh sein.",
+      "counter_statistics": "Ein Zähler hat keine Langzeitstatistik (Zustandsklasse total oder total_increasing fehlt)."
+    },
+    "abort": {
+      "already_configured": "Dieser Speicher ist schon eingerichtet.",
+      "reconfigure_successful": "Gespeichert. Speicherwacht lädt neu."
+    }
+  },
+  "selector": {
+    "source": {
+      "options": {
+        "manual": "Eigene Zuordnung"
+      }
+    },
+    "boundary": {
+      "options": {
+        "battery": "den Akku (DC, z. B. Batteriezähler des Wechselrichters)",
+        "system": "den ganzen Speicher (AC, z. B. Zwischenstecker davor)"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "efficiency_today": {
+        "name": "Wirkungsgrad heute"
+      },
+      "efficiency_month": {
+        "name": "Wirkungsgrad Monat"
+      },
+      "efficiency_year": {
+        "name": "Wirkungsgrad Jahr"
+      },
+      "efficiency_total": {
+        "name": "Wirkungsgrad gesamt"
+      },
+      "full_cycles_total": {
+        "name": "Vollzyklen gesamt"
+      },
+      "full_cycles_year": {
+        "name": "Vollzyklen Jahr"
+      },
+      "rest_loss": {
+        "name": "Ruheverlust"
+      },
+      "warranty_used": {
+        "name": "Garantie-Durchsatz genutzt"
+      },
+      "capacity_estimate": {
+        "name": "Kapazität (geschätzt)"
+      }
+    }
+  },
+  "issues": {
+    "missing_entity": {
+      "title": "Speicherwacht: Entität fehlt",
+      "description": "Diese Entitäten von {name} gibt es nicht: {entities}. Wähle unter Einstellungen → Geräte & Dienste → Speicherwacht → ⋮ → Neu konfigurieren andere."
+    },
+    "source_unavailable": {
+      "title": "Speicherwacht: Quelle nicht erreichbar",
+      "description": "Diese Entitäten von {name} sind seit mehr als {minutes} Minuten nicht verfügbar: {entities}. Solange fehlen Speicherwacht Werte. Prüfe die Quell-Integration. Der Hinweis verschwindet, sobald wieder Werte kommen."
+    },
+    "source_unit": {
+      "title": "Speicherwacht: unerwartete Einheit",
+      "description": "Diese Entitäten von {name} haben eine Einheit, mit der Speicherwacht nicht rechnen kann (Zähler Wh/kWh/MWh, Ladezustand %): {entities}. Wähle unter Neu konfigurieren andere."
+    }
+  }
+}
