@@ -2,7 +2,9 @@
 
 ## Unveröffentlicht
 
-Erste Version (geplant als 0.1.0b1).
+## 0.1.0b1 – 2026-10-30
+
+Erste Version (Beta).
 
 - **Wirkungsgrad** je Monat, Jahr und gesamt (je Tag deaktiviert) aus Lade- und Entladezähler, korrigiert um die Änderung des Ladezustands; Ruhetage (Laden und Entladen je unter 5 % der Kapazität) zählen getrennt.
 - **Vollzyklen** seit Inbetriebnahme (Zählerstand) und im Jahr, optional **Garantie-Durchsatz genutzt**.
