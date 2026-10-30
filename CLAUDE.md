@@ -10,7 +10,7 @@ Stand: Projektstart 2026-10-30, noch kein Release. Arbeitsstand in `NOTES.md`.
 - **`NOTES.md`** (lokal, in `.git/info/exclude`) – Arbeitsstand, offene Punkte, Beobachtungen. Nach jeder Sitzung fortschreiben.
 - **`CLAUDE.local.md`** (lokal, in `.git/info/exclude`) – Rechner und Testanlage des Inhabers (echte Entitäten, Werte, Eigenbau zum Vergleich).
 - **`CHANGELOG.md`** – Versionsgeschichte und „Unveröffentlicht“.
-- **`docs/BRAND.md`** – Marke (noch offen, mit dem Inhaber abstimmen).
+- **`docs/BRAND.md`** – Farben, Schrift, Bilddateien, Regenerierung (`tools/brand/`). Brand-Bilder nicht verändern oder neu erzeugen, außer auf ausdrücklichen Wunsch.
 
 ## Verbindliche Entscheidungen (2026-10-30)
 
