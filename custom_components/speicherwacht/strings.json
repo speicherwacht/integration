@@ -85,8 +85,8 @@
           "warranty_mwh": "Warranted throughput (optional)"
         },
         "data_description": {
-          "charged": "Energy into the battery. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
-          "discharged": "Energy out of the battery.",
+          "charged": "Energy that flows into the battery – not the PV production. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
+          "discharged": "Energy that comes out of the battery – not what the whole system delivers to the house.",
           "soc": "In %.",
           "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
           "boundary": "Results of the two boundaries are not comparable.",
@@ -105,8 +105,8 @@
           "warranty_mwh": "Warranted throughput (optional)"
         },
         "data_description": {
-          "charged": "Energy into the battery. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
-          "discharged": "Energy out of the battery.",
+          "charged": "Energy that flows into the battery – not the PV production. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
+          "discharged": "Energy that comes out of the battery – not what the whole system delivers to the house.",
           "soc": "In %.",
           "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
           "boundary": "Results of the two boundaries are not comparable.",
@@ -125,8 +125,8 @@
           "warranty_mwh": "Warranted throughput (optional)"
         },
         "data_description": {
-          "charged": "Energy into the battery. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
-          "discharged": "Energy out of the battery.",
+          "charged": "Energy that flows into the battery – not the PV production. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
+          "discharged": "Energy that comes out of the battery – not what the whole system delivers to the house.",
           "soc": "In %.",
           "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
           "boundary": "Results of the two boundaries are not comparable.",

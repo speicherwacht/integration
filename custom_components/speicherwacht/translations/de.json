@@ -85,8 +85,8 @@
           "warranty_mwh": "Garantie-Durchsatz (optional)"
         },
         "data_description": {
-          "charged": "Energie in den Akku. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
-          "discharged": "Energie aus dem Akku.",
+          "charged": "Energie, die in den Akku fließt – nicht die PV-Erzeugung. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
+          "discharged": "Energie, die aus dem Akku kommt – nicht die Abgabe der ganzen Anlage ins Haus.",
           "soc": "In %.",
           "capacity": "Laut Datenblatt (nutzbar, nicht brutto). Nötig für die Korrektur über den Ladezustand und die Vollzyklen; die geschätzte Kapazität ersetzt sie nie.",
           "boundary": "Ergebnisse der beiden Grenzen sind nicht vergleichbar.",
@@ -105,8 +105,8 @@
           "warranty_mwh": "Garantie-Durchsatz (optional)"
         },
         "data_description": {
-          "charged": "Energie in den Akku. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
-          "discharged": "Energie aus dem Akku.",
+          "charged": "Energie, die in den Akku fließt – nicht die PV-Erzeugung. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
+          "discharged": "Energie, die aus dem Akku kommt – nicht die Abgabe der ganzen Anlage ins Haus.",
           "soc": "In %.",
           "capacity": "Laut Datenblatt (nutzbar, nicht brutto). Nötig für die Korrektur über den Ladezustand und die Vollzyklen; die geschätzte Kapazität ersetzt sie nie.",
           "boundary": "Ergebnisse der beiden Grenzen sind nicht vergleichbar.",
@@ -125,8 +125,8 @@
           "warranty_mwh": "Garantie-Durchsatz (optional)"
         },
         "data_description": {
-          "charged": "Energie in den Akku. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
-          "discharged": "Energie aus dem Akku.",
+          "charged": "Energie, die in den Akku fließt – nicht die PV-Erzeugung. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
+          "discharged": "Energie, die aus dem Akku kommt – nicht die Abgabe der ganzen Anlage ins Haus.",
           "soc": "In %.",
           "capacity": "Laut Datenblatt (nutzbar, nicht brutto). Nötig für die Korrektur über den Ladezustand und die Vollzyklen; die geschätzte Kapazität ersetzt sie nie.",
           "boundary": "Ergebnisse der beiden Grenzen sind nicht vergleichbar.",

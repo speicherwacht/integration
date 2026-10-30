@@ -133,10 +133,13 @@ ENTITIES = {
     },
     "data_description": {
         "charged": (
-            "Energy into the battery. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
-            "Energie in den Akku. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
+            "Energy that flows into the battery – not the PV production. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
+            "Energie, die in den Akku fließt – nicht die PV-Erzeugung. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
         ),
-        "discharged": ("Energy out of the battery.", "Energie aus dem Akku."),
+        "discharged": (
+            "Energy that comes out of the battery – not what the whole system delivers to the house.",
+            "Energie, die aus dem Akku kommt – nicht die Abgabe der ganzen Anlage ins Haus.",
+        ),
         "soc": ("In %.", "In %."),
         "capacity": (
             "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
