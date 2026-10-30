@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 – 2026-10-30
+
+- **Ruheverlust nie mehr negativ:** Steigt der Ladezustand in Ruhephasen (Laden am Ladezähler vorbei, etwa PV direkt in den Akku bei DC-gekoppelten Balkonspeichern, oder Drift des Ladezustands), zeigte der Ruheverlust einen negativen Wert (gemeldet: −3 W). Jetzt ist er dann unbekannt mit dem Grund `soc_rose_at_rest`; der errechnete Wert steht im Attribut `raw_watts`. Ein Anstieg bis zu einer Stufe des Ladezustands (1 %) über alle Ruhestunden gilt als Rundung und zeigt 0 W. „Ruheverlust hoch“ bleibt dann unbekannt (Rückmeldung im simon42-Forum).
+- **Tageszähler-Erkennung genauer:** Als Tageszähler („Energie heute“) gilt ein Zähler jetzt nur, wenn er an verschiedenen Tagen zur selben Uhrzeit zurückfällt. Bisher zählte jeder Rückfall, sodass ein Gesamtzähler, der nach einem Neustart des Geräts bei 0 beginnt, nach zwei Neustarts abgelehnt wurde. Die Einrichtung warnt nur noch; wer sicher einen Gesamtzähler gewählt hat, sendet unverändert noch einmal ab. Beim Neu konfigurieren werden nur neu gewählte Zähler geprüft, und ein Fehler beim Lesen der Statistik hält die Einrichtung nicht mehr auf. Der Reparaturhinweis „Zähler beginnt jeden Tag neu“ folgt derselben Regel und erkennt jetzt auch kleine Tageszähler unter 1 kWh.
+- **Fehlerhilfe:** Wirkungsgrad über 100 % kann auch heißen, dass Energie am Ladezähler vorbei in den Akku fließt.
+
 ## 0.1.1 – 2026-10-30
 
 Erste finale Version: Stand von 0.1.0b3 und zwei Korrekturen.

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 DOMAIN = "speicherwacht"
 # Kept equal to manifest.json and pyproject.toml (tests/test_manifest.py).
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 
 CONF_NAME = "name"
 CONF_TEMPLATE = "template"
