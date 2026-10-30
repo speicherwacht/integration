@@ -176,6 +176,18 @@ Geräte & Dienste → Speicherwacht → ⋮ → *Löschen*. Speicherwacht legt k
 - [battery_sim](https://github.com/hif2k1/battery_sim): simuliert, was ein Speicher bringen würde – für die Zeit vor dem Kauf.
 - Viele Hersteller-Integrationen (Zendure, Anker SOLIX, Marstek) zeigen eigene Wirkungsgrade, meist Entladung / Ladung ohne Korrektur über den Ladezustand.
 
+## Weitere Wachten
+
+Vom selben Autor und nach demselben Muster gebaut: Einrichtung über die Oberfläche, deutsch und englisch, schonend für SD-Karten.
+
+- **Energie**
+  - [Einspeisewacht](https://github.com/einspeisewacht/integration) – was negative Strompreise bei der PV-Einspeisung kosten (§ 51 EEG)
+  - [Tarifwacht](https://github.com/tarifwacht/integration) – was der eigene Strombezug mit anderen Tarifen gekostet hätte, auch dynamisch und mit Modul 3
+  - [Wärmewacht](https://github.com/waermewacht/integration) – Arbeitszahlen und Gesundheits-Check der Wärmepumpe
+- **Alltag**
+  - [Eilwacht](https://github.com/eilwacht/integration) – Tagesschau-Eilmeldungen und Regionalnachrichten als Auslöser für Automationen
+  - [Streckenwacht](https://github.com/streckenwacht/integration) – Baustellen, Sperrungen und Staus auf den eigenen Strecken
+
 ## Lizenz
 
 MIT, siehe [LICENSE](LICENSE).

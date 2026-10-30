@@ -176,6 +176,18 @@ Devices & services → Speicherwacht → ⋮ → *Delete*. Speicherwacht creates
 - [battery_sim](https://github.com/hif2k1/battery_sim): simulates what a battery would bring – for the time before buying one.
 - Many vendor integrations (Zendure, Anker SOLIX, Marstek) show their own efficiencies, mostly discharge / charge without a correction by the state of charge.
 
+## Sister integrations
+
+By the same author and built the same way: set up in the UI, in German and English, gentle on SD cards.
+
+- **Energy**
+  - [Einspeisewacht](https://github.com/einspeisewacht/integration) – what negative electricity prices cost your PV feed-in (German EEG § 51)
+  - [Tarifwacht](https://github.com/tarifwacht/integration) – what your grid consumption would have cost with other tariffs, including dynamic ones and Modul 3
+  - [Wärmewacht](https://github.com/waermewacht/integration) – performance factors and health check for your heat pump
+- **Everyday**
+  - [Eilwacht](https://github.com/eilwacht/integration) – Tagesschau breaking news and regional news as automation triggers (German)
+  - [Streckenwacht](https://github.com/streckenwacht/integration) – roadworks, closures and traffic jams on your own routes (Germany, Luxembourg)
+
 ## License
 
 MIT, see [LICENSE](LICENSE).
