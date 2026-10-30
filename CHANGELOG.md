@@ -1,5 +1,10 @@
 # Changelog
 
+## Unveröffentlicht
+
+- **Umbenannte Quellen werden nachgezogen:** Ändert sich die Entity-ID eines Zählers oder des Ladezustands (Entitäts-Einstellungen, „Entity-IDs neu erstellen“ am Gerät), übernimmt Speicherwacht die neue ID selbst und lädt den Eintrag einmal neu, auch wenn mehrere Quellen kurz nacheinander umbenannt werden. Bisher fehlten die Quellen danach („Entität fehlt“), bis man neu konfiguriert hat. Eine gelöschte Entität bleibt ein Fall für „Neu konfigurieren“.
+- **Neu konfigurieren mit einem anderen Ladezähler:** Der Eintrag gilt jetzt als der Speicher dieses Zählers. Bisher blieb er beim alten Zähler; ein neuer Eintrag mit dem alten Zähler wurde dann als „schon eingerichtet“ abgelehnt.
+
 ## 0.1.1 – 2026-10-30
 
 Erste finale Version, Stand wie 0.1.0b3.

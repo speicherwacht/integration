@@ -371,8 +371,18 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
         }
         if self.source == SOURCE_RECONFIGURE:
             entry = self._get_reconfigure_entry()
+            # Another charge counter identifies the storage from now on,
+            # unless an older entry still carries that id.
+            unique_id = values[Signal.CHARGED.value]
+            holder = self.hass.config_entries.async_entry_for_domain_unique_id(
+                DOMAIN, unique_id
+            )
             # The update listener reloads the entry.
-            return self.async_update_and_abort(entry, data={**entry.data, **data})
+            return self.async_update_and_abort(
+                entry,
+                unique_id=unique_id if holder in (None, entry) else entry.unique_id,
+                data={**entry.data, **data},
+            )
         # The charge counter identifies the storage, whichever way it was
         # chosen (template or own mapping).
         await self.async_set_unique_id(values[Signal.CHARGED.value])

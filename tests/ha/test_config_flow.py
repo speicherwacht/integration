@@ -210,3 +210,29 @@ async def test_reconfigure_keeps_its_own_counters(hass: HomeAssistant) -> None:
     result = await hass.config_entries.flow.async_configure(result["flow_id"], MANUAL)
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "reconfigure_successful"
+
+
+async def test_reconfigure_moves_the_unique_id(hass: HomeAssistant) -> None:
+    """Another charge counter identifies the entry from now on."""
+    set_sources(hass)
+    hass.states.async_set("sensor.new_charged", "5.0", ENERGY)
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title="Akku",
+        unique_id=CHARGED,
+        data={
+            "name": "Akku",
+            CONF_TEMPLATE: "manual",
+            CONF_ENTITIES: {"charged": CHARGED, "discharged": DISCHARGED, "soc": SOC},
+            CONF_CAPACITY: 10.0,
+            CONF_BOUNDARY: "battery",
+        },
+    )
+    entry.add_to_hass(hass)
+    result = await entry.start_reconfigure_flow(hass)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {**MANUAL, "charged": "sensor.new_charged"}
+    )
+    assert result["reason"] == "reconfigure_successful"
+    assert entry.unique_id == "sensor.new_charged"
+    assert entry.data[CONF_ENTITIES]["charged"] == "sensor.new_charged"

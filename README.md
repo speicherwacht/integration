@@ -150,7 +150,7 @@ Quellen und Begründungen: [docs/ENTWICKLUNG.md](docs/ENTWICKLUNG.md), Abschnitt
 ## Fehlerbehebung
 
 - **Reparaturhinweis „Entität fehlt“, „Quelle nicht erreichbar“ oder „unerwartete Einheit“:** Quell-Integration prüfen oder unter *Neu konfigurieren* andere Entitäten wählen. Die Hinweise verschwinden von selbst.
-- **Quelle umbenannt** (Entity-ID geändert, auch über „Entity-IDs neu erstellen“): Speicherwacht zieht das noch nicht selbst nach und meldet „Entität fehlt“. Unter *Neu konfigurieren* die neue Entität wählen; der Verlauf bleibt erhalten, weil Home Assistant die Statistik mit umbenennt.
+- **Quelle umbenannt** (Entity-ID geändert, auch über „Entity-IDs neu erstellen“): Speicherwacht zieht die neue ID seit 0.1.2 selbst nach und lädt den Eintrag kurz danach neu; *Neu konfigurieren* ist nicht nötig. Der Verlauf bleibt erhalten, weil Home Assistant die Statistik mit umbenennt. Nur eine gelöschte Entität meldet „Entität fehlt“.
 - **Alle Werte bleiben unbekannt:** Haben die Zähler und der Ladezustand Langzeitstatistik? *Werkzeuge → Statistik* (vor 2026.8: Entwicklerwerkzeuge) zeigt es. Ohne Zustandsklasse gibt es keine.
 - **Wirkungsgrad über 100 %:** Meist messen Lade- und Entladezähler an verschiedenen Stellen, oder der Ladezustand ist falsch zugeordnet.
 - **Diagnose-Datei:** Geräte & Dienste → Speicherwacht → ⋮ → *Diagnose herunterladen*; sie enthält auch die vom Zählerbaustein verworfenen Werte.

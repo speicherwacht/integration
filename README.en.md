@@ -150,7 +150,7 @@ Sources and reasons: [docs/ENTWICKLUNG.md](docs/ENTWICKLUNG.md) (German), sectio
 ## Troubleshooting
 
 - **Repair issue "entity missing", "source not available" or "unexpected unit":** check the source integration or choose other entities under *Reconfigure*. The issues disappear by themselves.
-- **Source renamed** (entity ID changed, also via "Recreate entity IDs"): Speicherwacht does not follow it yet and reports "entity missing". Choose the new entity under *Reconfigure*; the history is kept because Home Assistant renames the statistics too.
+- **Source renamed** (entity ID changed, also via "Recreate entity IDs"): since 0.1.2 Speicherwacht follows the new ID itself and reloads the entry shortly after; no need to *Reconfigure*. The history is kept because Home Assistant renames the statistics too. Only a deleted entity reports "entity missing".
 - **All values stay unknown:** do the counters and the state of charge have long-term statistics? *Tools → Statistics* (before 2026.8: Developer tools) shows it. Without a state class there are none.
 - **Efficiency above 100 %:** usually the charge and discharge counters measure at different places, or the state of charge is mapped wrongly.
 - **Diagnostics file:** Devices & services → Speicherwacht → ⋮ → *Download diagnostics*; it also lists the values the counter module rejected.
