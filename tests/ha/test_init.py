@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import UTC, date, datetime, timedelta
 
 import pytest
+from freezegun.api import FrozenDateTimeFactory
 from homeassistant.components.recorder import Recorder
 from homeassistant.components.recorder.models import (
     StatisticData,
@@ -173,26 +174,28 @@ async def test_without_warranty_no_warranty_sensor(hass: HomeAssistant) -> None:
     )
 
 
-async def test_missing_source_gives_a_repair_issue(hass: HomeAssistant) -> None:
+async def tick(hass: HomeAssistant, freezer: FrozenDateTimeFactory) -> None:
+    """Five minutes on: the interval check sees the frozen clock."""
+    await hass.async_block_till_done()
+    freezer.tick(timedelta(minutes=5))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+
+async def test_missing_source_gives_a_repair_issue(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory
+) -> None:
     entry = await setup_entry(hass)
     hass.states.async_remove(SOC)
-    now = datetime.now(UTC)
     issue_id = f"{entry.entry_id}_missing_entity"
-    # The check runs every 5 minutes with its scheduled time: at 5 and 10
-    # minutes Home Assistant is still starting up (grace of 10 minutes).
-    for minutes in (6, 11):
-        await hass.async_block_till_done()
-        async_fire_time_changed(hass, now + timedelta(minutes=minutes))
-        await hass.async_block_till_done()
+    # At 5 minutes Home Assistant is still starting up (grace of 10 minutes).
+    await tick(hass, freezer)
     assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is None
-    async_fire_time_changed(hass, now + timedelta(minutes=16))
-    await hass.async_block_till_done()
+    await tick(hass, freezer)
     assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is not None
 
     hass.states.async_set(SOC, "40.0", {"unit_of_measurement": "%"})
-    await hass.async_block_till_done()
-    async_fire_time_changed(hass, now + timedelta(minutes=21))
-    await hass.async_block_till_done()
+    await tick(hass, freezer)
     assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is None
 
 
