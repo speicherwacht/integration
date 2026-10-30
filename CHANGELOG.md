@@ -1,15 +1,12 @@
 # Changelog
 
-## Unveröffentlicht
+## 0.1.1 – 2026-10-30
+
+Erste finale Version: Stand von 0.1.0b3 und zwei Korrekturen.
 
 - **Umbenannte Quellen werden nachgezogen:** Ändert sich die Entity-ID eines Zählers oder des Ladezustands (Entitäts-Einstellungen, „Entity-IDs neu erstellen“ am Gerät), übernimmt Speicherwacht die neue ID selbst und lädt den Eintrag einmal neu, auch wenn mehrere Quellen kurz nacheinander umbenannt werden. Bisher fehlten die Quellen danach („Entität fehlt“), bis man neu konfiguriert hat. Eine gelöschte Entität bleibt ein Fall für „Neu konfigurieren“.
 - **Neu konfigurieren mit einem anderen Ladezähler:** Der Eintrag gilt jetzt als der Speicher dieses Zählers. Bisher blieb er beim alten Zähler; ein neuer Eintrag mit dem alten Zähler wurde dann als „schon eingerichtet“ abgelehnt.
-
-## 0.1.1 – 2026-10-30
-
-Erste finale Version, Stand wie 0.1.0b3.
-
-- README mit Bildern von Gerät und Dashboard; Fehlerbehebung: nach dem Umbenennen einer Quelle neu konfigurieren (automatisches Nachziehen folgt).
+- README mit Bildern von Gerät und Dashboard.
 
 Was Speicherwacht seit den Betas kann: Wirkungsgrad je Monat, Jahr und gesamt mit Korrektur über den Ladezustand, Ruhetage getrennt; Vollzyklen und Garantie-Durchsatz; Ruheverlust; geschätzte Kapazität; Gesundheits-Check mit drei Problem-Sensoren; Vorlagen für Fronius (erprobt) und 13 weitere Quellen (Beta); alles aus der Langzeitstatistik, auch rückwirkend.
 
