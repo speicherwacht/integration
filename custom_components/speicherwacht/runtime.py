@@ -41,6 +41,7 @@ from .const import (
     DOMAIN,
 )
 from .counter import UNIT_FACTORS, CounterEvent
+from .health import Health, check
 from .hours import Series, SocRow, build
 from .model import Boundary, Signal
 from .profiles import TEMPLATES
@@ -72,6 +73,7 @@ ISSUE_MISSING = "missing_entity"
 ISSUE_UNAVAILABLE = "source_unavailable"
 ISSUE_UNIT = "source_unit"
 ISSUE_RESETS = "counter_resets"
+ISSUE_MISMATCH = "counter_soc_mismatch"
 # A counter that starts anew this often within a week behaves like a day
 # counter (own assumption; a lifetime counter resets at most on replacement).
 RESETS_PER_WEEK = 3
@@ -100,6 +102,7 @@ class StorageRuntime:
             else None
         )
         self.analysis: Analysis | None = None
+        self.health: Health | None = None
         self.series: Series | None = None
         self.problem: str | None = NOT_ANALYSED
         self._charged: dict[datetime, float] = {}
@@ -169,7 +172,11 @@ class StorageRuntime:
             await self._async_read(start, now)
             # Pure functions over all hours (tens of thousands after a few
             # years): off the event loop, on copies of the hourly readings.
-            self.series, self.analysis = await self.hass.async_add_executor_job(
+            (
+                self.series,
+                self.analysis,
+                self.health,
+            ) = await self.hass.async_add_executor_job(
                 self._compute,
                 dict(self._charged),
                 dict(self._discharged),
@@ -178,6 +185,7 @@ class StorageRuntime:
             )
             self.problem = None
             self._check_resets(now)
+            self._check_mismatch(now)
         except Exception:  # keep running; the sensors stay as they were
             _LOGGER.exception("Analysing the storage statistics failed")
         finally:
@@ -190,7 +198,7 @@ class StorageRuntime:
         discharged: dict[datetime, float],
         soc: dict[datetime, SocRow],
         now: datetime,
-    ) -> tuple[Series, Analysis]:
+    ) -> tuple[Series, Analysis, Health]:
         series = build(
             charged,
             discharged,
@@ -198,7 +206,11 @@ class StorageRuntime:
             self.capacity,
             self.tz if self.day_values else None,
         )
-        return series, analyse(series.hours, self.capacity, self.tz, now)
+        return (
+            series,
+            analyse(series.hours, self.capacity, self.tz, now),
+            check(series.hours, self.capacity, self.tz, now),
+        )
 
     @property
     def lifetime_discharged(self) -> float | None:
@@ -279,6 +291,24 @@ class StorageRuntime:
             minutes=str(int(UNAVAILABLE_AFTER.total_seconds() // 60)),
         )
         self._issue(ISSUE_UNIT, unit)
+
+    def _check_mismatch(self, now: datetime) -> None:
+        """Repair issue when counters and state of charge disagree over the
+        last day; only after the start-up grace, like the other issues."""
+        if self.health is None or now - self._started < ISSUE_GRACE:
+            return
+        mismatch = self.health.mismatch
+        entities = []
+        if mismatch.problem:
+            signal = (
+                Signal.SOC
+                if mismatch.details.get("kind") == "soc_still"
+                else Signal.CHARGED
+            )
+            entities = [self.entities[signal]]
+            if signal is Signal.CHARGED:
+                entities.append(self.entities[Signal.DISCHARGED])
+        self._issue(ISSUE_MISMATCH, entities)
 
     def _check_resets(self, now: datetime) -> None:
         """Repair issue for counters that start anew again and again (a day

@@ -103,9 +103,24 @@
       "capacity_estimate": {
         "name": "Kapazität (geschätzt)"
       }
+    },
+    "binary_sensor": {
+      "efficiency_drop": {
+        "name": "Wirkungsgrad unter Vorjahr"
+      },
+      "capacity_low": {
+        "name": "Kapazität gesunken"
+      },
+      "rest_loss_high": {
+        "name": "Ruheverlust hoch"
+      }
     }
   },
   "issues": {
+    "counter_soc_mismatch": {
+      "title": "Speicherwacht: Zähler und Ladezustand passen nicht zusammen",
+      "description": "Bei {name} haben Ladezustand und Zähler im letzten Tag nicht zusammengepasst (der Ladezustand hat sich bewegt, die Zähler standen – oder umgekehrt). Prüfe diese Entitäten: {entities}. Meist hängt ein Zähler, der Ladezustand ist eingefroren oder etwas ist falsch zugeordnet (Neu konfigurieren). Der Hinweis verschwindet, sobald beide wieder zusammenpassen."
+    },
     "counter_resets": {
       "title": "Speicherwacht: Zähler beginnt immer wieder neu",
       "description": "Diese Zähler von {name} haben in den letzten 7 Tagen mindestens 3-mal neu begonnen: {entities}. So verhält sich ein Tageszähler (Energie heute); Speicherwacht zählt dann zu wenig. Wähle unter Einstellungen → Geräte & Dienste → Speicherwacht → ⋮ → Neu konfigurieren Lebenszeit-Zähler (Gesamtenergie)."

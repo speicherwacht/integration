@@ -120,6 +120,14 @@ async def setup_entry(hass: HomeAssistant, **data) -> MockConfigEntry:
     return entry
 
 
+def problem_state(hass: HomeAssistant, entry: MockConfigEntry, key: str):
+    entity_id = er.async_get(hass).async_get_entity_id(
+        "binary_sensor", DOMAIN, f"{entry.entry_id}_{key}"
+    )
+    assert entity_id, key
+    return hass.states.get(entity_id)
+
+
 def state(hass: HomeAssistant, entry: MockConfigEntry, key: str):
     entity_id = er.async_get(hass).async_get_entity_id(
         "sensor", DOMAIN, f"{entry.entry_id}_{key}"
@@ -159,6 +167,12 @@ async def test_figures_from_statistics(hass: HomeAssistant) -> None:
     assert capacity.attributes["share_of_data_sheet_percent"] == pytest.approx(
         100, abs=3
     )
+    # Health check: one month of data has no previous year to compare.
+    drop = problem_state(hass, entry, "efficiency_drop")
+    assert drop.state == "unknown"
+    assert drop.attributes["reason"] == "no_previous_year"
+    assert problem_state(hass, entry, "capacity_low").state == "off"
+    assert problem_state(hass, entry, "rest_loss_high").state == "off"
     # The day sensor exists but is disabled by default.
     entity_id = er.async_get(hass).async_get_entity_id(
         "sensor", DOMAIN, f"{entry.entry_id}_efficiency_today"

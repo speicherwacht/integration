@@ -103,9 +103,24 @@
       "capacity_estimate": {
         "name": "Capacity (estimated)"
       }
+    },
+    "binary_sensor": {
+      "efficiency_drop": {
+        "name": "Efficiency below last year"
+      },
+      "capacity_low": {
+        "name": "Capacity low"
+      },
+      "rest_loss_high": {
+        "name": "Rest loss high"
+      }
     }
   },
   "issues": {
+    "counter_soc_mismatch": {
+      "title": "Speicherwacht: counters and state of charge disagree",
+      "description": "Over the last day the state of charge of {name} and its counters told different stories (the state of charge moved while the counters stood still, or the other way round). Check these entities: {entities}. A stuck counter, a frozen state of charge or a wrong mapping (Reconfigure) are the usual causes. The issue disappears once both move together again."
+    },
     "counter_resets": {
       "title": "Speicherwacht: counter starts anew again and again",
       "description": "These counters of {name} started anew at least 3 times in the last 7 days: {entities}. That is how a day counter (energy today) behaves; Speicherwacht then counts too little. Choose lifetime counters (total energy) under Settings → Devices & services → Speicherwacht → ⋮ → Reconfigure."

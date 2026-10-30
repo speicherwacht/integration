@@ -28,6 +28,17 @@
       "capacity_estimate": {
         "default": "mdi:battery-heart-variant"
       }
+    },
+    "binary_sensor": {
+      "efficiency_drop": {
+        "default": "mdi:battery-arrow-down"
+      },
+      "capacity_low": {
+        "default": "mdi:battery-alert"
+      },
+      "rest_loss_high": {
+        "default": "mdi:battery-clock-outline"
+      }
     }
   }
 }

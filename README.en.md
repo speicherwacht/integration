@@ -16,7 +16,7 @@
 ## Contents
 
 - [What Speicherwacht does](#what-speicherwacht-does) · [Requirements](#requirements) · [Installation](#installation) · [Setup](#setup)
-- [Entities](#entities) · [How it calculates](#how-it-calculates) · [Limits](#limits)
+- [Entities](#entities) · [Health check](#health-check) · [How it calculates](#how-it-calculates) · [Limits](#limits)
 - [Troubleshooting](#troubleshooting) · [Privacy](#privacy) · [Removal](#removal) · [Related projects](#related-projects)
 
 ## What Speicherwacht does
@@ -92,6 +92,20 @@ Attributes show what a value is made of: charged, discharged, change of stored e
 | `no_soc` | no state of charge at the day boundaries |
 | `too_few_rest_hours` | fewer than 24 rest hours in 30 days |
 | `too_few_discharges` | fewer than three discharges from full to empty in 90 days |
+
+## Health check
+
+Three problem sensors (on = conspicuous, unknown = not enough data yet, reason in the attribute `reason`) and one repair issue. They tell *what* stands out, not *why* – no expert diagnosis.
+
+| Entity | On when … |
+| --- | --- |
+| Efficiency below last year | the efficiency of the last 30 days is at least 3 percentage points below the same 30 days a year before (compared with last year because efficiency follows the season) |
+| Capacity low | the estimated capacity is below 80 % of the data sheet (end of life in the field) or 10 points below the estimate a year ago (2–3 points a year are normal) |
+| Rest loss high | the rest loss is above 64 W (highest standby in the HTW Berlin lab test) or at least 50 % and 10 W above the same days a year before |
+
+**Repair issue "Counters and state of charge disagree":** over the last day the state of charge moved a lot and the counters did not – or the other way round. Usually a counter is stuck, the state of charge is frozen or an entity is mapped wrongly.
+
+The comparisons with last year need a year of long-term statistics; until then these checks are unknown. Rules, sources and thresholds: [docs/GESUNDHEITSCHECK.md](docs/GESUNDHEITSCHECK.md) (German).
 
 ## How it calculates
 

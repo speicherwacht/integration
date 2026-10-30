@@ -171,8 +171,9 @@ Vom Inhaber am 2026-10-30:
 | `days.py` | lokale Tage (23/25 h), SoC an Stundengrenzen, Perioden |
 | `analysis.py` | Wirkungsgrad, Ruhetage, Ruheverlust, Kapazität, Vollzyklen |
 | `profiles.py` | Vorlagen als Daten, Gruppierung nach Präfix oder Config-Entry |
+| `health.py` | Gesundheits-Check (`docs/GESUNDHEITSCHECK.md`) |
 
-HA-Schicht: `runtime.py` (Statistik lesen: beim Start alles seit 2000, dann stündlich um :12 ab drei Stunden vor der letzten Zeile; Reparaturhinweise alle 5 min nach 10 min Laufzeit), `config_flow.py` (erkannte Speicher, eigene Zuordnung mit Vorbelegung aus den Energie-Einstellungen, Neu konfigurieren), `sensor.py`, `diagnostics.py`. Texte und Icons erzeugt `tools/make_strings.py` (danach `ruff format`).
+HA-Schicht: `runtime.py` (Statistik lesen: beim Start alles seit 2000, dann stündlich um :12 ab drei Stunden vor der letzten Zeile; Reparaturhinweise alle 5 min nach 10 min Laufzeit), `config_flow.py` (erkannte Speicher, eigene Zuordnung mit Vorbelegung aus den Energie-Einstellungen, Neu konfigurieren), `sensor.py`, `binary_sensor.py` (Problem-Sensoren), `diagnostics.py`. Texte und Icons erzeugt `tools/make_strings.py` (danach `ruff format`).
 
 - **Schreiblast:** keine Speicherdatei. Sensoren ändern sich höchstens stündlich; Werte gerundet (Prozent 0,1, Zyklen 0,1, kWh 0,01, W 1), die Liste `samples_kwh` nicht aufgezeichnet.
 - **Speicher:** Die Stundenstände aller drei Quellen bleiben im Arbeitsspeicher (drei Zahlen je Stunde, ~26.000 je Jahr).

@@ -9,6 +9,7 @@ from homeassistant.helpers import issue_registry as ir
 
 from .const import DOMAIN
 from .runtime import (
+    ISSUE_MISMATCH,
     ISSUE_MISSING,
     ISSUE_RESETS,
     ISSUE_UNAVAILABLE,
@@ -16,8 +17,14 @@ from .runtime import (
     StorageRuntime,
 )
 
-PLATFORMS: list[Platform] = [Platform.SENSOR]
-ISSUES = (ISSUE_MISSING, ISSUE_UNAVAILABLE, ISSUE_UNIT, ISSUE_RESETS)
+PLATFORMS: list[Platform] = [Platform.BINARY_SENSOR, Platform.SENSOR]
+ISSUES = (
+    ISSUE_MISSING,
+    ISSUE_UNAVAILABLE,
+    ISSUE_UNIT,
+    ISSUE_RESETS,
+    ISSUE_MISMATCH,
+)
 
 type SpeicherwachtConfigEntry = ConfigEntry[StorageRuntime]
 

@@ -32,6 +32,19 @@ SENSORS = {
     ),
 }
 EFFICIENCY = ("Efficiency", "Wirkungsgrad", "mdi:battery-charging-high")
+BINARY = {
+    "efficiency_drop": (
+        "Efficiency below last year",
+        "Wirkungsgrad unter Vorjahr",
+        "mdi:battery-arrow-down",
+    ),
+    "capacity_low": ("Capacity low", "Kapazität gesunken", "mdi:battery-alert"),
+    "rest_loss_high": (
+        "Rest loss high",
+        "Ruheverlust hoch",
+        "mdi:battery-clock-outline",
+    ),
+}
 
 USER = {
     "title": ("Battery storage", "Batteriespeicher"),
@@ -169,6 +182,12 @@ BOUNDARY = {
     ),
 }
 ISSUES = {
+    "counter_soc_mismatch": (
+        "Speicherwacht: counters and state of charge disagree",
+        "Speicherwacht: Zähler und Ladezustand passen nicht zusammen",
+        "Over the last day the state of charge of {name} and its counters told different stories (the state of charge moved while the counters stood still, or the other way round). Check these entities: {entities}. A stuck counter, a frozen state of charge or a wrong mapping (Reconfigure) are the usual causes. The issue disappears once both move together again.",
+        "Bei {name} haben Ladezustand und Zähler im letzten Tag nicht zusammengepasst (der Ladezustand hat sich bewegt, die Zähler standen – oder umgekehrt). Prüfe diese Entitäten: {entities}. Meist hängt ein Zähler, der Ladezustand ist eingefroren oder etwas ist falsch zugeordnet (Neu konfigurieren). Der Hinweis verschwindet, sobald beide wieder zusammenpassen.",
+    ),
     "counter_resets": (
         "Speicherwacht: counter starts anew again and again",
         "Speicherwacht: Zähler beginnt immer wieder neu",
@@ -234,7 +253,10 @@ def build(lang: int) -> dict:
             "source": {"options": {"manual": SOURCE_MANUAL[lang]}},
             "boundary": {"options": _pick(BOUNDARY, lang)},
         },
-        "entity": {"sensor": sensor},
+        "entity": {
+            "sensor": sensor,
+            "binary_sensor": {k: {"name": v[lang]} for k, v in BINARY.items()},
+        },
         "issues": {
             key: {"title": text[lang], "description": text[2 + lang]}
             for key, text in ISSUES.items()
@@ -245,7 +267,12 @@ def build(lang: int) -> dict:
 def icons() -> dict:
     sensor = {f"efficiency_{key}": {"default": EFFICIENCY[2]} for key in PERIODS}
     sensor.update({k: {"default": v[2]} for k, v in SENSORS.items()})
-    return {"entity": {"sensor": sensor}}
+    return {
+        "entity": {
+            "sensor": sensor,
+            "binary_sensor": {k: {"default": v[2]} for k, v in BINARY.items()},
+        }
+    }
 
 
 def write(path: Path, data: dict) -> None:

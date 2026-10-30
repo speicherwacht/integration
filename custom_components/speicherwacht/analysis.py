@@ -196,7 +196,7 @@ def rest_loss(hours: Sequence[Hour], capacity: float, now: datetime) -> RestLoss
     the last) is booked against the drop of the state of charge.
     """
     since = now - REST_WINDOW
-    recent = [h for h in hours if h.start >= since]
+    recent = [h for h in hours if since <= h.start < now]
     lost = span = 0.0
     for run in _runs(recent, lambda h: _quiet(h, capacity)):
         if len(run) < MIN_REST_RUN_HOURS:
@@ -225,7 +225,7 @@ def capacity_estimate(
 ) -> CapacityEstimate:
     """Median energy per 100 % SoC over the latest full-to-empty discharges."""
     since = now - CAPACITY_WINDOW
-    recent = [h for h in hours if h.start >= since]
+    recent = [h for h in hours if since <= h.start < now]
     samples = []
     for run in _runs(recent, lambda h: _discharging(h, capacity)):
         first, last = run[0], run[-1]

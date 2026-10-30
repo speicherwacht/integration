@@ -16,7 +16,7 @@
 ## Inhalt
 
 - [Was Speicherwacht kann](#was-speicherwacht-kann) · [Voraussetzungen](#voraussetzungen) · [Installation](#installation) · [Einrichtung](#einrichtung)
-- [Entitäten](#entitäten) · [Wie gerechnet wird](#wie-gerechnet-wird) · [Grenzen der Aussage](#grenzen-der-aussage)
+- [Entitäten](#entitäten) · [Gesundheits-Check](#gesundheits-check) · [Wie gerechnet wird](#wie-gerechnet-wird) · [Grenzen der Aussage](#grenzen-der-aussage)
 - [Fehlerbehebung](#fehlerbehebung) · [Datenschutz](#datenschutz) · [Entfernen](#entfernen) · [Verwandte Projekte](#verwandte-projekte)
 
 ## Was Speicherwacht kann
@@ -92,6 +92,20 @@ Attribute zeigen, woraus ein Wert entsteht: geladen, entladen, Änderung der ges
 | `no_soc` | kein Ladezustand an den Tagesgrenzen |
 | `too_few_rest_hours` | weniger als 24 Ruhestunden in 30 Tagen |
 | `too_few_discharges` | weniger als drei Entladungen von voll bis leer in 90 Tagen |
+
+## Gesundheits-Check
+
+Drei Problem-Sensoren (an = auffällig, unbekannt = noch zu wenig Daten, Grund im Attribut `reason`) und ein Reparaturhinweis. Sie sagen, *was* auffällt, nicht *warum* – keine Fachdiagnose.
+
+| Entität | An, wenn … |
+| --- | --- |
+| Wirkungsgrad unter Vorjahr | der Wirkungsgrad der letzten 30 Tage mindestens 3 Prozentpunkte unter denselben 30 Tagen des Vorjahres liegt (Vergleich mit dem Vorjahr, weil der Wirkungsgrad mit der Jahreszeit schwankt) |
+| Kapazität gesunken | die geschätzte Kapazität unter 80 % des Datenblatts liegt (Lebensende im Feld) oder 10 Punkte unter der Schätzung vor einem Jahr (normal sind 2–3 Punkte pro Jahr) |
+| Ruheverlust hoch | der Ruheverlust über 64 W liegt (höchster Stand-by-Wert im Labortest der HTW Berlin) oder mindestens 50 % und 10 W über denselben Tagen des Vorjahres |
+
+**Reparaturhinweis „Zähler und Ladezustand passen nicht zusammen“:** Im letzten Tag hat sich der Ladezustand stark bewegt und die Zähler nicht – oder umgekehrt. Meist hängt ein Zähler, der Ladezustand ist eingefroren oder eine Entität ist falsch zugeordnet.
+
+Die Vergleiche mit dem Vorjahr brauchen ein Jahr Langzeitstatistik; vorher sind diese Prüfungen unbekannt. Regeln, Quellen und Schwellen: [docs/GESUNDHEITSCHECK.md](docs/GESUNDHEITSCHECK.md).
 
 ## Wie gerechnet wird
 

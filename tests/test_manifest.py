@@ -70,6 +70,14 @@ def test_every_sensor_translated_and_has_an_icon() -> None:
     assert set(strings) == set(icons) == keys
 
 
+def test_every_problem_sensor_translated_and_has_an_icon() -> None:
+    from custom_components.speicherwacht.binary_sensor import CHECKS
+
+    strings = load(INTEGRATION / "strings.json")["entity"]["binary_sensor"]
+    icons = load(INTEGRATION / "icons.json")["entity"]["binary_sensor"]
+    assert set(strings) == set(icons) == set(CHECKS)
+
+
 def test_issues_translated() -> None:
     assert set(load(INTEGRATION / "strings.json")["issues"]) == set(ISSUES)
 
