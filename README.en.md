@@ -62,6 +62,10 @@ The first step lists the storages Speicherwacht detected plus "Map entities myse
 | Victron with BMV, SmartShunt or Lynx | core `victron_gx` | experimental (beta) |
 | SolarEdge StorEdge | [solaredge_modbus_multi](https://github.com/WillCodeForCats/solaredge-modbus-multi) | experimental (beta) |
 | SolaX, Sofar | [solax_modbus](https://github.com/wills106/homeassistant-solax-modbus) | experimental (beta) |
+| Sungrow SH | [Modbus YAML by mkaiser](https://github.com/mkaiser/Sungrow-SHx-Inverter-Modbus-Home-Assistant) | experimental (beta) |
+| Sigenergy SigenStor | [sigen](https://github.com/TypQxQ/Sigenergy-Local-Modbus) | experimental (beta) |
+| Zendure SolarFlow, Hyper, Hub | [zendure_ha](https://github.com/Zendure/Zendure-HA) | experimental (beta) |
+| Marstek Venus E | [marstek_modbus](https://github.com/ViperRNMC/marstek_venus_modbus) or [Marstek Modbus Suite](https://github.com/sphings79/marstek-modbus-suite) | experimental (beta) |
 | all others | map entities yourself | – |
 
 - **Own mapping:** if your battery is set up in the energy dashboard, Speicherwacht proposes its counters, state of charge and capacity from there.
@@ -71,6 +75,10 @@ The first step lists the storages Speicherwacht detected plus "Map entities myse
 - **Victron:** the counters come from the battery monitor (BMV, SmartShunt, Lynx). A battery connected by CAN-BMS only has none. The system's "DC battery charge/discharge energy" start at 0 after every restart and are not usable.
 - **SolarEdge:** battery entities exist only with the option "Auto-Detect Batteries". With LG and BYD batteries the counters sometimes drop to 0; the integration then holds the old value and Speicherwacht reports "counters and state of charge disagree".
 - **SolaX:** "Battery Input Energy Total" and "Battery Output Energy Total" are disabled; enable them and reload the integration. The setup points this out.
+- **Sungrow:** according to the package, "Battery level" runs from 0 to 100 % between the inverter's minimum and maximum state of charge. The estimated capacity then shows only that window; if it is much narrower than the whole battery, enter its capacity.
+- **Sigenergy:** Speicherwacht takes the plant's counters (Modbus protocol v2.7 and later). Older firmware lacks them; then map the inverter's counters yourself.
+- **Zendure:** the integration sums up the counters from the battery power; the device has none. Speicherwacht can then only check that these values are consistent. After renaming the device in the Zendure app, choose the entities again under *Reconfigure*.
+- **Marstek:** Venus E only. On Venus A and D the solar power passes through the discharge counter; they are not detected. The counters measure at the socket, i.e. the whole storage.
 - **The counters measure:** *the battery* (DC, e.g. the inverter's battery counters) or *the whole storage* (AC, e.g. a plug meter in front of a balcony battery). Values of the two boundaries are not comparable; AC includes the inverter losses.
 - **Warranted throughput (optional):** the energy in MWh your warranty covers. Adds the sensor "Warranted throughput used".
 - **Reconfigure:** Devices & services → Speicherwacht → ⋮ → *Reconfigure*.

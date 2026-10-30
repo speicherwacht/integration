@@ -1,0 +1,537 @@
+{
+  "platform": "zendure_ha",
+  "name_prefix": "SolarFlow 800 Pro",
+  "devices": {
+    "manager": {
+      "identifiers": [
+        [
+          "zendure_ha",
+          "Zendure Manager"
+        ]
+      ],
+      "name": "Zendure Manager",
+      "manufacturer": "Zendure",
+      "model": "Zendure Manager"
+    },
+    "sf800pro": {
+      "identifiers": [
+        [
+          "zendure_ha",
+          "k7Qp2XwZ"
+        ],
+        [
+          "zendure_ha",
+          "HOA1NPN9F2X4K8M"
+        ]
+      ],
+      "name": "SolarFlow 800 Pro",
+      "manufacturer": "Zendure",
+      "model": "SolarFlow 800 Pro",
+      "model_id": "R3mn8U",
+      "serial_number": "HOA1NPN9F2X4K8M",
+      "hw_version": "k7Qp2XwZ"
+    },
+    "sf800pro_pack": {
+      "identifiers": [
+        [
+          "zendure_ha",
+          "CO4EHPT2K7QM9"
+        ]
+      ],
+      "name": "AB2000X K7QM9",
+      "manufacturer": "Zendure",
+      "model": "AB2000X",
+      "serial_number": "CO4EHPT2K7QM9",
+      "via_device": [
+        "zendure_ha",
+        "HOA1NPN9F2X4K8M"
+      ]
+    },
+    "hyper": {
+      "identifiers": [
+        [
+          "zendure_ha",
+          "b3Tn6YvR"
+        ],
+        [
+          "zendure_ha",
+          "EE1LH9C3D5G7J2B"
+        ]
+      ],
+      "name": "Hyper 2000",
+      "manufacturer": "Zendure",
+      "model": "Hyper 2000",
+      "model_id": "ja72U0ha",
+      "serial_number": "EE1LH9C3D5G7J2B",
+      "hw_version": "b3Tn6YvR"
+    },
+    "hyper_pack_1": {
+      "identifiers": [
+        [
+          "zendure_ha",
+          "CO4HZN5D2P8VB"
+        ]
+      ],
+      "name": "AB2000 2P8VB",
+      "manufacturer": "Zendure",
+      "model": "AB2000",
+      "serial_number": "CO4HZN5D2P8VB",
+      "via_device": [
+        "zendure_ha",
+        "EE1LH9C3D5G7J2B"
+      ]
+    },
+    "hyper_pack_2": {
+      "identifiers": [
+        [
+          "zendure_ha",
+          "CO4HZN5D7R1KC"
+        ]
+      ],
+      "name": "AB2000 7R1KC",
+      "manufacturer": "Zendure",
+      "model": "AB2000",
+      "serial_number": "CO4HZN5D7R1KC",
+      "via_device": [
+        "zendure_ha",
+        "EE1LH9C3D5G7J2B"
+      ]
+    }
+  },
+  "entities": [
+    {
+      "entity_id": "sensor.solarflow_800_pro_aggr_charge",
+      "unique_id": "solarflow_800_pro_aggr_charge",
+      "state": "412.38417253",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "SolarFlow 800 Pro Gesamte Ladeenergie"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro"
+    },
+    {
+      "entity_id": "sensor.solarflow_800_pro_aggr_discharge",
+      "unique_id": "solarflow_800_pro_aggr_discharge",
+      "state": "371.90263518",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "SolarFlow 800 Pro Gesamte Entladeenergie"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro"
+    },
+    {
+      "entity_id": "sensor.solarflow_800_pro_roundtrip_efficiency",
+      "unique_id": "solarflow_800_pro_roundtrip_efficiency",
+      "state": "90.2",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "SolarFlow 800 Pro Roundtrip-Wirkungsgrad"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro"
+    },
+    {
+      "entity_id": "sensor.solarflow_800_pro_electric_level",
+      "unique_id": "solarflow_800_pro_electric_level",
+      "state": "57",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "SolarFlow 800 Pro Batterieladezustand (SoC)"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro"
+    },
+    {
+      "entity_id": "sensor.solarflow_800_pro_total_kwh",
+      "unique_id": "solarflow_800_pro_total_kwh",
+      "state": "1.92",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "SolarFlow 800 Pro Gesamtkapazität Batterie"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro"
+    },
+    {
+      "entity_id": "sensor.solarflow_800_pro_available_kwh",
+      "unique_id": "solarflow_800_pro_available_kwh",
+      "state": "0.9024",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "SolarFlow 800 Pro Verfügbare Energie"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro"
+    },
+    {
+      "entity_id": "sensor.solarflow_800_pro_output_pack_power",
+      "unique_id": "solarflow_800_pro_output_pack_power",
+      "state": "0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "SolarFlow 800 Pro Batterieladeleistung"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro"
+    },
+    {
+      "entity_id": "sensor.solarflow_800_pro_pack_input_power",
+      "unique_id": "solarflow_800_pro_pack_input_power",
+      "state": "214",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "SolarFlow 800 Pro Batterieentladeleistung"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro"
+    },
+    {
+      "entity_id": "sensor.solarflow_800_pro_bat_in_out",
+      "unique_id": "solarflow_800_pro_bat_in_out",
+      "state": "214",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "SolarFlow 800 Pro Batterieleistung"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro"
+    },
+    {
+      "entity_id": "sensor.solarflow_800_pro_aggr_solar",
+      "unique_id": "solarflow_800_pro_aggr_solar",
+      "state": "655.13702941",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "SolarFlow 800 Pro Gesamte Solarenergie"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro"
+    },
+    {
+      "entity_id": "sensor.solarflow_800_pro_aggr_output_home",
+      "unique_id": "solarflow_800_pro_aggr_output_home",
+      "state": "598.44120385",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "SolarFlow 800 Pro Gesamte Hausenergie"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro"
+    },
+    {
+      "entity_id": "sensor.solarflow_800_pro_aggr_grid_input_power",
+      "unique_id": "solarflow_800_pro_aggr_grid_input_power",
+      "state": "38.2651187",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "SolarFlow 800 Pro Gesamte Netzenergie"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro"
+    },
+    {
+      "entity_id": "sensor.ab2000x_k7qm9_soc_level",
+      "unique_id": "ab2000x_k7qm9_soc_level",
+      "state": "57",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "AB2000X K7QM9 Ladezustand (SoC)"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro_pack"
+    },
+    {
+      "entity_id": "sensor.ab2000x_k7qm9_soh",
+      "unique_id": "ab2000x_k7qm9_soh",
+      "state": "98.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "AB2000X K7QM9 Gesundheitszustand"
+      },
+      "disabled_by_default": false,
+      "device": "sf800pro_pack"
+    },
+    {
+      "entity_id": "sensor.hyper_2000_aggr_charge",
+      "unique_id": "hyper_2000_aggr_charge",
+      "state": "1387.62904417",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Hyper 2000 Gesamte Ladeenergie"
+      },
+      "disabled_by_default": false,
+      "device": "hyper"
+    },
+    {
+      "entity_id": "sensor.hyper_2000_aggr_discharge",
+      "unique_id": "hyper_2000_aggr_discharge",
+      "state": "1219.33071856",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Hyper 2000 Gesamte Entladeenergie"
+      },
+      "disabled_by_default": false,
+      "device": "hyper"
+    },
+    {
+      "entity_id": "sensor.hyper_2000_roundtrip_efficiency",
+      "unique_id": "hyper_2000_roundtrip_efficiency",
+      "state": "87.9",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "Hyper 2000 Roundtrip-Wirkungsgrad"
+      },
+      "disabled_by_default": false,
+      "device": "hyper"
+    },
+    {
+      "entity_id": "sensor.hyper_2000_electric_level",
+      "unique_id": "hyper_2000_electric_level",
+      "state": "64",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Hyper 2000 Batterieladezustand (SoC)"
+      },
+      "disabled_by_default": false,
+      "device": "hyper"
+    },
+    {
+      "entity_id": "sensor.hyper_2000_total_kwh",
+      "unique_id": "hyper_2000_total_kwh",
+      "state": "3.84",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Hyper 2000 Gesamtkapazität Batterie"
+      },
+      "disabled_by_default": false,
+      "device": "hyper"
+    },
+    {
+      "entity_id": "sensor.hyper_2000_available_kwh",
+      "unique_id": "hyper_2000_available_kwh",
+      "state": "2.0736",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Hyper 2000 Verfügbare Energie"
+      },
+      "disabled_by_default": false,
+      "device": "hyper"
+    },
+    {
+      "entity_id": "sensor.hyper_2000_output_pack_power",
+      "unique_id": "hyper_2000_output_pack_power",
+      "state": "486",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Hyper 2000 Batterieladeleistung"
+      },
+      "disabled_by_default": false,
+      "device": "hyper"
+    },
+    {
+      "entity_id": "sensor.hyper_2000_pack_input_power",
+      "unique_id": "hyper_2000_pack_input_power",
+      "state": "0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Hyper 2000 Batterieentladeleistung"
+      },
+      "disabled_by_default": false,
+      "device": "hyper"
+    },
+    {
+      "entity_id": "sensor.hyper_2000_bat_in_out",
+      "unique_id": "hyper_2000_bat_in_out",
+      "state": "-486",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Hyper 2000 Batterieleistung"
+      },
+      "disabled_by_default": false,
+      "device": "hyper"
+    },
+    {
+      "entity_id": "sensor.hyper_2000_aggr_solar",
+      "unique_id": "hyper_2000_aggr_solar",
+      "state": "1702.88315602",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Hyper 2000 Gesamte Solarenergie"
+      },
+      "disabled_by_default": false,
+      "device": "hyper"
+    },
+    {
+      "entity_id": "sensor.hyper_2000_aggr_output_home",
+      "unique_id": "hyper_2000_aggr_output_home",
+      "state": "1290.04477931",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Hyper 2000 Gesamte Hausenergie"
+      },
+      "disabled_by_default": false,
+      "device": "hyper"
+    },
+    {
+      "entity_id": "sensor.hyper_2000_aggr_grid_input_power",
+      "unique_id": "hyper_2000_aggr_grid_input_power",
+      "state": "0.0",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Hyper 2000 Gesamte Netzenergie"
+      },
+      "disabled_by_default": false,
+      "device": "hyper"
+    },
+    {
+      "entity_id": "sensor.ab2000_2p8vb_soc_level",
+      "unique_id": "ab2000_2p8vb_soc_level",
+      "state": "63",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "AB2000 2P8VB Ladezustand (SoC)"
+      },
+      "disabled_by_default": false,
+      "device": "hyper_pack_1"
+    },
+    {
+      "entity_id": "sensor.ab2000_2p8vb_soh",
+      "unique_id": "ab2000_2p8vb_soh",
+      "state": "97.3",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "AB2000 2P8VB Gesundheitszustand"
+      },
+      "disabled_by_default": false,
+      "device": "hyper_pack_1"
+    },
+    {
+      "entity_id": "sensor.ab2000_7r1kc_soc_level",
+      "unique_id": "ab2000_7r1kc_soc_level",
+      "state": "65",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "AB2000 7R1KC Ladezustand (SoC)"
+      },
+      "disabled_by_default": false,
+      "device": "hyper_pack_2"
+    },
+    {
+      "entity_id": "sensor.ab2000_7r1kc_soh",
+      "unique_id": "ab2000_7r1kc_soh",
+      "state": "99.1",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "AB2000 7R1KC Gesundheitszustand"
+      },
+      "disabled_by_default": false,
+      "device": "hyper_pack_2"
+    },
+    {
+      "entity_id": "sensor.zendure_manager_total_kwh",
+      "unique_id": "zendure_manager_total_kwh",
+      "state": "5.76",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Zendure Manager Gesamtkapazität Batterie"
+      },
+      "disabled_by_default": false,
+      "device": "manager"
+    },
+    {
+      "entity_id": "sensor.zendure_manager_available_kwh",
+      "unique_id": "zendure_manager_available_kwh",
+      "state": "2.976",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Zendure Manager Verfügbare Energie"
+      },
+      "disabled_by_default": false,
+      "device": "manager"
+    },
+    {
+      "entity_id": "sensor.zendure_manager_global_soc",
+      "unique_id": "zendure_manager_global_soc",
+      "state": "61.666666666666664",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Zendure Manager Globaler Akku-SOC"
+      },
+      "disabled_by_default": false,
+      "device": "manager"
+    },
+    {
+      "entity_id": "sensor.zendure_manager_power",
+      "unique_id": "zendure_manager_power",
+      "state": "-272",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Zendure Manager Leistung"
+      },
+      "disabled_by_default": false,
+      "device": "manager"
+    }
+  ]
+}

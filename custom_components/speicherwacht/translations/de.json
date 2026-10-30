@@ -37,6 +37,18 @@
           "source": "Mit (beta) markierte Vorlagen stammen aus dem Quellcode der Integration und sind an einer echten Anlage noch nicht bestätigt."
         }
       },
+      "user_hint_sigen": {
+        "title": "Batteriespeicher",
+        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nSigenergy: Eine Anlage hat keine Lebenszeit-Zähler für den Akku. Sie brauchen Modbus-Protokoll v2.7 oder neuer (Firmware-Update). Bis dahin ordne die Zähler des Wechselrichters („Total charge/discharge energy“) selbst zu.",
+        "data": {
+          "name": "Name",
+          "source": "Quelle"
+        },
+        "data_description": {
+          "name": "Name des Geräts, das Speicherwacht anlegt.",
+          "source": "Mit (beta) markierte Vorlagen stammen aus dem Quellcode der Integration und sind an einer echten Anlage noch nicht bestätigt."
+        }
+      },
       "user_hint_solax_modbus": {
         "title": "Batteriespeicher",
         "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nSolaX: Die Lebenszeit-Zähler des Akkus sind deaktiviert. Aktiviere im SolaX-Gerät „Battery Input Energy Total“ und „Battery Output Energy Total“, lade die Integration neu und starte diese Einrichtung erneut.",
@@ -64,6 +76,46 @@
       "entities": {
         "title": "Entitäten und Kapazität",
         "description": "Zähler brauchen eine Zustandsklasse (total oder total_increasing), der Ladezustand die Zustandsklasse measurement: Speicherwacht rechnet aus deren Langzeitstatistik, auch für die Zeit vor der Einrichtung.",
+        "data": {
+          "charged": "Energie geladen (Lebenszeit)",
+          "discharged": "Energie entladen (Lebenszeit)",
+          "soc": "Ladezustand",
+          "capacity": "Nutzbare Kapazität",
+          "boundary": "Die Zähler messen",
+          "warranty_mwh": "Garantie-Durchsatz (optional)"
+        },
+        "data_description": {
+          "charged": "Energie in den Akku. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
+          "discharged": "Energie aus dem Akku.",
+          "soc": "In %.",
+          "capacity": "Laut Datenblatt (nutzbar, nicht brutto). Nötig für die Korrektur über den Ladezustand und die Vollzyklen; die geschätzte Kapazität ersetzt sie nie.",
+          "boundary": "Ergebnisse der beiden Grenzen sind nicht vergleichbar.",
+          "warranty_mwh": "Energie, die die Garantie abdeckt, in MWh entladen (Datenblatt oder Garantiebedingungen). Ergibt den Sensor „Garantie-Durchsatz genutzt“."
+        }
+      },
+      "entities_note_sungrow_modbus_yaml": {
+        "title": "Entitäten und Kapazität",
+        "description": "Zähler brauchen eine Zustandsklasse (total oder total_increasing), der Ladezustand die Zustandsklasse measurement: Speicherwacht rechnet aus deren Langzeitstatistik, auch für die Zeit vor der Einrichtung.\n\nSungrow (Modbus-YAML): Laut Paket läuft „Battery level“ zwischen dem im Wechselrichter eingestellten minimalen und maximalen Ladezustand von 0 bis 100 %. Die geschätzte Kapazität zeigt dann nur dieses Fenster (z. B. 5–100 %: etwa 95 %). Ist dein Fenster deutlich enger, trage seine Kapazität statt der des ganzen Akkus ein, damit „Kapazität gesunken“ nicht anschlägt.",
+        "data": {
+          "charged": "Energie geladen (Lebenszeit)",
+          "discharged": "Energie entladen (Lebenszeit)",
+          "soc": "Ladezustand",
+          "capacity": "Nutzbare Kapazität",
+          "boundary": "Die Zähler messen",
+          "warranty_mwh": "Garantie-Durchsatz (optional)"
+        },
+        "data_description": {
+          "charged": "Energie in den Akku. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
+          "discharged": "Energie aus dem Akku.",
+          "soc": "In %.",
+          "capacity": "Laut Datenblatt (nutzbar, nicht brutto). Nötig für die Korrektur über den Ladezustand und die Vollzyklen; die geschätzte Kapazität ersetzt sie nie.",
+          "boundary": "Ergebnisse der beiden Grenzen sind nicht vergleichbar.",
+          "warranty_mwh": "Energie, die die Garantie abdeckt, in MWh entladen (Datenblatt oder Garantiebedingungen). Ergibt den Sensor „Garantie-Durchsatz genutzt“."
+        }
+      },
+      "entities_note_zendure_ha": {
+        "title": "Entitäten und Kapazität",
+        "description": "Zähler brauchen eine Zustandsklasse (total oder total_increasing), der Ladezustand die Zustandsklasse measurement: Speicherwacht rechnet aus deren Langzeitstatistik, auch für die Zeit vor der Einrichtung.\n\nZendure: Die Integration rechnet ihre Zähler in Home Assistant aus der gemeldeten Akkuleistung hoch; das Gerät selbst hat keine. Speicherwacht kann sie deshalb nur auf Stimmigkeit prüfen, nicht das Gerät messen. Benennst du das Gerät in der Zendure-App um, ändern sich seine Entitäts-IDs: Wähle sie dann unter Neu konfigurieren neu.",
         "data": {
           "charged": "Energie geladen (Lebenszeit)",
           "discharged": "Energie entladen (Lebenszeit)",

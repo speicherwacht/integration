@@ -1,0 +1,123 @@
+{
+  "platform": "modbus",
+  "config_entry_id": null,
+  "entities": [
+    {
+      "entity_id": "sensor.total_battery_charge_inv_1",
+      "unique_id": "sg_total_battery_charge_inv_1",
+      "state": "2611.5",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+        "friendly_name": "Total battery charge inv 1"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.total_battery_discharge_inv_1",
+      "unique_id": "sg_total_battery_discharge_inv_1",
+      "state": "2367.0",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+        "friendly_name": "Total battery discharge inv 1"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.daily_battery_charge_inv_1",
+      "unique_id": "sg_daily_battery_charge_inv_1",
+      "state": "6.2",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+        "friendly_name": "Daily battery charge inv 1"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.battery_level_inv_1",
+      "unique_id": "sg_battery_level_inv_1",
+      "state": "71.9",
+      "attributes": {
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "state_class": "measurement",
+        "friendly_name": "Battery level inv 1"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.battery_state_of_health_inv_1",
+      "unique_id": "sg_battery_state_of_health_inv_1",
+      "state": "99",
+      "attributes": {
+        "unit_of_measurement": "%",
+        "state_class": "measurement",
+        "friendly_name": "Battery state of health inv 1"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.battery_capacity_high_precision_inv_1",
+      "unique_id": "uid_battery_capacity_high_precision_inv_1",
+      "state": "12.80",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Battery capacity high precision inv 1"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.total_battery_charge_inv_2",
+      "unique_id": "sg_total_battery_charge_inv_2",
+      "state": "1980.4",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+        "friendly_name": "Total battery charge inv 2"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.total_battery_discharge_inv_2",
+      "unique_id": "sg_total_battery_discharge_inv_2",
+      "state": "1792.6",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+        "friendly_name": "Total battery discharge inv 2"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.battery_level_inv_2",
+      "unique_id": "sg_battery_level_inv_2",
+      "state": "64.2",
+      "attributes": {
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "state_class": "measurement",
+        "friendly_name": "Battery level inv 2"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.battery_capacity_high_precision_inv_2",
+      "unique_id": "uid_battery_capacity_high_precision_inv_2",
+      "state": "9.60",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Battery capacity high precision inv 2"
+      },
+      "disabled_by_default": false
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "platform": "marstek_modbus",
+  "config_entry_id": "01K8N5A9W3J6P2S8G4Y7KXHMTR",
+  "name_prefix": "Marstek Venus Modbus",
+  "devices": {
+    "venus": {
+      "identifiers": [
+        [
+          "marstek_modbus",
+          "01K8N5A9W3J6P2S8G4Y7KXHMTR"
+        ]
+      ],
+      "name": "Marstek Venus Modbus",
+      "manufacturer": "Marstek",
+      "model": "Venus",
+      "entry_type": "service"
+    }
+  },
+  "entities": [
+    {
+      "entity_id": "sensor.marstek_venus_modbus_gesamte_ladeenergie",
+      "unique_id": "01K8N5A9W3J6P2S8G4Y7KXHMTR_total_charging_energy",
+      "state": "1206.55",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Marstek Venus Modbus Gesamte Ladeenergie"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_modbus_gesamte_entladeenergie",
+      "unique_id": "01K8N5A9W3J6P2S8G4Y7KXHMTR_total_discharging_energy",
+      "state": "1018.23",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Marstek Venus Modbus Gesamte Entladeenergie"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_modbus_tagliche_ladeenergie",
+      "unique_id": "01K8N5A9W3J6P2S8G4Y7KXHMTR_total_daily_charging_energy",
+      "state": "3.94",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Marstek Venus Modbus Tägliche Ladeenergie"
+      },
+      "disabled_by_default": true,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_modbus_tagliche_entladeenergie",
+      "unique_id": "01K8N5A9W3J6P2S8G4Y7KXHMTR_total_daily_discharging_energy",
+      "state": "2.81",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Marstek Venus Modbus Tägliche Entladeenergie"
+      },
+      "disabled_by_default": true,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_modbus_soc_batterie",
+      "unique_id": "01K8N5A9W3J6P2S8G4Y7KXHMTR_battery_soc",
+      "state": "71.3",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Marstek Venus Modbus SoC Batterie"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_modbus_batterie_gesamtenergie",
+      "unique_id": "01K8N5A9W3J6P2S8G4Y7KXHMTR_battery_total_energy",
+      "state": "5.12",
+      "attributes": {
+        "state_class": "total",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Marstek Venus Modbus Batterie-Gesamtenergie"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_modbus_batterieleistung",
+      "unique_id": "01K8N5A9W3J6P2S8G4Y7KXHMTR_battery_power",
+      "state": "455",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Marstek Venus Modbus Batterieleistung"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_modbus_ac_leistung",
+      "unique_id": "01K8N5A9W3J6P2S8G4Y7KXHMTR_ac_power",
+      "state": "431",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Marstek Venus Modbus AC-Leistung"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_modbus_vollzyklen_bms",
+      "unique_id": "01K8N5A9W3J6P2S8G4Y7KXHMTR_battery_cycle_count",
+      "state": "211",
+      "attributes": {
+        "state_class": "total_increasing",
+        "friendly_name": "Marstek Venus Modbus Vollzyklen (BMS)"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_modbus_gesamt_roundtrip_effizienz",
+      "unique_id": "01K8N5A9W3J6P2S8G4Y7KXHMTR_round_trip_efficiency_total",
+      "state": "84.39",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "Marstek Venus Modbus Gesamt-Roundtrip-Effizienz"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_modbus_gespeicherte_energie",
+      "unique_id": "01K8N5A9W3J6P2S8G4Y7KXHMTR_stored_energy",
+      "state": "3.651",
+      "attributes": {
+        "state_class": "total",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Marstek Venus Modbus Gespeicherte Energie"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    }
+  ]
+}

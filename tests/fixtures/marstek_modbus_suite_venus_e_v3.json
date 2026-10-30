@@ -1,0 +1,176 @@
+{
+  "platform": "marstek_modbus",
+  "config_entry_id": "01K8N4V2XH7QF3M9R6T1B5CZDE",
+  "name_prefix": "Marstek Venus E 3.0",
+  "devices": {
+    "venus": {
+      "identifiers": [
+        [
+          "marstek_modbus",
+          "01K8N4V2XH7QF3M9R6T1B5CZDE"
+        ]
+      ],
+      "name": "Marstek Venus E 3.0",
+      "manufacturer": "Marstek",
+      "model": "Venus",
+      "entry_type": "service"
+    }
+  },
+  "entities": [
+    {
+      "entity_id": "sensor.marstek_venus_e_3_0_gesamte_ladeenergie",
+      "unique_id": "01K8N4V2XH7QF3M9R6T1B5CZDE_total_charging_energy",
+      "state": "873.41",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Marstek Venus E 3.0 Gesamte Ladeenergie"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_e_3_0_gesamte_entladeenergie",
+      "unique_id": "01K8N4V2XH7QF3M9R6T1B5CZDE_total_discharging_energy",
+      "state": "741.86",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Marstek Venus E 3.0 Gesamte Entladeenergie"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_e_3_0_tagliche_ladeenergie",
+      "unique_id": "01K8N4V2XH7QF3M9R6T1B5CZDE_total_daily_charging_energy",
+      "state": "4.12",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Marstek Venus E 3.0 Tägliche Ladeenergie"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_e_3_0_tagliche_entladeenergie",
+      "unique_id": "01K8N4V2XH7QF3M9R6T1B5CZDE_total_daily_discharging_energy",
+      "state": "3.57",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Marstek Venus E 3.0 Tägliche Entladeenergie"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_e_3_0_soc_batterie",
+      "unique_id": "01K8N4V2XH7QF3M9R6T1B5CZDE_battery_soc",
+      "state": "48.7",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Marstek Venus E 3.0 SoC Batterie"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_e_3_0_batterie_nennkapazitat",
+      "unique_id": "01K8N4V2XH7QF3M9R6T1B5CZDE_battery_rated_capacity",
+      "state": "5.12",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Marstek Venus E 3.0 Batterie-Nennkapazität"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_e_3_0_batterieleistung",
+      "unique_id": "01K8N4V2XH7QF3M9R6T1B5CZDE_battery_power",
+      "state": "-812",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Marstek Venus E 3.0 Batterieleistung"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_e_3_0_ac_leistung",
+      "unique_id": "01K8N4V2XH7QF3M9R6T1B5CZDE_ac_power",
+      "state": "-846",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Marstek Venus E 3.0 AC-Leistung"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_e_3_0_vollzyklen_bms",
+      "unique_id": "01K8N4V2XH7QF3M9R6T1B5CZDE_battery_cycle_count",
+      "state": "153",
+      "attributes": {
+        "state_class": "total_increasing",
+        "friendly_name": "Marstek Venus E 3.0 Vollzyklen (BMS)"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_e_3_0_gesamt_roundtrip_effizienz",
+      "unique_id": "01K8N4V2XH7QF3M9R6T1B5CZDE_round_trip_efficiency_total",
+      "state": "84.94",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "Marstek Venus E 3.0 Gesamt-Roundtrip-Effizienz"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_e_3_0_gespeicherte_energie",
+      "unique_id": "01K8N4V2XH7QF3M9R6T1B5CZDE_stored_energy",
+      "state": "2.493",
+      "attributes": {
+        "state_class": "total",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Marstek Venus E 3.0 Gespeicherte Energie"
+      },
+      "disabled_by_default": false,
+      "device": "venus"
+    },
+    {
+      "entity_id": "sensor.marstek_venus_e_3_0_batteriezustand",
+      "unique_id": "01K8N4V2XH7QF3M9R6T1B5CZDE_battery_health",
+      "state": "97.45",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "Marstek Venus E 3.0 Batteriezustand"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "venus"
+    }
+  ]
+}

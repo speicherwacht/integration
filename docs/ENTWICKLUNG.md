@@ -14,7 +14,7 @@ Speicherwacht wertet aus vorhandenen Home-Assistant-Entitäten aus, wie gut ein 
 - Kapazität (geschätzt) aus Entladungen von voll bis leer.
 - Rückblick: alles aus der Langzeitstatistik, also auch vor der Einrichtung.
 - Reparaturhinweise für Datenfehler (Entität fehlt, Quelle nicht verfügbar, falsche Einheit).
-- Vorlagen: Fronius (echte Anlage), dazu als Beta Huawei Solar, solarman, Anker SOLIX (Cloud), Anker SOLIX (offiziell, lokal), GoodWe, Victron GX, SolarEdge (solaredge_modbus_multi) und SolaX (solax_modbus).
+- Vorlagen: Fronius (echte Anlage), dazu als Beta Huawei Solar, solarman, Anker SOLIX (Cloud), Anker SOLIX (offiziell, lokal), GoodWe, Victron GX, SolarEdge (solaredge_modbus_multi), SolaX (solax_modbus), Sungrow (Modbus-YAML), Sigenergy, Zendure und Marstek Venus E.
 
 **Später** (nicht im MVP): Wirtschaftlichkeit (Ersparnis, Amortisation; Entscheidung 2026-10-30 „später“), Problem-Sensoren (Wirkungsgrad oder Kapazität gesunken, Ruheverlust hoch), Verluste nach Leistungsklassen, Standby-Signal des Wechselrichters, Aktion „Bericht“.
 
@@ -149,6 +149,33 @@ Erkennung immer über die Entitäten-Registry (Plattform + `unique_id`), nie üb
 - `battery_input_energy_total` / `battery_output_energy_total` (kWh, 0,1, **`total` ohne `last_reset`**) sind standardmäßig deaktiviert und werden dann nicht einmal abgefragt → `counter_hint`, nach dem Einschalten neu laden. SoC heißt `battery_capacity` (%), bei Sofar `battery_capacity_total`. Kapazität `battery_system_installed_capacity` (Wh, Nennwert, GEN4–6 mit Protokoll ≥ 1.00, deaktiviert).
 - Bei instabiler Verbindung springen die Summen kurz auf 0 und zurück (#2115) – mit `total` als negative und gleich große positive Änderung, das fängt der Zählerbaustein ab. Andere Plugins derselben Domain (AlphaESS, Solis, Growatt …) haben andere Schlüssel; bei AlphaESS ist `battery_capacity` kWh, deshalb nimmt die Vorlage nur SolaX- und Sofar-Schlüssel. DC oder AC nicht dokumentiert.
 
+### Sungrow (Core `modbus` mit dem YAML-Paket, beta)
+
+- mkaiser/Sungrow-SHx-Inverter-Modbus-Home-Assistant (`310635c`, Stand 2026-06-19, ohne Tags), die verbreitetste Variante; Installationen nicht zählbar (Plattform `modbus`). Die unique_id ist der YAML-Wert selbst, kein Config-Entry; bei mehreren Wechselrichtern `_inv_<n>` angehängt → Speicher-ID leer bzw. `_inv_<n>`.
+- `sg_total_battery_charge` / `sg_total_battery_discharge` (kWh, 0,1, **`total` ohne `last_reset`**, alle 600 s gelesen), SoC `sg_battery_level`, Kapazität `uid_battery_capacity_high_precision` (kWh; 2025-11/12 umbenannt). Leistung negativ = Laden. DC oder AC unbekannt.
+- **SoC:** Laut Kommentar im Paket läuft „Battery level“ zwischen min_soc und max_soc von 0 bis 100 %, nicht absolut (nicht geprüft). Die SoC-Korrektur verschiebt sich um den Anteil des Fensters, die Kapazitätsschätzung zeigt das Fenster → Hinweis im Zuordnungsschritt (`note`), Kapazität des Fensters eintragen, wenn es deutlich enger ist.
+- Der Nachfolger `sungrow_modbus` (Alpha) behält die entity_ids, wechselt aber Plattform und unique_ids (`<Seriennummer>_<key>`) → dann eine zweite Vorlage. KRoperUK/sungrow-hass (`sungrow`, 745 Installationen) ohne Vorlage: Welche Cloud-Punktcodes ein Heimspeicher füllt, ist ohne Diagnose-Dump offen.
+
+### Sigenergy (HACS `sigen`, beta)
+
+- TypQxQ/Sigenergy-Local-Modbus 1.2.7.5 (`b66e304`; 1.3.0 an diesen Stellen gleich). unique_id `<Config-Entry-ID>_<Gerätename klein>_<key>`, ein Config-Entry je Anlage.
+- **Nur die Anlagenzähler** (Entscheidung 2026-10-30): `plant_accumulated_battery_charge_energy` / `…_discharge_energy` (0,01 kWh, **`total` ohne `last_reset`**, ab Protokoll v2.7, Anzeige in MWh), SoC `plant_ess_soc`, Kapazität `plant_ess_rated_energy_capacity`. Die Wechselrichter haben eigene Zähler desselben Akkus; sie anzubieten hieße, denselben Akku zweimal zur Wahl zu stellen. Ältere Firmware hat nur den Anlagen-SoC → Hinweis (`counter_hint`), dann eigene Zuordnung mit den Wechselrichterzählern.
+- Leistung positiv = Laden. Kurze Nullwerte nach einer Wiederverbindung sind bei Tageszählern belegt (#313), der Null-Schutz der Integration deckt die Speicherzähler nicht ab. Bis 1.1.0 (2025-08) war der Anlagenzähler ein berechneter Sensor mit demselben Schlüssel.
+
+### Zendure (HACS `zendure_ha`, beta)
+
+- Zendure/Zendure-HA 1.4.4 (`8d59bac`). unique_id `<Gerätename aus der App, snake_case>_<key>`, eine Instanz → Gruppierung nach Präfix. Umbenennen in der App zieht unique_id und entity_id um (`migration.py`) → Speicherwacht meldet `missing_entity`, Neu konfigurieren hilft. Zwei Geräte mit gleichem Namen kollidieren (#1518).
+- `aggr_charge` / `aggr_discharge` (kWh, `total_increasing`) **rechnet die Integration in HA** als Linkssumme aus der Pack-Leistung hoch und stellt sie beim Start wieder her; das Gerät liefert keinen Zählerstand. Speicherwacht prüft hier also die Stimmigkeit der Integration, nicht ein Gerätemaß → Hinweis im Zuordnungsschritt (`note`). SoC `electric_level`, Kapazität `total_kwh` (Nennwerte der Packs aus der Seriennummer). Erweiterungsakkus und „Zendure Manager“ haben keine Zähler.
+- #1599: `aggr_charge` wuchs auf 3e75 (vermutlich Restore in der Anzeigeeinheit Wh) – der Zählerbaustein verwirft solche Sprünge (`MAX_C_RATE`). Bei einem Verbindungsabbruch bucht die Integration „letzte Leistung × Lücke“ nach (nur aus dem Code).
+
+### Marstek Venus E (HACS `marstek_modbus`, beta)
+
+- Zwei Integrationen mit derselben Domain und unique_id `<Config-Entry-ID>_<key>`: ViperRNMC/marstek_venus_modbus 2026.10.1 (`cb5a241`) und sphings79/marstek-modbus-suite 3.1.3 (`60c023d`). Eine Vorlage für beide.
+- `total_charging_energy` / `total_discharging_energy` (Register 33000/33002, 0,01 kWh, `total_increasing`) zählen an der AC-Seite → `Boundary.SYSTEM`. SoC `battery_soc` (E v3: vom Wechselrichter hochgerechnet, bei 0/100 % auf den BMS-Wert gesetzt). Kapazität `battery_rated_capacity` (Suite ab 3.1.0-beta.3) oder `battery_total_energy` (Viper, Suite E v1/v2) → `capacity` ist ein Tupel.
+- **Venus A/D ausgeschlossen:** Dort läuft PV→Haus durch den Entladezähler (Viper #207). Erkennbar an `mppt1_power`, auch deaktiviert in der Registry → `exclude_keys`, die Prüfung sieht auch deaktivierte Einträge.
+- Firmware: EMS 144/147 Zähler auf 0 oder still (#170, #192), Firmware-Update oder Werksreset setzt sie zurück (#226), EMS 148 einzelne Werte als 1/10 (#216). Beide Integrationen verwerfen Rückgänge nur bis zum nächsten HA-Neustart.
+- Ohne Vorlage: B2500 (nur Tageswerte, MQTT), `marstek_local_api` (keine Akkuzähler); HA-Core hat keine Marstek-Integration.
+
 ### Weitere Hersteller (Recherche 29.10.2026, noch ohne Fixture)
 
 Grundlage für die Reihenfolge weiterer Vorlagen; vor dem Bau jeweils am Quellcode und mit Fixture prüfen.
@@ -172,7 +199,7 @@ Grundlage für die Reihenfolge weiterer Vorlagen; vor dem Bau jeweils am Quellco
 Vom Inhaber am 2026-10-30:
 
 - Name „Speicherwacht“, Domain `speicherwacht`, Repo `github.com/speicherwacht/integration` (Organisation legt der Inhaber an), `codeowners` `@n42net`, MIT.
-- Heim- und Balkonspeicher gleich, Kern herstellerneutral; erste Vorlage Fronius, dazu Huawei Solar, solarman, Anker SOLIX als Beta aus dem Quellcode; mit 0.1.0b3 GoodWe, Victron GX, SolarEdge und SolaX (die nächsten nach HA-Analytics).
+- Heim- und Balkonspeicher gleich, Kern herstellerneutral; erste Vorlage Fronius, dazu Huawei Solar, solarman, Anker SOLIX als Beta aus dem Quellcode; mit 0.1.0b3 GoodWe, Victron GX, SolarEdge, SolaX, Sungrow (YAML), Sigenergy (nur Anlage), Zendure (mit Hinweis auf die gerechneten Zähler) und Marstek Venus E (die nächsten nach HA-Analytics).
 - **Nur Langzeitstatistik**: stündlich neu rechnen, keine eigene Speicherdatei, keine Schreiblast; Live und Rückblick rechnen gleich. Reparaturhinweise schauen trotzdem auf die aktuellen Zustände.
 - Zähler Pflicht; wer nur Leistung hat, legt einen Helfer „Integral“ an (README).
 - Bilanzgrenze je Eintrag wählbar (Akku/System).

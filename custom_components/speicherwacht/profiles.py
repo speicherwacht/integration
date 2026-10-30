@@ -52,9 +52,13 @@ class Template:
     # keys, tried longest first.
     id_format: str
     group_by: GroupBy = GroupBy.PREFIX
-    # Key of an entity holding the usable capacity (Wh or kWh), offered as
-    # the default in the setup; never replaces the user's value.
-    capacity: str | None = None
+    # Keys of an entity holding the usable capacity (Wh or kWh), preferred
+    # first, offered as the default in the setup; never replace the user's
+    # value.
+    capacity: tuple[str, ...] = ()
+    # A storage with one of these keys is not of this template, even if the
+    # entity is disabled (another model with the same counters).
+    exclude_keys: tuple[str, ...] = ()
     boundary: Boundary = Boundary.BATTERY
     # Counters start anew each local day (cloud day values).
     day_values: bool = False
@@ -64,12 +68,15 @@ class Template:
     # The setup explains how to get the counters when a storage of this
     # template has a state of charge but no counters (text "hint_<key>").
     counter_hint: bool = False
+    # The entities step explains a limit of this source (text "note_<key>").
+    note: bool = False
 
     def group(self, entries: Iterable[RegistryEntry]) -> dict[str, dict[str, str]]:
         """{storage id: {key: entity_id}} of the usable entries."""
         groups: dict[str, dict[str, str]] = {}
+        excluded: set[str] = set()
         for entry in entries:
-            if entry.platform != self.platform or not entry.usable:
+            if entry.platform != self.platform:
                 continue
             parts = self.split(entry.unique_id)
             if parts is None:
@@ -80,8 +87,11 @@ class Template:
                 if self.group_by is GroupBy.ENTRY
                 else prefix
             )
-            groups.setdefault(storage, {}).setdefault(key, entry.entity_id)
-        return groups
+            if key in self.exclude_keys:
+                excluded.add(storage)
+            elif entry.usable:
+                groups.setdefault(storage, {}).setdefault(key, entry.entity_id)
+        return {s: keys for s, keys in groups.items() if s not in excluded}
 
     def split(self, unique_id: str) -> tuple[str, str] | None:
         """(prefix, key) of a unique id, None if it is not of this format."""
@@ -95,8 +105,7 @@ class Template:
         if "{key}" not in self.id_format:
             return (re.compile(self.id_format),)
         keys = {key for keys in self.signals.values() for key in keys}
-        if self.capacity:
-            keys.add(self.capacity)
+        keys.update(self.capacity, self.exclude_keys)
         return tuple(
             re.compile(self.id_format.replace("{key}", re.escape(key)))
             for key in sorted(keys, key=len, reverse=True)
@@ -120,7 +129,7 @@ class Template:
         for storage, keys in self.group(entries).items():
             signals = self.resolve(keys)
             if all(signal in signals for signal in REQUIRED):
-                capacity = keys.get(self.capacity) if self.capacity else None
+                capacity = next((keys[k] for k in self.capacity if k in keys), None)
                 result[storage] = (signals, capacity)
         return result
 
@@ -151,7 +160,7 @@ FRONIUS = Template(
     },
     id_format=r"(?P<prefix>.+?)(?:-modbus)?-(?P<key>{key})",
     group_by=GroupBy.ENTRY,
-    capacity="capacity_designed",
+    capacity=("capacity_designed",),
 )
 
 # HACS integration huawei_solar (wlcrs/huawei_solar 2.1.5, 9738e50): unique id
@@ -170,7 +179,7 @@ HUAWEI_SOLAR = Template(
         Signal.SOC: ("storage_state_of_capacity",),
     },
     id_format=r"(?P<prefix>[^_]+)_(?P<key>{key})",
-    capacity="storage_rated_capacity",
+    capacity=("storage_rated_capacity",),
     experimental=True,
 )
 
@@ -210,7 +219,7 @@ ANKER_SOLIX = Template(
         Signal.SOC: ("state_of_charge",),
     },
     id_format=r"(?P<prefix>[0-9a-z]+)_(?P<key>{key})",
-    capacity="battery_capacity",
+    capacity=("battery_capacity",),
     experimental=True,
     counter_hint=True,
 )
@@ -229,7 +238,7 @@ ANKER_SOLIX_OFFICIAL = Template(
         Signal.SOC: ("battery_soc",),
     },
     id_format=r"(?P<prefix>[0-9A-Z]{26})_(?P<key>{key})",
-    capacity="rated_energy",
+    capacity=("rated_energy",),
     experimental=True,
 )
 
@@ -291,7 +300,7 @@ SOLAREDGE_MODBUS_MULTI = Template(
         Signal.SOC: ("battery_soe",),
     },
     id_format=r"(?P<prefix>.+_B[1-3])_(?P<key>{key})",
-    capacity="max_energy",
+    capacity=("max_energy",),
     experimental=True,
 )
 
@@ -313,9 +322,97 @@ SOLAX_MODBUS = Template(
     },
     id_format=r"(?!.* Energy Dashboard_)(?P<prefix>.+)_(?P<key>{key})",
     group_by=GroupBy.ENTRY,
-    capacity="battery_system_installed_capacity",
+    capacity=("battery_system_installed_capacity",),
     experimental=True,
     counter_hint=True,
+)
+
+# Core integration modbus with the YAML package of mkaiser/Sungrow-SHx-
+# Inverter-Modbus-Home-Assistant (310635c, 2026-06-19): the unique ids are the
+# package's own, "_inv_<n>" appended with several inverters; one storage per
+# inverter. Lifetime counters "total" without last_reset, 0.1 kWh, read every
+# 600 s. "Battery level" runs from 0 to 100 % between min and max SoC, not
+# absolute (note). The successor integration sungrow_modbus (alpha) keeps the
+# entity ids but changes platform and unique ids. Negative power is charging.
+SUNGROW_MODBUS_YAML = Template(
+    key="sungrow_modbus_yaml",
+    label="Sungrow SH (Modbus-YAML von mkaiser)",
+    platform="modbus",
+    signals={
+        Signal.CHARGED: ("sg_total_battery_charge",),
+        Signal.DISCHARGED: ("sg_total_battery_discharge",),
+        Signal.SOC: ("sg_battery_level",),
+    },
+    id_format=r"(?P<key>{key})(?P<prefix>_inv_\d+)?",
+    capacity=("uid_battery_capacity_high_precision",),
+    experimental=True,
+    note=True,
+)
+
+# HACS integration sigen (TypQxQ/Sigenergy-Local-Modbus 1.2.7.5, b66e304; the
+# same in 1.3.0): unique id "<config entry id>_<device name>_<key>". Only the
+# plant's counters (protocol v2.7 and later, 0.01 kWh, "total" without
+# last_reset, shown in MWh): one storage per plant. The inverters have their
+# own counters of the same battery and are not offered, so it does not show
+# twice; older firmware has the plant SoC only (counter_hint). Rated capacity
+# in kWh. Positive power is charging.
+SIGEN = Template(
+    key="sigen",
+    label="Sigenergy SigenStor (sigen)",
+    platform="sigen",
+    signals={
+        Signal.CHARGED: ("plant_accumulated_battery_charge_energy",),
+        Signal.DISCHARGED: ("plant_accumulated_battery_discharge_energy",),
+        Signal.SOC: ("plant_ess_soc",),
+    },
+    id_format=r"(?P<prefix>[0-9A-Za-z]{26}_[0-9a-z_]+?)_(?P<key>{key})",
+    capacity=("plant_ess_rated_energy_capacity",),
+    experimental=True,
+    counter_hint=True,
+)
+
+# HACS integration zendure_ha (Zendure/Zendure-HA 1.4.4, 8d59bac): unique id
+# "<device name from the app, snake case>_<key>"; renaming the device in the
+# app moves unique id and entity id. The lifetime counters are summed up in
+# Home Assistant from the pack powers, not read from the device (note).
+# Capacity = rated sum of the packs. Expansion packs and the manager have no
+# counters.
+ZENDURE_HA = Template(
+    key="zendure_ha",
+    label="Zendure SolarFlow, Hyper, Hub (zendure_ha)",
+    platform="zendure_ha",
+    signals={
+        Signal.CHARGED: ("aggr_charge",),
+        Signal.DISCHARGED: ("aggr_discharge",),
+        Signal.SOC: ("electric_level",),
+    },
+    id_format=r"(?P<prefix>[a-z0-9_]+?)_(?P<key>{key})",
+    capacity=("total_kwh",),
+    experimental=True,
+    note=True,
+)
+
+# HACS integrations marstek_venus_modbus (ViperRNMC 2026.10.1, cb5a241) and
+# marstek-modbus-suite (sphings79 3.1.3, 60c023d): same domain, unique id
+# "<config entry id>_<key>". The lifetime counters (registers 33000/33002,
+# 0.01 kWh) count at the AC connection: on the Venus E (no PV input) that is
+# the whole storage; on a Venus A/D PV passes through them, so those are
+# excluded (only their register maps have mppt1_power, disabled by default).
+# The suite renamed the capacity key in 3.1.0-beta.3.
+MARSTEK_MODBUS = Template(
+    key="marstek_modbus",
+    label="Marstek Venus E (marstek_modbus)",
+    platform="marstek_modbus",
+    signals={
+        Signal.CHARGED: ("total_charging_energy",),
+        Signal.DISCHARGED: ("total_discharging_energy",),
+        Signal.SOC: ("battery_soc",),
+    },
+    id_format=r"(?P<prefix>[0-9A-Z]{26})_(?P<key>{key})",
+    capacity=("battery_rated_capacity", "battery_total_energy"),
+    exclude_keys=("mppt1_power",),
+    boundary=Boundary.SYSTEM,
+    experimental=True,
 )
 
 TEMPLATES: dict[str, Template] = {
@@ -330,5 +427,9 @@ TEMPLATES: dict[str, Template] = {
         VICTRON_GX,
         SOLAREDGE_MODBUS_MULTI,
         SOLAX_MODBUS,
+        SUNGROW_MODBUS_YAML,
+        SIGEN,
+        ZENDURE_HA,
+        MARSTEK_MODBUS,
     )
 }

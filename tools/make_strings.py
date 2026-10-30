@@ -80,6 +80,10 @@ HINTS = {
         "Victron: a battery was found without lifetime counters. They come from a battery monitor (SmartShunt, BMV); batteries reporting over a CAN BMS do not have them. Choose the battery monitor, or map counters yourself.",
         "Victron: Ein Akku hat keine Lebenszeit-Zähler. Sie kommen von einem Batteriemonitor (SmartShunt, BMV); Akkus mit CAN-BMS liefern sie nicht. Wähle den Batteriemonitor oder ordne Zähler selbst zu.",
     ),
+    "sigen": (
+        "Sigenergy: a plant was found without battery lifetime counters. They need Modbus protocol v2.7 or later (a firmware update). Until then, map the inverter's counters ('Total charge/discharge energy') yourself.",
+        "Sigenergy: Eine Anlage hat keine Lebenszeit-Zähler für den Akku. Sie brauchen Modbus-Protokoll v2.7 oder neuer (Firmware-Update). Bis dahin ordne die Zähler des Wechselrichters („Total charge/discharge energy“) selbst zu.",
+    ),
     "solax_modbus": (
         "SolaX: the lifetime battery counters are disabled. Enable 'Battery Input Energy Total' and 'Battery Output Energy Total' in the SolaX device, reload the integration, then start this setup again.",
         "SolaX: Die Lebenszeit-Zähler des Akkus sind deaktiviert. Aktiviere im SolaX-Gerät „Battery Input Energy Total“ und „Battery Output Energy Total“, lade die Integration neu und starte diese Einrichtung erneut.",
@@ -94,6 +98,16 @@ HINTS = {
         "erst an, wenn du die Energie-Kategorie freigibst: Anker SOLIX → "
         "Konfigurieren → „solarbank_energy“ aus den ausgeschlossenen Kategorien "
         "nehmen, MQTT einschalten.",
+    ),
+}
+NOTES = {
+    "sungrow_modbus_yaml": (
+        "Sungrow (Modbus YAML): according to the package, 'Battery level' runs from 0 to 100 % between the minimum and maximum SoC set in the inverter. The estimated capacity then shows only that window (e.g. 5–100 %: about 95 %). If your window is much narrower, enter its capacity instead of the whole battery, so that 'Capacity dropped' does not report it.",
+        "Sungrow (Modbus-YAML): Laut Paket läuft „Battery level“ zwischen dem im Wechselrichter eingestellten minimalen und maximalen Ladezustand von 0 bis 100 %. Die geschätzte Kapazität zeigt dann nur dieses Fenster (z. B. 5–100 %: etwa 95 %). Ist dein Fenster deutlich enger, trage seine Kapazität statt der des ganzen Akkus ein, damit „Kapazität gesunken“ nicht anschlägt.",
+    ),
+    "zendure_ha": (
+        "Zendure: the integration sums up its counters in Home Assistant from the reported battery power; the device itself has none. Speicherwacht can therefore only check them for consistency, not measure the device. Renaming the device in the Zendure app changes its entity ids: then choose them again under Reconfigure.",
+        "Zendure: Die Integration rechnet ihre Zähler in Home Assistant aus der gemeldeten Akkuleistung hoch; das Gerät selbst hat keine. Speicherwacht kann sie deshalb nur auf Stimmigkeit prüfen, nicht das Gerät messen. Benennst du das Gerät in der Zendure-App um, ändern sich seine Entitäts-IDs: Wähle sie dann unter Neu konfigurieren neu.",
     ),
 }
 ENTITIES = {
@@ -250,6 +264,11 @@ def build(lang: int) -> dict:
         "data": _pick(ENTITIES["data"], lang),
         "data_description": _pick(ENTITIES["data_description"], lang),
     }
+    for key, text in NOTES.items():
+        steps[f"entities_note_{key}"] = {
+            **steps["entities"],
+            "description": steps["entities"]["description"] + "\n\n" + text[lang],
+        }
     sensor = {
         f"efficiency_{key}": {"name": f"{EFFICIENCY[lang]} {period[lang]}"}
         for key, period in PERIODS.items()

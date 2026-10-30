@@ -325,8 +325,15 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
             if error is None:
                 return await self._async_finish(values)
             errors["base"] = error
+        # A source with a known limit: say so next to its entities.
+        template = TEMPLATES.get(self._template)
+        step_id = (
+            f"entities_note_{template.key}"
+            if template and template.note
+            else "entities"
+        )
         return self.async_show_form(
-            step_id="entities", data_schema=entities_schema(values), errors=errors
+            step_id=step_id, data_schema=entities_schema(values), errors=errors
         )
 
     async def async_step_reconfigure(
@@ -387,11 +394,24 @@ async def _async_step_user_hint(
     return await self.async_step_user(user_input)
 
 
-# One step id per template with a counter hint (its own description text).
+async def _async_step_entities_note(
+    self: SpeicherwachtConfigFlow, user_input: dict[str, Any] | None = None
+) -> ConfigFlowResult:
+    """The entities step, shown with the note of a template."""
+    return await self.async_step_entities(user_input)
+
+
+# One step id per template with a counter hint or a note (own description).
 for _template in TEMPLATES.values():
     if _template.counter_hint:
         setattr(
             SpeicherwachtConfigFlow,
             f"async_step_user_hint_{_template.key}",
             _async_step_user_hint,
+        )
+    if _template.note:
+        setattr(
+            SpeicherwachtConfigFlow,
+            f"async_step_entities_note_{_template.key}",
+            _async_step_entities_note,
         )

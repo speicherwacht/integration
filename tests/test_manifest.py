@@ -104,3 +104,8 @@ def test_hint_steps_exist() -> None:
             assert hasattr(
                 SpeicherwachtConfigFlow, f"async_step_user_hint_{template.key}"
             )
+        if template.note:
+            assert f"entities_note_{template.key}" in steps
+            assert hasattr(
+                SpeicherwachtConfigFlow, f"async_step_entities_note_{template.key}"
+            )

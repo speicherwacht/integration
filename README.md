@@ -62,6 +62,10 @@ Im ersten Schritt zeigt Speicherwacht die Speicher, die es erkannt hat, und „E
 | Victron mit BMV, SmartShunt oder Lynx | Core `victron_gx` | experimentell (beta) |
 | SolarEdge StorEdge | [solaredge_modbus_multi](https://github.com/WillCodeForCats/solaredge-modbus-multi) | experimentell (beta) |
 | SolaX, Sofar | [solax_modbus](https://github.com/wills106/homeassistant-solax-modbus) | experimentell (beta) |
+| Sungrow SH | [Modbus-YAML von mkaiser](https://github.com/mkaiser/Sungrow-SHx-Inverter-Modbus-Home-Assistant) | experimentell (beta) |
+| Sigenergy SigenStor | [sigen](https://github.com/TypQxQ/Sigenergy-Local-Modbus) | experimentell (beta) |
+| Zendure SolarFlow, Hyper, Hub | [zendure_ha](https://github.com/Zendure/Zendure-HA) | experimentell (beta) |
+| Marstek Venus E | [marstek_modbus](https://github.com/ViperRNMC/marstek_venus_modbus) oder [Marstek Modbus Suite](https://github.com/sphings79/marstek-modbus-suite) | experimentell (beta) |
 | alle anderen | eigene Zuordnung | – |
 
 - **Eigene Zuordnung:** Hast du den Speicher im Energie-Dashboard eingetragen, übernimmt Speicherwacht Zähler, Ladezustand und Kapazität von dort als Vorschlag.
@@ -71,6 +75,10 @@ Im ersten Schritt zeigt Speicherwacht die Speicher, die es erkannt hat, und „E
 - **Victron:** Die Zähler kommen vom Batteriewächter (BMV, SmartShunt, Lynx). Ein Akku, der nur per CAN-BMS angebunden ist, hat keine. Die Werte „DC-Batterie Lade-/Entladeenergie“ des Systems beginnen bei jedem Neustart bei 0 und taugen nicht.
 - **SolarEdge:** Batterie-Entitäten gibt es erst mit der Option „Auto-Detect Batteries“. Bei LG- und BYD-Akkus springen die Zähler manchmal auf 0; die Integration hält dann den alten Wert fest, und Speicherwacht meldet „Zähler und Ladezustand passen nicht zusammen“.
 - **SolaX:** „Battery Input Energy Total“ und „Battery Output Energy Total“ sind ausgeschaltet; einschalten und die Integration neu laden. Speicherwacht weist in der Einrichtung darauf hin.
+- **Sungrow:** Laut Paket läuft „Battery level“ nur zwischen dem minimalen und maximalen Ladezustand des Wechselrichters von 0 bis 100 %. Die geschätzte Kapazität zeigt dann nur dieses Fenster; ist es deutlich enger als der ganze Akku, trag seine Kapazität ein.
+- **Sigenergy:** Speicherwacht nimmt die Zähler der Anlage (ab Modbus-Protokoll v2.7). Ältere Firmware hat sie nicht; dann die Zähler des Wechselrichters selbst zuordnen.
+- **Zendure:** Die Zähler rechnet die Integration aus der Akkuleistung hoch, das Gerät hat keine. Speicherwacht prüft dann nur, ob diese Werte stimmig sind. Nach dem Umbenennen des Geräts in der Zendure-App die Entitäten unter *Neu konfigurieren* neu wählen.
+- **Marstek:** nur Venus E. Bei Venus A und D läuft der Solarstrom durch den Entladezähler; sie werden nicht erkannt. Die Zähler messen an der Steckdose, also den ganzen Speicher.
 - **Die Zähler messen:** *den Akku* (DC, z. B. die Batteriezähler des Wechselrichters) oder *den ganzen Speicher* (AC, z. B. ein Zwischenstecker vor einem Balkonspeicher). Die Werte beider Grenzen sind nicht vergleichbar; AC enthält die Verluste des Wechselrichters.
 - **Garantie-Durchsatz (optional):** die Energie in MWh, die die Garantie abdeckt (Garantiebedingungen deines Speichers). Dann entsteht der Sensor „Garantie-Durchsatz genutzt“.
 - **Neu konfigurieren:** Geräte & Dienste → Speicherwacht → ⋮ → *Neu konfigurieren*.

@@ -13,11 +13,15 @@ from custom_components.speicherwacht.profiles import (
     FRONIUS,
     GOODWE,
     HUAWEI_SOLAR,
+    MARSTEK_MODBUS,
+    SIGEN,
     SOLAREDGE_MODBUS_MULTI,
     SOLARMAN,
     SOLAX_MODBUS,
+    SUNGROW_MODBUS_YAML,
     TEMPLATES,
     VICTRON_GX,
+    ZENDURE_HA,
     RegistryEntry,
 )
 
@@ -184,3 +188,84 @@ def test_solax_counters_disabled_by_default_get_the_hint() -> None:
         Signal.SOC: "sensor.solax_battery_capacity",
     }
     assert capacity == "sensor.solax_battery_system_installed_capacity"
+
+
+def test_sungrow_yaml_one_inverter() -> None:
+    fixture = load_fixture("sungrow_modbus_yaml.json")
+    found = SUNGROW_MODBUS_YAML.detect(entries(fixture))
+    assert list(found) == [""]
+    signals, capacity = found[""]
+    assert signals == {
+        Signal.CHARGED: "sensor.total_battery_charge",
+        Signal.DISCHARGED: "sensor.total_battery_discharge",
+        Signal.SOC: "sensor.battery_level",
+    }
+    assert capacity == "sensor.battery_capacity_high_precision"
+
+
+def test_sungrow_yaml_two_inverters() -> None:
+    fixture = load_fixture("sungrow_modbus_yaml_two_inverters.json")
+    found = SUNGROW_MODBUS_YAML.detect(entries(fixture))
+    assert sorted(found) == ["_inv_1", "_inv_2"]
+    signals, capacity = found["_inv_2"]
+    assert signals[Signal.SOC] == "sensor.battery_level_inv_2"
+    assert capacity == "sensor.battery_capacity_high_precision_inv_2"
+
+
+def test_sigen_plant_only_not_the_inverter() -> None:
+    fixture = load_fixture("sigen_plant.json")
+    found = SIGEN.detect(entries(fixture))
+    (storage,) = found
+    assert storage.endswith("_sigen_plant")
+    signals, capacity = found[storage]
+    assert signals[Signal.CHARGED] == (
+        "sensor.sigen_plant_total_charged_energy_of_the_ess"
+    )
+    assert signals[Signal.SOC] == "sensor.sigen_plant_battery_state_of_charge"
+    assert capacity == "sensor.sigen_plant_rated_energy_capacity"
+
+
+def test_sigen_old_firmware_gets_the_hint() -> None:
+    fixture = load_fixture("sigen_plant.json")
+    old = [e for e in entries(fixture) if "plant_accumulated" not in e.unique_id]
+    assert SIGEN.detect(old) == {}
+    assert len(SIGEN.without_counters(old)) == 1
+
+
+def test_zendure_devices_not_packs_or_manager() -> None:
+    fixture = load_fixture("zendure_ha_solarflow.json")
+    found = ZENDURE_HA.detect(entries(fixture))
+    assert sorted(found) == ["hyper_2000", "solarflow_800_pro"]
+    signals, _capacity = found["hyper_2000"]
+    assert signals[Signal.CHARGED] == "sensor.hyper_2000_aggr_charge"
+    assert ZENDURE_HA.without_counters(entries(fixture)) == []
+
+
+@pytest.mark.parametrize(
+    ("fixture_name", "capacity"),
+    [
+        (
+            "marstek_modbus_suite_venus_e_v3.json",
+            "sensor.marstek_venus_e_3_0_batterie_nennkapazitat",
+        ),
+        (
+            "marstek_venus_modbus_venus_e_v3.json",
+            "sensor.marstek_venus_modbus_batterie_gesamtenergie",
+        ),
+    ],
+)
+def test_marstek_venus_e_both_forks(fixture_name: str, capacity: str) -> None:
+    fixture = load_fixture(fixture_name)
+    found = MARSTEK_MODBUS.detect(entries(fixture))
+    assert list(found) == [fixture["config_entry_id"]]
+    signals, found_capacity = found[fixture["config_entry_id"]]
+    assert signals[Signal.CHARGED].endswith("_gesamte_ladeenergie")
+    assert found_capacity == capacity
+
+
+def test_marstek_venus_d_excluded_by_a_disabled_entity() -> None:
+    """PV passes through the counters of a Venus A/D."""
+    fixture = load_fixture("marstek_venus_modbus_venus_d.json")
+    assert any(not e.usable for e in entries(fixture))
+    assert MARSTEK_MODBUS.detect(entries(fixture)) == {}
+    assert MARSTEK_MODBUS.without_counters(entries(fixture)) == []

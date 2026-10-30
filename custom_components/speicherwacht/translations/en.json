@@ -37,6 +37,18 @@
           "source": "Templates marked (beta) were built from the integration's source code and are not yet confirmed on a real installation."
         }
       },
+      "user_hint_sigen": {
+        "title": "Battery storage",
+        "description": "Speicherwacht reads the counters of your battery (energy charged and discharged, lifetime) and its state of charge from their long-term statistics. Pick a detected storage or map the entities yourself.\n\nSigenergy: a plant was found without battery lifetime counters. They need Modbus protocol v2.7 or later (a firmware update). Until then, map the inverter's counters ('Total charge/discharge energy') yourself.",
+        "data": {
+          "name": "Name",
+          "source": "Source"
+        },
+        "data_description": {
+          "name": "Name of the device Speicherwacht creates.",
+          "source": "Templates marked (beta) were built from the integration's source code and are not yet confirmed on a real installation."
+        }
+      },
       "user_hint_solax_modbus": {
         "title": "Battery storage",
         "description": "Speicherwacht reads the counters of your battery (energy charged and discharged, lifetime) and its state of charge from their long-term statistics. Pick a detected storage or map the entities yourself.\n\nSolaX: the lifetime battery counters are disabled. Enable 'Battery Input Energy Total' and 'Battery Output Energy Total' in the SolaX device, reload the integration, then start this setup again.",
@@ -64,6 +76,46 @@
       "entities": {
         "title": "Entities and capacity",
         "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.",
+        "data": {
+          "charged": "Energy charged (lifetime)",
+          "discharged": "Energy discharged (lifetime)",
+          "soc": "State of charge",
+          "capacity": "Usable capacity",
+          "boundary": "The counters measure",
+          "warranty_mwh": "Warranted throughput (optional)"
+        },
+        "data_description": {
+          "charged": "Energy into the battery. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
+          "discharged": "Energy out of the battery.",
+          "soc": "In %.",
+          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
+          "boundary": "Results of the two boundaries are not comparable.",
+          "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+        }
+      },
+      "entities_note_sungrow_modbus_yaml": {
+        "title": "Entities and capacity",
+        "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.\n\nSungrow (Modbus YAML): according to the package, 'Battery level' runs from 0 to 100 % between the minimum and maximum SoC set in the inverter. The estimated capacity then shows only that window (e.g. 5–100 %: about 95 %). If your window is much narrower, enter its capacity instead of the whole battery, so that 'Capacity dropped' does not report it.",
+        "data": {
+          "charged": "Energy charged (lifetime)",
+          "discharged": "Energy discharged (lifetime)",
+          "soc": "State of charge",
+          "capacity": "Usable capacity",
+          "boundary": "The counters measure",
+          "warranty_mwh": "Warranted throughput (optional)"
+        },
+        "data_description": {
+          "charged": "Energy into the battery. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
+          "discharged": "Energy out of the battery.",
+          "soc": "In %.",
+          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
+          "boundary": "Results of the two boundaries are not comparable.",
+          "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+        }
+      },
+      "entities_note_zendure_ha": {
+        "title": "Entities and capacity",
+        "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.\n\nZendure: the integration sums up its counters in Home Assistant from the reported battery power; the device itself has none. Speicherwacht can therefore only check them for consistency, not measure the device. Renaming the device in the Zendure app changes its entity ids: then choose them again under Reconfigure.",
         "data": {
           "charged": "Energy charged (lifetime)",
           "discharged": "Energy discharged (lifetime)",

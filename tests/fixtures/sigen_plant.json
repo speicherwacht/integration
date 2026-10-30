@@ -1,0 +1,209 @@
+{
+  "platform": "sigen",
+  "config_entry_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA",
+  "entities": [
+    {
+      "entity_id": "sensor.sigen_plant_total_charged_energy_of_the_ess",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_plant_plant_accumulated_battery_charge_energy",
+      "state": "5.12844",
+      "attributes": {
+        "unit_of_measurement": "MWh",
+        "device_class": "energy",
+        "state_class": "total",
+        "friendly_name": "Sigen Plant Total Charged Energy of the ESS"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_plant_total_discharged_energy_of_the_ess",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_plant_plant_accumulated_battery_discharge_energy",
+      "state": "4.63917",
+      "attributes": {
+        "unit_of_measurement": "MWh",
+        "device_class": "energy",
+        "state_class": "total",
+        "friendly_name": "Sigen Plant Total Discharged Energy of the ESS"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_plant_daily_battery_charge_energy",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_plant_plant_daily_battery_charge_energy",
+      "state": "11.62",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+        "friendly_name": "Sigen Plant Daily Battery Charge Energy"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_plant_daily_battery_discharge_energy",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_plant_plant_daily_battery_discharge_energy",
+      "state": "9.87",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+        "friendly_name": "Sigen Plant Daily Battery Discharge Energy"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_plant_battery_state_of_charge",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_plant_plant_ess_soc",
+      "state": "67.4",
+      "attributes": {
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "state_class": "measurement",
+        "friendly_name": "Sigen Plant Battery State of Charge"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_plant_battery_state_of_health",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_plant_plant_ess_soh",
+      "state": "99.1",
+      "attributes": {
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "state_class": "measurement",
+        "friendly_name": "Sigen Plant Battery State of Health"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_plant_rated_energy_capacity",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_plant_plant_ess_rated_energy_capacity",
+      "state": "16.12",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+        "friendly_name": "Sigen Plant Rated Energy Capacity"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_plant_battery_power",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_plant_plant_ess_power",
+      "state": "2.315",
+      "attributes": {
+        "unit_of_measurement": "kW",
+        "device_class": "power",
+        "state_class": "measurement",
+        "friendly_name": "Sigen Plant Battery Power"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_plant_total_charged_energy_of_the_evdc",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_plant_plant_total_charged_energy_of_the_evdc",
+      "state": "0.0",
+      "attributes": {
+        "unit_of_measurement": "MWh",
+        "device_class": "energy",
+        "state_class": "total",
+        "friendly_name": "Sigen Plant Total Charged Energy of the EVDC"
+      },
+      "disabled_by_default": true
+    },
+    {
+      "entity_id": "sensor.sigen_inverter_total_charge_energy",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_inverter_inverter_ess_accumulated_charge_energy",
+      "state": "5.12844",
+      "attributes": {
+        "unit_of_measurement": "MWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+        "friendly_name": "Sigen Inverter Total Charge Energy"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_inverter_total_discharge_energy",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_inverter_inverter_ess_accumulated_discharge_energy",
+      "state": "4.63917",
+      "attributes": {
+        "unit_of_measurement": "MWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+        "friendly_name": "Sigen Inverter Total Discharge Energy"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_inverter_daily_charge_energy",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_inverter_inverter_ess_daily_charge_energy",
+      "state": "11.62",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+        "friendly_name": "Sigen Inverter Daily Charge Energy"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_inverter_daily_discharge_energy",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_inverter_inverter_ess_daily_discharge_energy",
+      "state": "9.87",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+        "friendly_name": "Sigen Inverter Daily Discharge Energy"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_inverter_battery_state_of_charge",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_inverter_inverter_ess_battery_soc",
+      "state": "67.4",
+      "attributes": {
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "state_class": "measurement",
+        "friendly_name": "Sigen Inverter Battery State of Charge"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_inverter_battery_state_of_health",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_inverter_inverter_ess_battery_soh",
+      "state": "99.1",
+      "attributes": {
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "state_class": "measurement",
+        "friendly_name": "Sigen Inverter Battery State of Health"
+      },
+      "disabled_by_default": false
+    },
+    {
+      "entity_id": "sensor.sigen_inverter_rated_battery_capacity",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_inverter_inverter_rated_battery_capacity",
+      "state": "16.12",
+      "attributes": {
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Sigen Inverter Rated Battery Capacity"
+      },
+      "disabled_by_default": true
+    },
+    {
+      "entity_id": "sensor.sigen_inverter_battery_power",
+      "unique_id": "01K8N7S2QW4E9R6T3Y5V1H0XPA_sigen_inverter_inverter_ess_charge_discharge_power",
+      "state": "2.315",
+      "attributes": {
+        "unit_of_measurement": "kW",
+        "device_class": "power",
+        "state_class": "measurement",
+        "friendly_name": "Sigen Inverter Battery Power"
+      },
+      "disabled_by_default": false
+    }
+  ]
+}
