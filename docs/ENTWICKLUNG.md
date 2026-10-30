@@ -30,7 +30,7 @@ Speicherwacht wertet aus vorhandenen Home-Assistant-Entitäten aus, wie gut ein 
 | HA Core, Energie-Dashboard | bis 2026.11-Beta | Kein Wirkungsgrad, kein Ruheverlust, kein SoH. Seit 2026.6 SoC-Sensor je Speicher, seit 2026.8 Kapazität (für den gewichteten Gesamt-SoC) – Speicherwacht belegt daraus die eigene Zuordnung vor. |
 | Karten (universal-battery-card u. a.) | – | Nur Anzeige. |
 
-Name: keine Treffer für „Speicherwacht“/`speicherwacht` auf GitHub (Organisation frei), PyPI, HACS, im Web; Domains .de/.com/.eu laut Index vom 29.10. frei. **DPMA und EUIPO von Hand prüfen.** Bericht: Recherche vom 30.10. (Scratchpad, nicht im Repo).
+Name: keine Treffer für „Speicherwacht“/`speicherwacht` auf GitHub (Organisation frei), PyPI, HACS, im Web; Domains .de/.com/.eu laut Index vom 29.10. frei. Marken (2026-10-30, im Browser): DPMAregister (deutsche, Unions- und internationale Marken) ohne Treffer für `?speicherwacht?` und `?speicher?wacht?`; TMview (EUIPO und nationale Ämter der EU) ohne Treffer für „speicherwacht“ (Gegenprobe „tesla“ lieferte Treffer). Keine Rechtsberatung. Bericht: Recherche vom 30.10. (Scratchpad, nicht im Repo).
 
 ## 3. Fachregeln
 
@@ -177,4 +177,3 @@ HA-Schicht: `runtime.py` (Statistik lesen: beim Start alles seit 2000, dann stü
 - Erste Beta an der Testanlage gegen die eigenen Riemann-Helfer prüfen (Werte nur in `CLAUDE.local.md`).
 - Normtexte (IEC 62933-2-1, DIN VDE V 0510-200) nicht gelesen (kostenpflichtig).
 - Anker: DC oder AC? An einer echten Anlage klären, dann Bilanzgrenze der Vorlage festlegen.
-- DPMA/EUIPO für den Namen (Inhaber).
