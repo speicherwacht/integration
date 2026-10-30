@@ -1,8 +1,15 @@
-# Speicherwacht
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/github/readme-header-dark@2x.png">
+  <img alt="Speicherwacht – Jede Ladung. Jeder Zyklus." src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/github/readme-header-light@2x.png" width="640">
+</picture>
+
+[![Release](https://img.shields.io/github/v/release/speicherwacht/integration?color=007D7F)](https://github.com/speicherwacht/integration/releases)
+[![CI](https://github.com/speicherwacht/integration/actions/workflows/ci.yml/badge.svg)](https://github.com/speicherwacht/integration/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-F5A623.svg)](LICENSE)
+
+**Deutsch** · [English](https://github.com/speicherwacht/integration/blob/main/README.en.md)
 
 **Wie gut arbeitet mein Batteriespeicher wirklich?** Speicherwacht ist eine Home-Assistant-Integration, die aus den vorhandenen Zählern deines Heim- oder Balkonspeichers den Wirkungsgrad je Monat und Jahr, die Vollzyklen, den Ruheverlust und die tatsächlich entnehmbare Kapazität berechnet – herstellerneutral, nur lesend, ohne Cloud.
-
-*English: [README.en.md](README.en.md)*
 
 > **Beta.** Speicherwacht ist neu. Die Vorlage für Fronius ist an einer echten Anlage erprobt, die übrigen stammen aus dem Quellcode der jeweiligen Integration. Rückmeldungen sind willkommen.
 
