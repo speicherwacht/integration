@@ -7,7 +7,12 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
-from custom_components.speicherwacht.counter import Counter, CounterEvent, to_kwh
+from custom_components.speicherwacht.counter import (
+    Counter,
+    CounterEvent,
+    looks_like_day_counter,
+    to_kwh,
+)
 
 T0 = datetime(2026, 1, 15, 6, 0, tzinfo=UTC)
 
@@ -196,3 +201,41 @@ def test_previous_day_value_arrives_just_after_midnight() -> None:
     assert plain.update(51.08, datetime(2026, 1, 15, 0, 21, tzinfo=BERLIN)).event is (
         CounterEvent.JUMP
     )
+
+
+DAY_TZ = ZoneInfo("Europe/Berlin")
+
+
+def hourly(start: datetime, values: list[float]) -> list[tuple[datetime, float]]:
+    return [(start + timedelta(hours=i), v) for i, v in enumerate(values)]
+
+
+def test_day_counter_is_told_from_its_hourly_values() -> None:
+    """Energy today restarts at the same local hour every day."""
+    day = [0.2 * h for h in range(1, 25)]
+    midnight = datetime(2026, 1, 12, 0, tzinfo=DAY_TZ)
+    assert looks_like_day_counter(hourly(midnight, day * 3), DAY_TZ)
+    assert not looks_like_day_counter(hourly(midnight, day * 2)[:30], DAY_TZ)
+    small = [0.05, 0.0] * 24  # below 0.1 kWh: says nothing
+    assert not looks_like_day_counter(hourly(midnight, small), DAY_TZ)
+
+
+def test_day_counter_in_utc_over_the_clock_change() -> None:
+    """Day values restarting at 0 UTC: 02:00 local in summer time, 01:00 in
+    winter time (change on 25 October 2026)."""
+    start = datetime(2026, 10, 23, 0, tzinfo=UTC)
+    rows = [(start + timedelta(hours=i), 0.5 * (i % 24 + 1)) for i in range(96)]
+    assert looks_like_day_counter(rows, DAY_TZ)
+
+
+def test_lifetime_counter_restarting_at_0_is_no_day_counter() -> None:
+    """A device restart at any hour and a stuck spike are no day counter;
+    falls on the same day neither."""
+    start = datetime(2026, 1, 12, 0, tzinfo=DAY_TZ)
+    values = [100.0 + h for h in range(96)]
+    values[10:] = [v - 110.0 for v in values[10:]]  # restart at 10:00, day 1
+    values[63:] = [v - values[62] for v in values[63:]]  # 15:00, day 3
+    values[92] = 99999.0  # spike at 20:00, day 4, back the hour after
+    assert not looks_like_day_counter(hourly(start, values), DAY_TZ)
+    same_day = [5.0, 0.0, 5.0, 0.0, 5.0, 0.0]
+    assert not looks_like_day_counter(hourly(start, same_day), DAY_TZ)

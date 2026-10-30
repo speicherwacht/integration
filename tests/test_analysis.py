@@ -9,6 +9,7 @@ import pytest
 
 from custom_components.speicherwacht.analysis import (
     NO_DATA,
+    SOC_ROSE_AT_REST,
     TOO_FEW_DISCHARGES,
     TOO_FEW_REST_HOURS,
     TOO_LITTLE_CHARGE,
@@ -192,3 +193,22 @@ def test_half_hour_time_zones_get_an_efficiency(zone: str) -> None:
     tz = ZoneInfo(zone)
     total = analyse(hours, 10.0, tz, END).efficiency[Period.TOTAL]
     assert total.ratio == pytest.approx(0.9, abs=0.01)
+
+
+def test_soc_rising_at_rest_gives_no_negative_loss() -> None:
+    """Charging past the counters (PV straight into the battery) or SoC
+    drift: the rest loss is unknown, the computed value an attribute."""
+    hours = simulate(JUNE, 30, rest_watts=-3.0)
+    rest = analyse(hours, 10.0, BERLIN, END).rest
+    assert rest.watts is None
+    assert rest.reason == SOC_ROSE_AT_REST
+    assert rest.raw_watts == pytest.approx(-3.0, rel=0.05)
+
+
+def test_rest_loss_within_one_soc_step_is_zero() -> None:
+    """A tiny rise over all rest hours can be rounding of the SoC: 0 W."""
+    hours = simulate(JUNE, 30, rest_watts=-0.05)
+    rest = analyse(hours, 10.0, BERLIN, END).rest
+    assert rest.watts == 0.0
+    assert rest.reason is None
+    assert rest.raw_watts == pytest.approx(-0.05, rel=0.1)

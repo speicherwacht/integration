@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, date, datetime, timedelta
+from unittest.mock import patch
 
 import pytest
 from freezegun.api import FrozenDateTimeFactory
@@ -15,6 +16,7 @@ from homeassistant.components.recorder.models import (
 from homeassistant.components.recorder.statistics import async_import_statistics
 from homeassistant.config_entries import SOURCE_USER
 from homeassistant.core import HomeAssistant
+from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.util import dt as dt_util
@@ -265,27 +267,60 @@ def import_day_counter(hass: HomeAssistant, days: int) -> None:
     )
 
 
-async def test_day_counter_is_refused_in_the_setup(hass: HomeAssistant) -> None:
-    import_day_counter(hass, 4)
-    await async_wait_recording_done(hass)
-    set_sources(hass)
+MAPPING = {
+    "charged": CHARGED,
+    "discharged": DISCHARGED,
+    "soc": SOC,
+    CONF_CAPACITY: 10.0,
+    CONF_BOUNDARY: "battery",
+}
+
+
+async def manual_flow(hass: HomeAssistant) -> str:
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_USER}
     )
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"], {"name": "Akku", "source": "manual"}
     )
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        {
-            "charged": CHARGED,
-            "discharged": DISCHARGED,
-            "soc": SOC,
-            CONF_CAPACITY: 10.0,
-            CONF_BOUNDARY: "battery",
-        },
-    )
+    return result["flow_id"]
+
+
+async def test_day_counter_warning_can_be_overridden(hass: HomeAssistant) -> None:
+    """A warning: sent again unchanged, the counters are kept."""
+    import_day_counter(hass, 4)
+    await async_wait_recording_done(hass)
+    set_sources(hass)
+    flow_id = await manual_flow(hass)
+    result = await hass.config_entries.flow.async_configure(flow_id, MAPPING)
     assert result["errors"] == {"base": "day_counter"}
+    result = await hass.config_entries.flow.async_configure(flow_id, MAPPING)
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+
+
+async def test_failed_statistics_query_does_not_block(hass: HomeAssistant) -> None:
+    import_day_counter(hass, 4)
+    await async_wait_recording_done(hass)
+    set_sources(hass)
+    flow_id = await manual_flow(hass)
+    with patch(
+        "custom_components.speicherwacht.day_counters.statistics_during_period",
+        side_effect=RuntimeError("database locked"),
+    ):
+        result = await hass.config_entries.flow.async_configure(flow_id, MAPPING)
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+
+
+async def test_reconfigure_checks_only_changed_counters(hass: HomeAssistant) -> None:
+    """The day counter stays, only the capacity changes: no warning."""
+    import_day_counter(hass, 4)
+    await async_wait_recording_done(hass)
+    entry = await setup_entry(hass)
+    result = await entry.start_reconfigure_flow(hass)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {**MAPPING, CONF_CAPACITY: 12.0}
+    )
+    assert result["reason"] == "reconfigure_successful"
 
 
 async def test_day_counter_gives_a_repair_issue(hass: HomeAssistant) -> None:

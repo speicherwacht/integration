@@ -144,7 +144,9 @@ def rest_loss_high(hours: Sequence[Hour], capacity: float, now: datetime) -> Che
         "watts": current.watts,
         "previous_year_watts": before.watts,
         "max_watts": REST_LOSS_MAX_WATTS,
+        "reason": current.reason,
     }
+    # Unknown, also when the state of charge rose at rest: never an alarm.
     if current.watts is None:
         return Check(None, NO_REST_LOSS, details)
     high = current.watts > REST_LOSS_MAX_WATTS

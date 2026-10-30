@@ -31,6 +31,11 @@ MIN_REST_RUN_HOURS = 3
 # Rest losses over this window, shown from this many rest hours on.
 REST_WINDOW = timedelta(days=30)
 MIN_REST_HOURS = 24
+# A rest loss below 0 means the state of charge rose while resting: energy
+# entered past the counters (PV straight into the battery) or the SoC drifts.
+# Within one step of a state of charge in whole percent over all rest hours
+# it is rounding and shows as 0 W (own assumption); beyond, it is unknown.
+SOC_STEP_PERCENT = 1.0
 # Capacity estimate: only discharges from full to empty count (as the field
 # method of Figgener et al. 2024 between end of charge and end of discharge;
 # the battery's own SoC is calculated by its management and would mostly
@@ -48,6 +53,7 @@ NO_DATA = "no_data"
 TOO_LITTLE_CHARGE = "too_little_charge"
 NO_SOC = "no_soc"
 TOO_FEW_REST_HOURS = "too_few_rest_hours"
+SOC_ROSE_AT_REST = "soc_rose_at_rest"
 TOO_FEW_DISCHARGES = "too_few_discharges"
 
 
@@ -82,6 +88,7 @@ class RestLoss:
     watts: float | None
     hours: float
     reason: str | None = None
+    raw_watts: float | None = None  # as computed, also when below 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -209,7 +216,12 @@ def rest_loss(hours: Sequence[Hour], capacity: float, now: datetime) -> RestLoss
         span += len(run) - 1
     if span < MIN_REST_HOURS:
         return RestLoss(None, span, TOO_FEW_REST_HOURS)
-    return RestLoss(lost / span * 1000, span)
+    watts = lost / span * 1000
+    if watts >= 0:
+        return RestLoss(watts, span, raw_watts=watts)
+    if -watts <= SOC_STEP_PERCENT / 100 * capacity * 1000 / span:
+        return RestLoss(0.0, span, raw_watts=watts)
+    return RestLoss(None, span, SOC_ROSE_AT_REST, raw_watts=watts)
 
 
 def _discharging(hour: Hour, capacity: float) -> bool:

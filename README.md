@@ -109,6 +109,7 @@ Attribute zeigen, woraus ein Wert entsteht: geladen, entladen, Änderung der ges
 | `too_little_charge` | weniger geladen als eine Kapazität (Tag: eine halbe) |
 | `no_soc` | kein Ladezustand an den Tagesgrenzen |
 | `too_few_rest_hours` | weniger als 24 Ruhestunden in 30 Tagen |
+| `soc_rose_at_rest` | Ladezustand stieg in Ruhephasen – Laden außerhalb der Zähler oder Drift des Ladezustands; der errechnete Wert steht im Attribut `raw_watts` |
 | `too_few_discharges` | weniger als drei Entladungen von voll bis leer in 90 Tagen |
 
 Die Sensoren lassen sich wie alle anderen ins Dashboard holen, etwa als Kacheln und mit einem Statistik-Diagramm der Lade- und Entladezähler:
@@ -151,8 +152,10 @@ Quellen und Begründungen: [docs/ENTWICKLUNG.md](docs/ENTWICKLUNG.md), Abschnitt
 
 - **Reparaturhinweis „Entität fehlt“, „Quelle nicht erreichbar“ oder „unerwartete Einheit“:** Quell-Integration prüfen oder unter *Neu konfigurieren* andere Entitäten wählen. Die Hinweise verschwinden von selbst.
 - **Quelle umbenannt** (Entity-ID geändert, auch über „Entity-IDs neu erstellen“): Speicherwacht zieht die neue ID seit 0.1.1 selbst nach und lädt den Eintrag kurz danach neu; *Neu konfigurieren* ist nicht nötig. Der Verlauf bleibt erhalten, weil Home Assistant die Statistik mit umbenennt. Nur eine gelöschte Entität meldet „Entität fehlt“.
+- **Reparaturhinweis „Zähler beginnt jeden Tag neu“ oder Warnung „Tageszähler“ in der Einrichtung:** Ein Zähler fiel an mehreren Tagen zur selben Uhrzeit zurück, wie ein Zähler „Energie heute“. Speicherwacht braucht Gesamtzähler (Lebenszeit); unter *Neu konfigurieren* den passenden wählen. Ist es doch ein Gesamtzähler, den Hinweis ignorieren bzw. in der Einrichtung unverändert noch einmal absenden.
 - **Alle Werte bleiben unbekannt:** Haben die Zähler und der Ladezustand Langzeitstatistik? *Werkzeuge → Statistik* (vor 2026.8: Entwicklerwerkzeuge) zeigt es. Ohne Zustandsklasse gibt es keine.
-- **Wirkungsgrad über 100 %:** Meist messen Lade- und Entladezähler an verschiedenen Stellen, oder der Ladezustand ist falsch zugeordnet.
+- **Wirkungsgrad über 100 %:** Meist messen Lade- und Entladezähler an verschiedenen Stellen, Energie fließt am Ladezähler vorbei in den Akku (etwa PV direkt in den Akku bei DC-gekoppelten Balkonspeichern), oder der Ladezustand ist falsch zugeordnet.
+- **Ruheverlust unbekannt mit `soc_rose_at_rest`:** In Stunden ohne Laden und Entladen stieg der Ladezustand. Dann lädt etwas am Ladezähler vorbei (siehe oben) oder der Ladezustand driftet. Bis auf eine Stufe des Ladezustands (1 %) über alle Ruhestunden zeigt Speicherwacht 0 W, weil das Rundung sein kann. Der Gesundheits-Check „Ruheverlust hoch“ bleibt dann unbekannt.
 - **Diagnose-Datei:** Geräte & Dienste → Speicherwacht → ⋮ → *Diagnose herunterladen*; sie enthält auch die vom Zählerbaustein verworfenen Werte.
 
 ## Datenschutz

@@ -158,8 +158,8 @@ ERRORS = {
         "Dieser Ladezähler gehört schon zu einem anderen Speicherwacht-Eintrag.",
     ),
     "day_counter": (
-        "A counter fell back several times in the last days: it looks like a day counter (energy today). Speicherwacht needs lifetime counters (total energy).",
-        "Ein Zähler ist in den letzten Tagen mehrmals zurückgefallen: Er sieht nach einem Tageszähler aus (Energie heute). Speicherwacht braucht Lebenszeit-Zähler (Gesamtenergie).",
+        "A counter fell back at the same time of day on several days: it looks like a day counter (energy today). Speicherwacht needs lifetime counters (total energy). If it is a total counter after all, submit again unchanged.",
+        "Ein Zähler ist an mehreren Tagen zur selben Uhrzeit zurückgefallen: Er sieht nach einem Tageszähler aus (Energie heute). Speicherwacht braucht Lebenszeit-Zähler (Gesamtenergie). Ist es doch ein Gesamtzähler, unverändert noch einmal absenden.",
     ),
     "same_entity": (
         "Choose three different entities.",
@@ -215,10 +215,10 @@ ISSUES = {
         "Bei {name} haben Ladezustand und Zähler im letzten Tag nicht zusammengepasst (der Ladezustand hat sich bewegt, die Zähler standen – oder umgekehrt). Prüfe diese Entitäten: {entities}. Meist hängt ein Zähler, der Ladezustand ist eingefroren oder etwas ist falsch zugeordnet (Neu konfigurieren). Der Hinweis verschwindet, sobald beide wieder zusammenpassen.",
     ),
     "counter_resets": (
-        "Speicherwacht: counter starts anew again and again",
-        "Speicherwacht: Zähler beginnt immer wieder neu",
-        "These counters of {name} started anew at least 3 times in the last 7 days: {entities}. That is how a day counter (energy today) behaves; Speicherwacht then counts too little. Choose lifetime counters (total energy) under Settings → Devices & services → Speicherwacht → ⋮ → Reconfigure.",
-        "Diese Zähler von {name} haben in den letzten 7 Tagen mindestens 3-mal neu begonnen: {entities}. So verhält sich ein Tageszähler (Energie heute); Speicherwacht zählt dann zu wenig. Wähle unter Einstellungen → Geräte & Dienste → Speicherwacht → ⋮ → Neu konfigurieren Lebenszeit-Zähler (Gesamtenergie).",
+        "Speicherwacht: counter starts anew every day",
+        "Speicherwacht: Zähler beginnt jeden Tag neu",
+        "These counters of {name} fell back at the same time of day on several of the last 4 days: {entities}. That is how a day counter (energy today) behaves; Speicherwacht then counts too little. Choose lifetime counters (total energy) under Settings → Devices & services → Speicherwacht → ⋮ → Reconfigure. If it is a total counter after all, ignore this notice.",
+        "Diese Zähler von {name} sind an mehreren der letzten 4 Tage zur selben Uhrzeit zurückgefallen: {entities}. So verhält sich ein Tageszähler (Energie heute); Speicherwacht zählt dann zu wenig. Wähle unter Einstellungen → Geräte & Dienste → Speicherwacht → ⋮ → Neu konfigurieren Lebenszeit-Zähler (Gesamtenergie). Ist es doch ein Gesamtzähler, den Hinweis ignorieren.",
     ),
     "missing_entity": (
         "Speicherwacht: entity missing",

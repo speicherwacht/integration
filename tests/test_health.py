@@ -129,3 +129,10 @@ def test_soc_standing_still_while_counters_move() -> None:
 
 def test_mismatch_needs_a_day_of_hours() -> None:
     assert counter_soc_mismatch(simulate(THIS_YEAR, 0), 10.0).reason == TOO_FEW_HOURS
+
+
+def test_soc_rising_at_rest_is_no_alarm() -> None:
+    hours = simulate(THIS_YEAR, 30, rest_watts=-3.0)
+    result = rest_loss_high(hours, 10.0, NOW)
+    assert result.problem is None
+    assert result.details["reason"] == "soc_rose_at_rest"

@@ -156,6 +156,9 @@ DESCRIPTIONS = [
         value_fn=lambda a, _r: None if a.rest.watts is None else round(a.rest.watts),
         attrs_fn=lambda a, _r: {
             "rest_hours": round(a.rest.hours),
+            "raw_watts": None
+            if a.rest.raw_watts is None
+            else round(a.rest.raw_watts, 1),
             "reason": a.rest.reason,
         },
     ),

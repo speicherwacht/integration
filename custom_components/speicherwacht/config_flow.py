@@ -2,13 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
-from itertools import pairwise
 from typing import Any
 
 import voluptuous as vol
-from homeassistant.components.recorder import get_instance
-from homeassistant.components.recorder.statistics import statistics_during_period
 from homeassistant.config_entries import (
     SOURCE_RECONFIGURE,
     ConfigFlow,
@@ -23,7 +19,6 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import selector
-from homeassistant.util import dt as dt_util
 
 from .const import (
     CONF_BOUNDARY,
@@ -36,14 +31,11 @@ from .const import (
     TEMPLATE_MANUAL,
 )
 from .counter import UNIT_FACTORS
+from .day_counters import async_day_counters
 from .model import REQUIRED, Boundary, Signal
 from .profiles import TEMPLATES, RegistryEntry
 
 CONF_SOURCE = "source"
-# Day counter test: falls by half or more at least twice in this window
-# (own assumption; a lifetime counter falls only when it is replaced).
-DAY_COUNTER_WINDOW = timedelta(days=4)
-DAY_COUNTER_MIN_KWH = 0.1
 DEFAULT_NAME = "Speicher"
 # Counters need long-term statistics with a sum, the state of charge a mean.
 COUNTER_STATE_CLASSES = ("total", "total_increasing")
@@ -111,40 +103,6 @@ async def async_energy_prefill(hass: HomeAssistant) -> dict[str, Any]:
     if isinstance(capacity := battery.get("capacity"), int | float) and capacity > 0:
         prefill[CONF_CAPACITY] = capacity
     return prefill
-
-
-async def async_day_counters(hass: HomeAssistant, entity_ids: list[str]) -> list[str]:
-    """Counters that started anew at least twice in the last four days.
-
-    A day counter (sensor "today", "daily") mapped as lifetime counter would
-    book nothing after its first day; its statistics show it.
-    """
-    if "recorder" not in hass.config.components:
-        return []
-    end = dt_util.utcnow()
-    rows = await get_instance(hass).async_add_executor_job(
-        statistics_during_period,
-        hass,
-        end - DAY_COUNTER_WINDOW,
-        end,
-        set(entity_ids),
-        "hour",
-        {"energy": "kWh"},
-        {"state"},
-    )
-    found = []
-    for entity_id in entity_ids:
-        states = [
-            r["state"] for r in rows.get(entity_id, []) if r.get("state") is not None
-        ]
-        drops = sum(
-            1
-            for before, after in pairwise(states)
-            if before >= DAY_COUNTER_MIN_KWH and after < before * 0.5
-        )
-        if drops >= 2:
-            found.append(entity_id)
-    return found
 
 
 def entities_schema(values: dict[str, Any]) -> vol.Schema:
@@ -247,6 +205,9 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
         self._template = TEMPLATE_MANUAL
         self._storage: str | None = None
         self._prefill: dict[str, Any] = {}
+        # Counters that drew the day counter warning: sent again unchanged,
+        # they are kept (a lifetime counter can restart at 0 now and then).
+        self._day_counter_warned: tuple[Any, Any] | None = None
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -318,9 +279,13 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
             error = validate(self.hass, values)
             if error is None and self._counter_in_use(values):
                 error = "counter_in_use"
-            if error is None and await async_day_counters(
-                self.hass, [values[Signal.CHARGED], values[Signal.DISCHARGED]]
+            counters = (values[Signal.CHARGED], values[Signal.DISCHARGED])
+            if (
+                error is None
+                and counters != self._day_counter_warned
+                and await self._async_day_counters(values)
             ):
+                self._day_counter_warned = counters
                 error = "day_counter"
             if error is None:
                 return await self._async_finish(values)
@@ -347,6 +312,27 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
             CONF_WARRANTY_MWH: entry.data.get(CONF_WARRANTY_MWH),
         }
         return await self.async_step_entities()
+
+    async def _async_day_counters(self, values: dict[str, Any]) -> list[str]:
+        """Day counters among the counters; on a reconfigure only among the
+        newly chosen ones. Templates with day values expect them."""
+        before: dict[str, str] = {}
+        key = self._template
+        if self.source == SOURCE_RECONFIGURE:
+            entry = self._get_reconfigure_entry()
+            key = entry.data.get(CONF_TEMPLATE) or key
+            before = entry.data.get(CONF_ENTITIES, {})
+        template = TEMPLATES.get(key or "")
+        if template is not None and template.day_values:
+            return []
+        return await async_day_counters(
+            self.hass,
+            [
+                values[s.value]
+                for s in (Signal.CHARGED, Signal.DISCHARGED)
+                if values[s.value] != before.get(s.value)
+            ],
+        )
 
     def _counter_in_use(self, values: dict[str, Any]) -> bool:
         """The charge counter already belongs to another storage entry."""

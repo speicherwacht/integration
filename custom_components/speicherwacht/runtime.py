@@ -40,7 +40,8 @@ from .const import (
     CONF_WARRANTY_MWH,
     DOMAIN,
 )
-from .counter import UNIT_FACTORS, CounterEvent
+from .counter import UNIT_FACTORS, looks_like_day_counter
+from .day_counters import WINDOW as DAY_COUNTER_WINDOW
 from .health import Health, check
 from .hours import Series, SocRow, build
 from .model import Boundary, Signal
@@ -74,10 +75,6 @@ ISSUE_UNAVAILABLE = "source_unavailable"
 ISSUE_UNIT = "source_unit"
 ISSUE_RESETS = "counter_resets"
 ISSUE_MISMATCH = "counter_soc_mismatch"
-# A counter that starts anew this often within a week behaves like a day
-# counter (own assumption; a lifetime counter resets at most on replacement).
-RESETS_PER_WEEK = 3
-RESET_WINDOW = timedelta(days=7)
 
 
 class StorageRuntime:
@@ -311,22 +308,24 @@ class StorageRuntime:
         self._issue(ISSUE_MISMATCH, entities)
 
     def _check_resets(self, now: datetime) -> None:
-        """Repair issue for counters that start anew again and again (a day
-        counter mapped as lifetime counter books nothing after its first
-        day)."""
-        if self.day_values or self.series is None:
+        """Repair issue for counters that restart like a day counter (one
+        mapped as lifetime counter books nothing after its first day); the
+        rule of the setup (counter.looks_like_day_counter) on the hourly
+        states read anyway."""
+        if self.day_values:
             return
-        since = now - RESET_WINDOW
-        counts: dict[str, int] = {}
-        for issue in self.series.issues:
-            if issue.event is CounterEvent.RESET and issue.hour >= since:
-                counts[issue.signal] = counts.get(issue.signal, 0) + 1
-        frequent = [
-            self.entities[Signal(signal)]
-            for signal, count in counts.items()
-            if count >= RESETS_PER_WEEK
+        since = now - DAY_COUNTER_WINDOW
+        found = [
+            self.entities[signal]
+            for signal, states in (
+                (Signal.CHARGED, self._charged),
+                (Signal.DISCHARGED, self._discharged),
+            )
+            if looks_like_day_counter(
+                sorted((h, v) for h, v in states.items() if h >= since), self.tz
+            )
         ]
-        self._issue(ISSUE_RESETS, frequent)
+        self._issue(ISSUE_RESETS, found)
 
     def _issue(self, key: str, entities: list[str], **placeholders: str) -> None:
         issue_id = f"{self.entry.entry_id}_{key}"
