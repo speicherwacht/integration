@@ -177,11 +177,16 @@ async def test_missing_source_gives_a_repair_issue(hass: HomeAssistant) -> None:
     entry = await setup_entry(hass)
     hass.states.async_remove(SOC)
     now = datetime.now(UTC)
-    for minutes in (11, 16):
+    issue_id = f"{entry.entry_id}_missing_entity"
+    # The check runs every 5 minutes with its scheduled time: at 5 and 10
+    # minutes Home Assistant is still starting up (grace of 10 minutes).
+    for minutes in (6, 11):
         await hass.async_block_till_done()
         async_fire_time_changed(hass, now + timedelta(minutes=minutes))
         await hass.async_block_till_done()
-    issue_id = f"{entry.entry_id}_missing_entity"
+    assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is None
+    async_fire_time_changed(hass, now + timedelta(minutes=16))
+    await hass.async_block_till_done()
     assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is not None
 
     hass.states.async_set(SOC, "40.0", {"unit_of_measurement": "%"})
