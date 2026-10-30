@@ -1,0 +1,135 @@
+{
+  "platform": "anker_solix_official",
+  "name_prefix": "Anker SOLIX Solarbank 4 E5000 Pro",
+  "devices": {
+    "solarbank": {
+      "identifiers": [
+        [
+          "anker_solix_official",
+          "01K8M3QZ7V5T2R9X4W6Y1N0PBA"
+        ]
+      ],
+      "name": "Anker SOLIX Solarbank 4 E5000 Pro",
+      "manufacturer": "Anker",
+      "model": "Anker SOLIX Solarbank 4 E5000 Pro"
+    }
+  },
+  "entities": [
+    {
+      "entity_id": "sensor.anker_solix_solarbank_4_e5000_pro_batterie_ladeenergie",
+      "unique_id": "01K8M3QZ7V5T2R9X4W6Y1N0PBA_cumulative_charge_energy",
+      "state": "412.7",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "modbus_address": 10262,
+        "data_type": "UINT32",
+        "register_count": 2,
+        "friendly_name": "Anker SOLIX Solarbank 4 E5000 Pro Batterie-Ladeenergie"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.anker_solix_solarbank_4_e5000_pro_batterie_entladeenergie",
+      "unique_id": "01K8M3QZ7V5T2R9X4W6Y1N0PBA_cumulative_discharge_energy",
+      "state": "371.9",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "modbus_address": 10264,
+        "data_type": "UINT32",
+        "register_count": 2,
+        "friendly_name": "Anker SOLIX Solarbank 4 E5000 Pro Batterie-Entladeenergie"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.anker_solix_solarbank_4_e5000_pro_akkukapazitat",
+      "unique_id": "01K8M3QZ7V5T2R9X4W6Y1N0PBA_rated_energy",
+      "state": "5.0",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "modbus_address": 10250,
+        "data_type": "UINT32",
+        "register_count": 2,
+        "friendly_name": "Anker SOLIX Solarbank 4 E5000 Pro Akkukapazität"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.anker_solix_solarbank_4_e5000_pro_soc",
+      "unique_id": "01K8M3QZ7V5T2R9X4W6Y1N0PBA_battery_soc",
+      "state": "58",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "modbus_address": 10014,
+        "data_type": "UINT16",
+        "register_count": 1,
+        "friendly_name": "Anker SOLIX Solarbank 4 E5000 Pro SOC"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.anker_solix_solarbank_4_e5000_pro_batterieladeleistung",
+      "unique_id": "01K8M3QZ7V5T2R9X4W6Y1N0PBA_battery_charging_power",
+      "state": "0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "modbus_address": 10008,
+        "data_type": "INT32",
+        "register_count": 2,
+        "friendly_name": "Anker SOLIX Solarbank 4 E5000 Pro Batterieladeleistung"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.anker_solix_solarbank_4_e5000_pro_batterieentladeleistung",
+      "unique_id": "01K8M3QZ7V5T2R9X4W6Y1N0PBA_battery_discharging_power",
+      "state": "240",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "modbus_address": 10008,
+        "data_type": "INT32",
+        "register_count": 2,
+        "friendly_name": "Anker SOLIX Solarbank 4 E5000 Pro Batterieentladeleistung"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.anker_solix_solarbank_4_e5000_pro_geratestatus",
+      "unique_id": "01K8M3QZ7V5T2R9X4W6Y1N0PBA_battery_status",
+      "state": "discharging",
+      "attributes": {
+        "options": [
+          "standby",
+          "charging",
+          "discharging",
+          "sleep"
+        ],
+        "device_class": "enum",
+        "modbus_address": 10001,
+        "data_type": "UINT16",
+        "register_count": 1,
+        "friendly_name": "Anker SOLIX Solarbank 4 E5000 Pro Gerätestatus"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    }
+  ]
+}

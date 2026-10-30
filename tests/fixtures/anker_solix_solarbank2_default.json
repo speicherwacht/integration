@@ -1,0 +1,196 @@
+{
+  "platform": "anker_solix",
+  "name_prefix": "Solarbank 2 E1600 Pro",
+  "devices": {
+    "system": {
+      "identifiers": [
+        [
+          "anker_solix",
+          "b7e41f02-6c3a-4d85-9e1b-2a7f0c5d8e64"
+        ]
+      ],
+      "name": "System Garten",
+      "manufacturer": "Anker",
+      "model": "Solarbank Site",
+      "model_id": "Type 5",
+      "serial_number": "b7e41f02-6c3a-4d85-9e1b-2a7f0c5d8e64"
+    },
+    "solarbank": {
+      "identifiers": [
+        [
+          "anker_solix",
+          "APC8R2D5F7H9J1K3L"
+        ]
+      ],
+      "name": "Solarbank 2 E1600 Pro",
+      "manufacturer": "Anker",
+      "model": "Solarbank 2 E1600 Pro",
+      "model_id": "A17C1",
+      "serial_number": "APC8R2D5F7H9J1K3L",
+      "via_device": null
+    }
+  },
+  "entities": [
+    {
+      "entity_id": "sensor.solarbank_2_e1600_pro_ladestand",
+      "unique_id": "apc8r2d5f7h9j1k3l_state_of_charge",
+      "state": "47",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 2 E1600 Pro Ladestand"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_2_e1600_pro_hauptakku_ladestand",
+      "unique_id": "apc8r2d5f7h9j1k3l_main_battery_soc",
+      "state": "49",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "serialnumber": "APC8R2D5F7H9J1K3L",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 2 E1600 Pro Hauptakku Ladestand"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_2_e1600_pro_akkuleistung",
+      "unique_id": "apc8r2d5f7h9j1k3l_battery_power_signed",
+      "state": "185",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 2 E1600 Pro Akkuleistung"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_2_e1600_pro_aufladeleistung",
+      "unique_id": "apc8r2d5f7h9j1k3l_bat_charge_power",
+      "state": "186",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 2 E1600 Pro Aufladeleistung"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_2_e1600_pro_entladeleistung",
+      "unique_id": "apc8r2d5f7h9j1k3l_bat_discharge_power",
+      "state": "0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 2 E1600 Pro Entladeleistung"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_2_e1600_pro_akkuenergie",
+      "unique_id": "apc8r2d5f7h9j1k3l_battery_energy",
+      "state": "1504",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "Wh",
+        "device_class": "energy_storage",
+        "attribution": "Data provided by Anker Solix Api",
+        "friendly_name": "Solarbank 2 E1600 Pro Akkuenergie"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_2_e1600_pro_temperatur",
+      "unique_id": "apc8r2d5f7h9j1k3l_temperature",
+      "state": "19",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 2 E1600 Pro Temperatur"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_2_e1600_pro_betriebszustand",
+      "unique_id": "apc8r2d5f7h9j1k3l_charging_status_desc",
+      "state": "charge_bypass",
+      "attributes": {
+        "options": [
+          "detection",
+          "protection_charge",
+          "bypass",
+          "bypass_discharge",
+          "discharge",
+          "charge",
+          "charge_bypass",
+          "charge_ac",
+          "charge_priority",
+          "wakeup",
+          "cold_wakeup",
+          "fully_charged",
+          "full_bypass",
+          "standby",
+          "unknown"
+        ],
+        "device_class": "enum",
+        "charging_status": "3",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 2 E1600 Pro Betriebszustand"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_2_e1600_pro_erweiterungsakkus",
+      "unique_id": "apc8r2d5f7h9j1k3l_sub_package_num",
+      "state": "1",
+      "attributes": {
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 2 E1600 Pro Erweiterungsakkus"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "number.solarbank_2_e1600_pro_akku_kapazitat",
+      "unique_id": "apc8r2d5f7h9j1k3l_battery_capacity",
+      "state": "3200",
+      "attributes": {
+        "min": 0,
+        "max": 100000,
+        "step": 1,
+        "mode": "box",
+        "unit_of_measurement": "Wh",
+        "device_class": "energy_storage",
+        "calculated": "3200",
+        "expansions": "1",
+        "attribution": "Data provided by Anker Solix Api",
+        "friendly_name": "Solarbank 2 E1600 Pro Akku Kapazität"
+      },
+      "disabled_by_default": false,
+      "entity_category": "config",
+      "device": "solarbank"
+    }
+  ]
+}

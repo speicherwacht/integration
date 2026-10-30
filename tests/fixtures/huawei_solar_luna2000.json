@@ -1,0 +1,891 @@
+{
+  "platform": "huawei_solar",
+  "name_prefix": "Batteries",
+  "devices": {
+    "inverter": {
+      "identifiers": [
+        [
+          "huawei_solar",
+          "HV2299990001"
+        ]
+      ],
+      "name": "Inverter",
+      "manufacturer": "Huawei",
+      "model": "SUN2000-10KTL-M1",
+      "via_device": null
+    },
+    "batteries": {
+      "identifiers": [
+        [
+          "huawei_solar",
+          "HV2299990001/connected_energy_storage"
+        ]
+      ],
+      "name": "Batteries",
+      "manufacturer": "Huawei",
+      "model": "Batteries",
+      "via_device": "inverter"
+    },
+    "battery_1": {
+      "identifiers": [
+        [
+          "huawei_solar",
+          "HV2299990001/battery_1"
+        ]
+      ],
+      "name": "Battery 1",
+      "manufacturer": "Huawei",
+      "model": "LUNA 2000",
+      "via_device": "inverter"
+    },
+    "battery_2": {
+      "identifiers": [
+        [
+          "huawei_solar",
+          "HV2299990001/battery_2"
+        ]
+      ],
+      "name": "Battery 2",
+      "manufacturer": "Huawei",
+      "model": "LUNA 2000",
+      "via_device": "inverter"
+    }
+  },
+  "entities": [
+    {
+      "entity_id": "sensor.batteries_maximum_charge_power",
+      "unique_id": "HV2299990001_storage_maximum_charge_power",
+      "state": "5000",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:battery-plus-variant",
+        "friendly_name": "Batteries Maximum charge power"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic",
+      "device": "batteries"
+    },
+    {
+      "entity_id": "sensor.batteries_maximum_discharge_power",
+      "unique_id": "HV2299990001_storage_maximum_discharge_power",
+      "state": "5000",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:battery-minus-variant",
+        "friendly_name": "Batteries Maximum discharge power"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic",
+      "device": "batteries"
+    },
+    {
+      "entity_id": "sensor.batteries_rated_capacity",
+      "unique_id": "HV2299990001_storage_rated_capacity",
+      "state": "25000",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "Wh",
+        "icon": "mdi:home-battery",
+        "friendly_name": "Batteries Rated Capacity"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic",
+      "device": "batteries"
+    },
+    {
+      "entity_id": "sensor.batteries_state_of_capacity",
+      "unique_id": "HV2299990001_storage_state_of_capacity",
+      "state": "63.4",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Batteries State of capacity"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "batteries"
+    },
+    {
+      "entity_id": "sensor.batteries_status",
+      "unique_id": "HV2299990001_storage_running_status",
+      "state": "Running",
+      "attributes": {
+        "friendly_name": "Batteries Status"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "batteries"
+    },
+    {
+      "entity_id": "sensor.batteries_bus_voltage",
+      "unique_id": "HV2299990001_storage_bus_voltage",
+      "state": "448.3",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "V",
+        "device_class": "voltage",
+        "icon": "mdi:home-lightning-bolt",
+        "friendly_name": "Batteries Bus voltage"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "batteries"
+    },
+    {
+      "entity_id": "sensor.batteries_bus_current",
+      "unique_id": "HV2299990001_storage_bus_current",
+      "state": "-3.4",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "A",
+        "device_class": "current",
+        "icon": "mdi:home-lightning-bolt-outline",
+        "friendly_name": "Batteries Bus current"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "batteries"
+    },
+    {
+      "entity_id": "sensor.batteries_charge_discharge_power",
+      "unique_id": "HV2299990001_storage_charge_discharge_power",
+      "state": "-1520",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:home-battery-outline",
+        "friendly_name": "Batteries Charge/Discharge power"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "batteries"
+    },
+    {
+      "entity_id": "sensor.batteries_total_charge",
+      "unique_id": "HV2299990001_storage_total_charge",
+      "state": "3556.07",
+      "attributes": {
+        "state_class": "total",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-plus-variant",
+        "friendly_name": "Batteries Total charge"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "batteries"
+    },
+    {
+      "entity_id": "sensor.batteries_total_discharge",
+      "unique_id": "HV2299990001_storage_total_discharge",
+      "state": "3187.15",
+      "attributes": {
+        "state_class": "total",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-minus-variant",
+        "friendly_name": "Batteries Total discharge"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "batteries"
+    },
+    {
+      "entity_id": "sensor.batteries_day_charge",
+      "unique_id": "HV2299990001_storage_current_day_charge_capacity",
+      "state": "8.42",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-plus-variant",
+        "friendly_name": "Batteries Day charge"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "batteries"
+    },
+    {
+      "entity_id": "sensor.batteries_day_discharge",
+      "unique_id": "HV2299990001_storage_current_day_discharge_capacity",
+      "state": "6.97",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-minus-variant",
+        "friendly_name": "Batteries Day discharge"
+      },
+      "disabled_by_default": false,
+      "entity_category": null,
+      "device": "batteries"
+    },
+    {
+      "entity_id": "sensor.battery_1_working_mode",
+      "unique_id": "HV2299990001_storage_unit_1_working_mode_b",
+      "state": "Maximise self consumption",
+      "attributes": {
+        "friendly_name": "Battery 1 Working mode"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_day_charge",
+      "unique_id": "HV2299990001_storage_unit_1_current_day_charge_capacity",
+      "state": "5.11",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Battery 1 Day charge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_day_discharge",
+      "unique_id": "HV2299990001_storage_unit_1_current_day_discharge_capacity",
+      "state": "4.18",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Battery 1 Day discharge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_bus_current",
+      "unique_id": "HV2299990001_storage_unit_1_bus_current",
+      "state": "-2.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "A",
+        "device_class": "current",
+        "icon": "mdi:home-lightning-bolt-outline",
+        "friendly_name": "Battery 1 Bus current"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_bus_voltage",
+      "unique_id": "HV2299990001_storage_unit_1_bus_voltage",
+      "state": "448.3",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "V",
+        "device_class": "voltage",
+        "icon": "mdi:home-lightning-bolt",
+        "friendly_name": "Battery 1 Bus voltage"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_bms_temperature",
+      "unique_id": "HV2299990001_storage_unit_1_battery_temperature",
+      "state": "24.6",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Battery 1 BMS temperature"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_remaining_charge_discharge_time",
+      "unique_id": "HV2299990001_storage_unit_1_remaining_charge_dis_charge_time",
+      "state": "287",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "min",
+        "icon": "mdi:timer-sand",
+        "friendly_name": "Battery 1 Remaining charge/discharge time"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_total_charge",
+      "unique_id": "HV2299990001_storage_unit_1_total_charge",
+      "state": "2345.67",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-plus-variant",
+        "friendly_name": "Battery 1 Total charge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_total_discharge",
+      "unique_id": "HV2299990001_storage_unit_1_total_discharge",
+      "state": "2101.23",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-minus-variant",
+        "friendly_name": "Battery 1 Total discharge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_state_of_capacity",
+      "unique_id": "HV2299990001_storage_unit_1_state_of_capacity",
+      "state": "64.1",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "icon": "mdi:home-battery",
+        "friendly_name": "Battery 1 State of capacity"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_running_status",
+      "unique_id": "HV2299990001_storage_unit_1_running_status",
+      "state": "Running",
+      "attributes": {
+        "friendly_name": "Battery 1 Running status"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic",
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_charge_discharge_power",
+      "unique_id": "HV2299990001_storage_unit_1_charge_discharge_power",
+      "state": "-912",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:home-battery-outline",
+        "friendly_name": "Battery 1 Charge/Discharge power"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_soh_calibration_status",
+      "unique_id": "HV2299990001_storage_unit_soh_calibration_status",
+      "state": "0",
+      "attributes": {
+        "friendly_name": "Battery 1 SOH calibration status"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic",
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_2_day_charge",
+      "unique_id": "HV2299990001_storage_unit_2_current_day_charge_capacity",
+      "state": "3.31",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Battery 2 Day charge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_2"
+    },
+    {
+      "entity_id": "sensor.battery_2_day_discharge",
+      "unique_id": "HV2299990001_storage_unit_2_current_day_discharge_capacity",
+      "state": "2.79",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Battery 2 Day discharge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_2"
+    },
+    {
+      "entity_id": "sensor.battery_2_bus_current",
+      "unique_id": "HV2299990001_storage_unit_2_bus_current",
+      "state": "-1.4",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "A",
+        "device_class": "current",
+        "icon": "mdi:home-lightning-bolt-outline",
+        "friendly_name": "Battery 2 Bus current"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_2"
+    },
+    {
+      "entity_id": "sensor.battery_2_bus_voltage",
+      "unique_id": "HV2299990001_storage_unit_2_bus_voltage",
+      "state": "448.1",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "V",
+        "device_class": "voltage",
+        "icon": "mdi:home-lightning-bolt",
+        "friendly_name": "Battery 2 Bus voltage"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_2"
+    },
+    {
+      "entity_id": "sensor.battery_2_bms_temperature",
+      "unique_id": "HV2299990001_storage_unit_2_battery_temperature",
+      "state": "23.9",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Battery 2 BMS temperature"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_2"
+    },
+    {
+      "entity_id": "sensor.battery_2_total_charge",
+      "unique_id": "HV2299990001_storage_unit_2_total_charge",
+      "state": "1210.4",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-plus-variant",
+        "friendly_name": "Battery 2 Total charge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_2"
+    },
+    {
+      "entity_id": "sensor.battery_2_total_discharge",
+      "unique_id": "HV2299990001_storage_unit_2_total_discharge",
+      "state": "1085.92",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-minus-variant",
+        "friendly_name": "Battery 2 Total discharge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_2"
+    },
+    {
+      "entity_id": "sensor.battery_2_state_of_capacity",
+      "unique_id": "HV2299990001_storage_unit_2_state_of_capacity",
+      "state": "62.3",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "icon": "mdi:home-battery",
+        "friendly_name": "Battery 2 State of capacity"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_2"
+    },
+    {
+      "entity_id": "sensor.battery_2_running_status",
+      "unique_id": "HV2299990001_storage_unit_2_running_status",
+      "state": "Running",
+      "attributes": {
+        "friendly_name": "Battery 2 Running status"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic",
+      "device": "battery_2"
+    },
+    {
+      "entity_id": "sensor.battery_2_charge_discharge_power",
+      "unique_id": "HV2299990001_storage_unit_2_charge_discharge_power",
+      "state": "-608",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:home-battery-outline",
+        "friendly_name": "Battery 2 Charge/Discharge power"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_2"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_1_max_temperature",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_1_maximum_temperature",
+      "state": "25.1",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Battery 1 Pack 1 max temperature"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_1_min_temperature",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_1_minimum_temperature",
+      "state": "22.8",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Battery 1 Pack 1 min temperature"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_1_working_status",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_1_working_status",
+      "state": "2",
+      "attributes": {
+        "friendly_name": "Battery 1 Pack 1 working status"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic",
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_1_state_of_capacity",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_1_state_of_capacity",
+      "state": "64.3",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "Battery 1 Pack 1 state of capacity"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_1_charge_discharge_power",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_1_charge_discharge_power",
+      "state": "-305",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:home-battery-outline",
+        "friendly_name": "Battery 1 Pack 1 charge discharge power"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_1_soh_calibration_status",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_1_soh_calibration_status",
+      "state": "0",
+      "attributes": {
+        "friendly_name": "Battery 1 Pack 1 SOH calibration status"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic",
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_1_total_charge",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_1_total_charge",
+      "state": "785.4",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-plus-variant",
+        "friendly_name": "Battery 1 Pack 1 total charge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_1_total_discharge",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_1_total_discharge",
+      "state": "703.12",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-minus-variant",
+        "friendly_name": "Battery 1 Pack 1 total discharge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_2_max_temperature",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_2_maximum_temperature",
+      "state": "24.8",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Battery 1 Pack 2 max temperature"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_2_min_temperature",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_2_minimum_temperature",
+      "state": "22.5",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Battery 1 Pack 2 min temperature"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_2_working_status",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_2_working_status",
+      "state": "2",
+      "attributes": {
+        "friendly_name": "Battery 1 Pack 2 working status"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic",
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_2_state_of_capacity",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_2_state_of_capacity",
+      "state": "64.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "Battery 1 Pack 2 state of capacity"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_2_charge_discharge_power",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_2_charge_discharge_power",
+      "state": "-304",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:home-battery-outline",
+        "friendly_name": "Battery 1 Pack 2 charge discharge power"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_2_soh_calibration_status",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_2_soh_calibration_status",
+      "state": "0",
+      "attributes": {
+        "friendly_name": "Battery 1 Pack 2 SOH calibration status"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic",
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_2_total_charge",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_2_total_charge",
+      "state": "781.95",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-plus-variant",
+        "friendly_name": "Battery 1 Pack 2 total charge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_2_total_discharge",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_2_total_discharge",
+      "state": "700.08",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-minus-variant",
+        "friendly_name": "Battery 1 Pack 2 total discharge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_3_max_temperature",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_3_maximum_temperature",
+      "state": "24.4",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Battery 1 Pack 3 max temperature"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_3_min_temperature",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_3_minimum_temperature",
+      "state": "22.1",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "friendly_name": "Battery 1 Pack 3 min temperature"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_3_working_status",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_3_working_status",
+      "state": "2",
+      "attributes": {
+        "friendly_name": "Battery 1 Pack 3 working status"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic",
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_3_state_of_capacity",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_3_state_of_capacity",
+      "state": "63.9",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "Battery 1 Pack 3 state of capacity"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_3_charge_discharge_power",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_3_charge_discharge_power",
+      "state": "-303",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:home-battery-outline",
+        "friendly_name": "Battery 1 Pack 3 charge discharge power"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_3_soh_calibration_status",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_3_soh_calibration_status",
+      "state": "0",
+      "attributes": {
+        "friendly_name": "Battery 1 Pack 3 SOH calibration status"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic",
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_3_total_charge",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_3_total_charge",
+      "state": "778.32",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-plus-variant",
+        "friendly_name": "Battery 1 Pack 3 total charge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "sensor.battery_1_pack_3_total_discharge",
+      "unique_id": "HV2299990001_storage_unit_1_battery_pack_3_total_discharge",
+      "state": "698.03",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "icon": "mdi:battery-minus-variant",
+        "friendly_name": "Battery 1 Pack 3 total discharge"
+      },
+      "disabled_by_default": true,
+      "entity_category": null,
+      "device": "battery_1"
+    },
+    {
+      "entity_id": "number.inverter_backup_power_soc",
+      "unique_id": "HV2299990001_storage_backup_power_state_of_charge",
+      "state": "15.0",
+      "attributes": {
+        "min": 0,
+        "max": 100,
+        "step": 0.1,
+        "mode": "box",
+        "unit_of_measurement": "%",
+        "icon": "mdi:battery-negative",
+        "friendly_name": "Inverter Backup power SOC"
+      },
+      "disabled_by_default": true,
+      "entity_category": "config",
+      "device": "inverter"
+    }
+  ]
+}

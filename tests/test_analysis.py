@@ -1,0 +1,140 @@
+"""Analysis against the simulator: efficiency, rest days, rest loss, capacity."""
+
+from __future__ import annotations
+
+from dataclasses import replace
+from datetime import date, timedelta
+
+import pytest
+
+from custom_components.speicherwacht.analysis import (
+    NO_DATA,
+    TOO_FEW_DISCHARGES,
+    TOO_FEW_REST_HOURS,
+    TOO_LITTLE_CHARGE,
+    analyse,
+    is_rest_day,
+)
+from custom_components.speicherwacht.days import Day, Period
+
+from .sim import BERLIN, SUMMER_DAY, at, simulate
+
+JUNE = date(2026, 6, 1)
+# Shortly before midnight on the last simulated day: still in June.
+HALF = timedelta(minutes=30)
+END = at(date(2026, 6, 30), 23) + HALF
+
+
+def test_month_efficiency_without_rest_loss_is_the_simulated_one() -> None:
+    hours = simulate(JUNE, 30, rest_watts=0.0, soc=30.0)
+    result = analyse(hours, 10.0, BERLIN, END)
+    month = result.efficiency[Period.MONTH]
+    assert month.ratio == pytest.approx(0.9, abs=0.005)
+    assert month.operating_days == 30
+    assert month.rest_days == 0
+
+
+@pytest.mark.parametrize("start_soc", [10.0, 50.0, 90.0])
+def test_correction_makes_the_start_level_irrelevant(start_soc: float) -> None:
+    """Without the correction a week would swing with the state of charge."""
+    hours = simulate(JUNE, 7, rest_watts=0.0, soc=start_soc)
+    result = analyse(hours, 10.0, BERLIN, at(date(2026, 6, 7), 23) + HALF)
+    assert result.efficiency[Period.MONTH].ratio == pytest.approx(0.9, abs=0.01)
+
+
+def test_rest_loss_during_operation_lowers_the_efficiency() -> None:
+    hours = simulate(JUNE, 30, rest_watts=20.0)
+    result = analyse(hours, 10.0, BERLIN, END)
+    month = result.efficiency[Period.MONTH]
+    expected = 0.9 - 30 * 24 * 0.02 / month.charged
+    assert month.ratio == pytest.approx(expected, abs=0.005)
+
+
+def test_rest_loss_is_measured_in_quiet_hours() -> None:
+    hours = simulate(JUNE, 30, rest_watts=20.0)
+    result = analyse(hours, 10.0, BERLIN, END)
+    assert result.rest.watts == pytest.approx(20.0, rel=0.05)
+    assert result.rest.hours >= 24
+
+
+def test_rest_days_stay_out_of_the_efficiency() -> None:
+    def winter(day: date) -> dict[int, float]:
+        return {} if date(2026, 6, 10) <= day < date(2026, 6, 20) else SUMMER_DAY
+
+    hours = simulate(JUNE, 30, rest_watts=0.0, profile=winter)
+    # A resting battery still loses some energy: only on the rest days.
+    rest = {date(2026, 6, 10) + timedelta(days=i) for i in range(10)}
+    hours = [
+        replace(h, soc=h.soc - 0.2) if h.start.astimezone(BERLIN).date() in rest else h
+        for h in hours
+    ]
+    result = analyse(hours, 10.0, BERLIN, END)
+    month = result.efficiency[Period.MONTH]
+    assert month.rest_days == 10
+    assert month.operating_days == 20
+    assert month.ratio == pytest.approx(0.9, abs=0.01)
+
+
+def test_rest_day_rule() -> None:
+    day = Day(JUNE, 0.4, 0.3, 50.0, 49.0, 24, 24, 24)
+    assert is_rest_day(day, 10.0)
+    assert not is_rest_day(replace(day, discharged=0.6), 10.0)
+
+
+def test_little_charge_gives_no_efficiency() -> None:
+    hours = simulate(JUNE, 1, rest_watts=0.0)
+    hours = [replace(h, charged=(h.charged or 0) / 2) for h in hours]
+    result = analyse(hours, 20.0, BERLIN, at(JUNE, 23) + HALF)
+    assert result.efficiency[Period.MONTH].reason == TOO_LITTLE_CHARGE
+    assert result.efficiency[Period.MONTH].ratio is None
+
+
+def test_today_ends_at_the_latest_hour() -> None:
+    hours = simulate(JUNE, 2, rest_watts=0.0)
+    now = at(date(2026, 6, 2), 16)
+    hours = [h for h in hours if h.start < now]
+    today = analyse(hours, 10.0, BERLIN, now).efficiency[Period.TODAY]
+    assert today.operating_days == 1
+    assert today.ratio == pytest.approx(0.9, abs=0.05)
+
+
+def test_days_without_counters_do_not_count() -> None:
+    """The SoC statistics reach further back than the counters."""
+    hours = simulate(JUNE, 10, rest_watts=0.0)
+    early = at(date(2026, 6, 4), 0)
+    hours = [
+        replace(h, charged=None, discharged=None) if h.start < early else h
+        for h in hours
+    ]
+    result = analyse(hours, 10.0, BERLIN, at(date(2026, 6, 10), 23) + HALF)
+    assert result.first_day == date(2026, 6, 4)
+    assert result.efficiency[Period.MONTH].rest_days == 0
+
+
+def test_cycles_are_discharge_per_capacity() -> None:
+    hours = simulate(JUNE, 10, rest_watts=0.0)
+    result = analyse(hours, 10.0, BERLIN, at(date(2026, 6, 10), 23) + HALF)
+    assert result.cycles_total == pytest.approx(result.discharged_total / 10.0)
+    assert result.cycles_year == pytest.approx(result.cycles_total)
+
+
+def test_capacity_estimate_from_large_discharges() -> None:
+    hours = simulate(JUNE, 30, rest_watts=0.0, capacity=10.0)
+    result = analyse(hours, 10.0, BERLIN, END)
+    assert result.capacity.kwh == pytest.approx(10.0, rel=0.03)
+    assert len(result.capacity.samples) == 10
+
+
+def test_capacity_estimate_follows_an_aged_battery() -> None:
+    """A battery with 8 kWh left, configured with its data sheet's 10 kWh."""
+    hours = simulate(JUNE, 30, rest_watts=0.0, capacity=8.0)
+    result = analyse(hours, 10.0, BERLIN, END)
+    assert result.capacity.kwh == pytest.approx(8.0, rel=0.03)
+
+
+def test_without_data_everything_is_unknown() -> None:
+    result = analyse([], 10.0, BERLIN, at(JUNE, 12))
+    assert result.efficiency[Period.TOTAL].reason == NO_DATA
+    assert result.rest.reason == TOO_FEW_REST_HOURS
+    assert result.capacity.reason == TOO_FEW_DISCHARGES
+    assert result.first_day is None

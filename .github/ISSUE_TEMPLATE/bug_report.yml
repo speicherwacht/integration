@@ -1,0 +1,72 @@
+name: Fehler melden
+description: Etwas funktioniert nicht wie erwartet.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke fürs Melden! Mit Diagnose-Datei und Versionen lässt sich das meist schnell eingrenzen.
+        Hinweis: Speicherwacht ist eine Orientierung, keine Fachdiagnose – die Werte stammen aus den Zählern deines Speichers bzw. Wechselrichters.
+  - type: textarea
+    id: description
+    attributes:
+      label: Was ist passiert?
+      description: Was hast du erwartet, was ist stattdessen passiert?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Wie lässt es sich nachvollziehen?
+      placeholder: |
+        1. Fronius Gen24 mit BYD HVS, Vorlage „Fronius“ eingerichtet
+        2. …
+  - type: input
+    id: storage
+    attributes:
+      label: Speicher und Anbindung
+      placeholder: "BYD Battery-Box Premium HVS 10.2 an Fronius Gen24, Core-Integration fronius"
+    validations:
+      required: true
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home-Assistant-Version
+      description: Einstellungen → Info
+      placeholder: "2026.10.4"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Speicherwacht-Version
+      description: HACS → Speicherwacht, oder Geräte & Dienste → Speicherwacht
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Betroffen
+      multiple: true
+      options:
+        - Wirkungsgrad
+        - Vollzyklen / Durchsatz
+        - Stand-by-Verluste
+        - Kapazität
+        - Einrichtung
+        - weiß nicht
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnose-Datei
+      description: >-
+        Geräte & Dienste → Speicherwacht → ⋮ → „Diagnose herunterladen“ und die Datei
+        hier hineinziehen.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Protokoll
+      description: >-
+        Einstellungen → System → Protokolle, nach „speicherwacht“ filtern.
+      render: text

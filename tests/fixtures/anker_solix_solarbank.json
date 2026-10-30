@@ -1,0 +1,376 @@
+{
+  "platform": "anker_solix",
+  "name_prefix": "Solarbank 3 E2700 Pro",
+  "devices": {
+    "system": {
+      "identifiers": [
+        [
+          "anker_solix",
+          "5d0c7e2a-91b3-4f6e-a8d4-3c2b1e0f9a77"
+        ]
+      ],
+      "name": "System Balkon",
+      "manufacturer": "Anker",
+      "model": "Solarbank Site",
+      "model_id": "Type 12",
+      "serial_number": "5d0c7e2a-91b3-4f6e-a8d4-3c2b1e0f9a77"
+    },
+    "solarbank": {
+      "identifiers": [
+        [
+          "anker_solix",
+          "AZV1K7Q3P9M2X4T8C"
+        ]
+      ],
+      "name": "Solarbank 3 E2700 Pro",
+      "manufacturer": "Anker",
+      "model": "Solarbank 3 E2700 Pro",
+      "model_id": "A17C5",
+      "serial_number": "AZV1K7Q3P9M2X4T8C",
+      "via_device": null
+    }
+  },
+  "entities": [
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_energie_geladen",
+      "unique_id": "azv1k7q3p9m2x4t8c_charged_energy",
+      "state": "612.874",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Energie geladen"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_energie_entladen",
+      "unique_id": "azv1k7q3p9m2x4t8c_discharged_energy",
+      "state": "548.311",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Energie entladen"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_energie_geliefert",
+      "unique_id": "azv1k7q3p9m2x4t8c_output_energy",
+      "state": "1621.087",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Energie geliefert"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_energie_produziert",
+      "unique_id": "azv1k7q3p9m2x4t8c_solar_energy",
+      "state": "1834.512",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Energie produziert"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_energie_verbraucht",
+      "unique_id": "azv1k7q3p9m2x4t8c_consumed_energy",
+      "state": "21.402",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Energie verbraucht"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_akkueffizienz",
+      "unique_id": "azv1k7q3p9m2x4t8c_battery_efficiency",
+      "state": "86.447",
+      "attributes": {
+        "unit_of_measurement": "%",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Akkueffizienz"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_gerateeffizienz",
+      "unique_id": "azv1k7q3p9m2x4t8c_device_efficiency",
+      "state": "87.347",
+      "attributes": {
+        "unit_of_measurement": "%",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Geräteeffizienz"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_ladestand",
+      "unique_id": "azv1k7q3p9m2x4t8c_state_of_charge",
+      "state": "64",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Ladestand"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_hauptakku_ladestand",
+      "unique_id": "azv1k7q3p9m2x4t8c_main_battery_soc",
+      "state": "66",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "state_of_health": 99.5,
+        "serialnumber": "AZV1K7Q3P9M2X4T8C",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Hauptakku Ladestand"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_erw_1_ladestand",
+      "unique_id": "azv1k7q3p9m2x4t8c_exp_1_soc",
+      "state": "62",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "state_of_health": 100,
+        "serialnumber": "AZV2B4N6M8Q1W3E5R",
+        "capacity": 2688,
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Erw. 1 Ladestand"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_akkuleistung",
+      "unique_id": "azv1k7q3p9m2x4t8c_battery_power_signed",
+      "state": "-312",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Akkuleistung"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_akkuenergie",
+      "unique_id": "azv1k7q3p9m2x4t8c_battery_energy",
+      "state": "3432",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "Wh",
+        "device_class": "energy_storage",
+        "attribution": "Data provided by Anker Solix Api",
+        "friendly_name": "Solarbank 3 E2700 Pro Akkuenergie"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_temperatur",
+      "unique_id": "azv1k7q3p9m2x4t8c_temperature",
+      "state": "23",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Temperatur"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_erw_1_temperatur",
+      "unique_id": "azv1k7q3p9m2x4t8c_exp_1_temperature",
+      "state": "22",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Erw. 1 Temperatur"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_betriebszustand",
+      "unique_id": "azv1k7q3p9m2x4t8c_charging_status_desc",
+      "state": "discharge",
+      "attributes": {
+        "options": [
+          "detection",
+          "protection_charge",
+          "bypass",
+          "bypass_discharge",
+          "discharge",
+          "charge",
+          "charge_bypass",
+          "charge_ac",
+          "charge_priority",
+          "wakeup",
+          "cold_wakeup",
+          "fully_charged",
+          "full_bypass",
+          "standby",
+          "unknown"
+        ],
+        "device_class": "enum",
+        "charging_status": "2",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Betriebszustand"
+      },
+      "disabled_by_default": false,
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_batteriezustand",
+      "unique_id": "azv1k7q3p9m2x4t8c_battery_status",
+      "state": "discharging",
+      "attributes": {
+        "options": [
+          "standby",
+          "charging",
+          "discharging",
+          "sleep",
+          "inactive",
+          "unknown"
+        ],
+        "device_class": "enum",
+        "status": "2",
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Batteriezustand"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.solarbank_3_e2700_pro_erweiterungsakkus",
+      "unique_id": "azv1k7q3p9m2x4t8c_sub_package_num",
+      "state": "1",
+      "attributes": {
+        "attribution": "Data provided by Anker Solix Api + MQTT",
+        "friendly_name": "Solarbank 3 E2700 Pro Erweiterungsakkus"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic",
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "number.solarbank_3_e2700_pro_akku_kapazitat",
+      "unique_id": "azv1k7q3p9m2x4t8c_battery_capacity",
+      "state": "5363",
+      "attributes": {
+        "min": 0,
+        "max": 100000,
+        "step": 1,
+        "mode": "box",
+        "unit_of_measurement": "Wh",
+        "device_class": "energy_storage",
+        "calculated": "5363",
+        "expansions": "1",
+        "attribution": "Data provided by Anker Solix Api",
+        "friendly_name": "Solarbank 3 E2700 Pro Akku Kapazität"
+      },
+      "disabled_by_default": false,
+      "entity_category": "config",
+      "device": "solarbank"
+    },
+    {
+      "entity_id": "sensor.system_balkon_tagliche_aufladung",
+      "unique_id": "5d0c7e2a-91b3-4f6e-a8d4-3c2b1e0f9a77_daily_charge_energy",
+      "state": "3.42",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "date": "2026-10-29",
+        "last_period": "3.40",
+        "attribution": "Data provided by Anker Solix Api",
+        "friendly_name": "System Balkon Tägliche Aufladung"
+      },
+      "disabled_by_default": false,
+      "device": "system"
+    },
+    {
+      "entity_id": "sensor.system_balkon_tagliche_entladung",
+      "unique_id": "5d0c7e2a-91b3-4f6e-a8d4-3c2b1e0f9a77_daily_discharge_energy",
+      "state": "1.87",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "date": "2026-10-29",
+        "last_period": "1.85",
+        "attribution": "Data provided by Anker Solix Api",
+        "friendly_name": "System Balkon Tägliche Entladung"
+      },
+      "disabled_by_default": false,
+      "device": "system"
+    },
+    {
+      "entity_id": "sensor.system_balkon_sb_akkuleistung",
+      "unique_id": "5d0c7e2a-91b3-4f6e-a8d4-3c2b1e0f9a77_solarbank_battery_power_signed",
+      "state": "-310",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "attribution": "Data provided by Anker Solix Api",
+        "friendly_name": "System Balkon SB Akkuleistung"
+      },
+      "disabled_by_default": false,
+      "device": "system"
+    },
+    {
+      "entity_id": "sensor.system_balkon_sb_ladestand",
+      "unique_id": "5d0c7e2a-91b3-4f6e-a8d4-3c2b1e0f9a77_solarbank_state_of_charge",
+      "state": "64.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "attribution": "Data provided by Anker Solix Api",
+        "friendly_name": "System Balkon SB Ladestand"
+      },
+      "disabled_by_default": false,
+      "device": "system"
+    }
+  ]
+}
