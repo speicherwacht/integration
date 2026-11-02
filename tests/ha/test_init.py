@@ -17,6 +17,7 @@ from homeassistant.components.recorder.statistics import async_import_statistics
 from homeassistant.config_entries import SOURCE_USER
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.util import dt as dt_util
@@ -335,3 +336,57 @@ async def test_day_counter_gives_a_repair_issue(hass: HomeAssistant) -> None:
     )
     assert issue is not None
     assert issue.translation_placeholders["entities"] == CHARGED
+
+
+@pytest.mark.freeze_time(NOW)
+async def test_report_action_gives_the_figures_of_a_period(
+    hass: HomeAssistant,
+) -> None:
+    await hass.config.async_set_time_zone("Europe/Berlin")
+    import_statistics(hass)
+    await async_wait_recording_done(hass)
+    entry = await setup_entry(hass)
+
+    async def report(**data: str):
+        return await hass.services.async_call(
+            DOMAIN,
+            "report",
+            {"config_entry": entry.entry_id, **data},
+            blocking=True,
+            return_response=True,
+        )
+
+    # Before the first read of the statistics there is nothing to report.
+    with pytest.raises(ServiceValidationError) as err:
+        await report()
+    assert err.value.translation_key == "not_analysed_yet"
+
+    await entry.runtime_data.async_refresh()
+    await hass.async_block_till_done()
+
+    # Default: 1 January until now, the figures of the yearly sensors.
+    year = await report()
+    assert year["start"] == "2026-01-01T00:00:00+01:00"
+    assert year["end"] == "2026-06-30T23:30:00+02:00"
+    assert year["boundary"] == "battery"
+    assert year["capacity_kwh"] == 10.0
+    assert year["efficiency"]["percent"] == float(
+        state(hass, entry, "efficiency_year").state
+    )
+    assert year["efficiency"]["operating_days"] == 30
+    assert year["full_cycles"] == float(state(hass, entry, "full_cycles_year").state)
+    assert year["capacity_estimate"]["kwh"] == pytest.approx(10.0, rel=0.03)
+    june = year["months"][-1]
+    assert june["month"] == "2026-06"
+    assert june["efficiency_operating_days"] == 30
+
+    # Times without a zone are local; whole days only.
+    half = await report(start="2026-06-01 00:00:00", end="2026-06-15 00:00:00")
+    assert half["first_day"] == "2026-06-01"
+    assert half["last_day"] == "2026-06-14"
+    assert half["days"] == 14
+    assert half["efficiency"]["percent"] == pytest.approx(90.0, abs=0.5)
+
+    with pytest.raises(ServiceValidationError) as err:
+        await report(start="2026-06-15 00:00:00", end="2026-06-01 00:00:00")
+    assert err.value.translation_key == "start_after_end"

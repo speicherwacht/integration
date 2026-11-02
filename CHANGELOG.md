@@ -2,6 +2,7 @@
 
 ## Unveröffentlicht
 
+- **Aktion „Bericht“** (`speicherwacht.report`): Energie, Wirkungsgrad mit Korrektur über den Ladezustand, Vollzyklen, Ruheverlust und geschätzte Kapazität für einen beliebigen Zeitraum, je Monat aufgeschlüsselt, auch vor der Einrichtung. Ohne Angaben: 1. Januar bis jetzt, also die Werte der Jahressensoren. Gerechnet wird wie bei den Sensoren, über ganze Tage.
 - **Neue Vorlage (Beta, aus dem Quellcode):** SolarEdge über die Core-Integration `solaredge_modbus` (ab HA 2026.10), ein Speicher je Batterie. Die bisherige Vorlage für die HACS-Integration `solaredge_modbus_multi` bleibt.
 
 ## 0.1.2 – 2026-10-30

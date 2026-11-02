@@ -243,6 +243,48 @@ ISSUES = {
     ),
 }
 
+SERVICES = {
+    "report": {
+        "name": ("Report", "Bericht"),
+        "description": (
+            "Energy, efficiency (with the state of charge correction), full cycles, rest loss and estimated capacity of a period, also before the setup (from the long-term statistics), with months.",
+            "Energie, Wirkungsgrad (mit Korrektur über den Ladezustand), Vollzyklen, Ruheverlust und geschätzte Kapazität eines Zeitraums, auch vor der Einrichtung (aus der Langzeitstatistik), mit Monaten.",
+        ),
+        "icon": "mdi:file-chart-outline",
+        "fields": {
+            "config_entry": (
+                ("Storage", "Speicher"),
+                ("The Speicherwacht entry.", "Der Speicherwacht-Eintrag."),
+            ),
+            "start": (
+                ("Start", "Beginn"),
+                (
+                    "Without: 1 January of the current year. Times without a zone are local time. Efficiency and energy count whole days only.",
+                    "Ohne: 1. Januar des laufenden Jahres. Zeiten ohne Zone sind Ortszeit. Wirkungsgrad und Energie zählen nur ganze Tage.",
+                ),
+            ),
+            "end": (
+                ("End", "Ende"),
+                ("Without: now.", "Ohne: jetzt."),
+            ),
+        },
+    },
+}
+EXCEPTIONS = {
+    "start_after_end": (
+        "The start must lie before the end.",
+        "Der Beginn muss vor dem Ende liegen.",
+    ),
+    "no_recorder": (
+        "The report needs the recorder (long-term statistics).",
+        "Der Bericht braucht den Recorder (Langzeitstatistik).",
+    ),
+    "not_analysed_yet": (
+        "Speicherwacht has not read the statistics of this storage yet; try again in a minute.",
+        "Speicherwacht hat die Statistik dieses Speichers noch nicht gelesen; versuche es in einer Minute noch einmal.",
+    ),
+}
+
 
 def _pick(table: dict, lang: int) -> dict:
     return {k: v[lang] for k, v in table.items()}
@@ -295,6 +337,18 @@ def build(lang: int) -> dict:
             key: {"title": text[lang], "description": text[2 + lang]}
             for key, text in ISSUES.items()
         },
+        "exceptions": {k: {"message": v[lang]} for k, v in EXCEPTIONS.items()},
+        "services": {
+            key: {
+                "name": action["name"][lang],
+                "description": action["description"][lang],
+                "fields": {
+                    field: {"name": name[lang], "description": help_[lang]}
+                    for field, (name, help_) in action["fields"].items()
+                },
+            }
+            for key, action in SERVICES.items()
+        },
     }
 
 
@@ -305,7 +359,10 @@ def icons() -> dict:
         "entity": {
             "sensor": sensor,
             "binary_sensor": {k: {"default": v[2]} for k, v in BINARY.items()},
-        }
+        },
+        "services": {
+            key: {"service": action["icon"]} for key, action in SERVICES.items()
+        },
     }
 
 

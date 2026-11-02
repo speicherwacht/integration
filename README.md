@@ -16,7 +16,7 @@
 ## Inhalt
 
 - [Was Speicherwacht kann](#was-speicherwacht-kann) · [Voraussetzungen](#voraussetzungen) · [Installation](#installation) · [Einrichtung](#einrichtung)
-- [Entitäten](#entitäten) · [Gesundheits-Check](#gesundheits-check) · [Wie gerechnet wird](#wie-gerechnet-wird) · [Grenzen der Aussage](#grenzen-der-aussage)
+- [Entitäten](#entitäten) · [Aktion „Bericht“](#aktion-bericht) · [Gesundheits-Check](#gesundheits-check) · [Wie gerechnet wird](#wie-gerechnet-wird) · [Grenzen der Aussage](#grenzen-der-aussage)
 - [Fehlerbehebung](#fehlerbehebung) · [Datenschutz](#datenschutz) · [Entfernen](#entfernen) · [Verwandte Projekte](#verwandte-projekte)
 
 ## Was Speicherwacht kann
@@ -27,6 +27,7 @@
 - **Ruheverlust:** mittlere Leistung, die der ruhende Speicher verliert (meist der Eigenverbrauch des Batteriemanagements).
 - **Kapazität (geschätzt):** entnehmbare Energie aus Entladungen von voll bis leer, im Vergleich zum Datenblatt.
 - **Rückblick ab dem ersten Tag:** Speicherwacht rechnet aus der Langzeitstatistik von Home Assistant, also auch für die Zeit vor der Einrichtung.
+- **Bericht für einen beliebigen Zeitraum** per Aktion, je Monat aufgeschlüsselt.
 - **Reparaturhinweise**, wenn eine Quelle fehlt, lange nicht verfügbar ist oder eine falsche Einheit hat.
 - Keine eigene Speicherdatei, keine zusätzliche Schreiblast auf SD-Karten.
 
@@ -117,6 +118,70 @@ Attribute zeigen, woraus ein Wert entsteht: geladen, entladen, Änderung der ges
 Die Sensoren lassen sich wie alle anderen ins Dashboard holen, etwa als Kacheln und mit einem Statistik-Diagramm der Lade- und Entladezähler:
 
 <img src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/screenshots/dashboard_energie.png" alt="Dashboard-Abschnitt mit Wirkungsgrad je Monat, Jahr und gesamt, Ruheverlust, Kapazität, Ladezustand, Vollzyklen und einem Balkendiagramm der monatlich geladenen und entladenen Energie" width="720">
+
+## Aktion „Bericht“
+
+*Einstellungen → Werkzeuge → Aktionen* (früher *Entwicklerwerkzeuge → Aktionen*) → **Speicherwacht: Bericht**, Speicher und Zeitraum wählen, „Antwort anzeigen“. Die Antwort lässt sich auch in Skripten und Automationen verwenden (`response_variable`). Sie enthält dieselben Werte wie die Sensoren, nur für einen beliebigen Zeitraum, auch vor der Einrichtung, und je Monat aufgeschlüsselt.
+
+```yaml
+action: speicherwacht.report
+data:
+  config_entry: <Eintrag auswählen>
+  start: "2025-01-01 00:00:00"
+  end: "2026-01-01 00:00:00"
+```
+
+- **Ohne Beginn:** 1. Januar des laufenden Jahres; **ohne Ende:** jetzt. Ohne beides liefert der Bericht die Werte von „Wirkungsgrad Jahr“ und „Vollzyklen Jahr“. Zeiten ohne Zeitzone gelten als Ortszeit deines Home Assistant.
+- **Energie, Wirkungsgrad und Vollzyklen** zählen nur ganze Tage, die im Zeitraum beginnen und enden; den laufenden Tag bis zur letzten Stunde, wenn der Zeitraum bis jetzt reicht. Ruhetage zählen wie bei den Sensoren nicht in den Wirkungsgrad, aber in Energie und Vollzyklen.
+- **Ruheverlust** ist das Mittel über alle Ruhestunden des Zeitraums, **Kapazität (geschätzt)** der Median der letzten zehn Entladungen von voll bis leer darin (mit denselben Schwellen wie die Sensoren).
+- Der Bericht rechnet aus der Statistik, die Speicherwacht zuletzt gelesen hat (stündlich, `data_until`). Er braucht den Recorder und antwortet erst, wenn Speicherwacht nach dem Start einmal gerechnet hat (etwa eine Minute).
+
+Beispiel-Antwort (erfundene Werte); `reason` hat dieselben Werte wie bei den Sensoren:
+
+```yaml
+start: "2026-01-01T00:00:00+01:00"
+end: "2026-11-02T14:20:00+01:00"
+boundary: battery
+capacity_kwh: 10.0
+first_day: "2026-01-01"
+last_day: "2026-11-02"
+days: 306
+data_until: "2026-11-02T14:00:00+01:00"
+charged_kwh: 2210.45
+discharged_kwh: 2051.3
+full_cycles: 205.1
+efficiency:
+  percent: 93.1
+  charged_kwh: 2198.7
+  discharged_kwh: 2047.9
+  stored_change_kwh: -0.6
+  operating_days: 291
+  rest_days: 15
+  rest_loss_kwh: 4.8
+  days_without_soc: 0
+  incomplete_days: 0
+  reason: null
+rest_loss:
+  watts: 12
+  rest_hours: 1840
+  raw_watts: 12.4
+  reason: null
+capacity_estimate:
+  kwh: 9.42
+  share_of_data_sheet_percent: 94.2
+  samples: 10
+  reason: null
+months:
+  - month: "2026-01"
+    charged_kwh: 98.2
+    discharged_kwh: 88.9
+    full_cycles: 8.9
+    efficiency_percent: 89.6
+    efficiency_operating_days: 24
+    efficiency_rest_days: 7
+    efficiency_reason: null
+  # … ein Eintrag je Monat
+```
 
 ## Gesundheits-Check
 

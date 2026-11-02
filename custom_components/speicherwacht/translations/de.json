@@ -225,5 +225,36 @@
       "title": "Speicherwacht: unerwartete Einheit",
       "description": "Diese Entitäten von {name} haben eine Einheit, mit der Speicherwacht nicht rechnen kann (Zähler Wh/kWh/MWh, Ladezustand %): {entities}. Wähle unter Neu konfigurieren andere."
     }
+  },
+  "exceptions": {
+    "start_after_end": {
+      "message": "Der Beginn muss vor dem Ende liegen."
+    },
+    "no_recorder": {
+      "message": "Der Bericht braucht den Recorder (Langzeitstatistik)."
+    },
+    "not_analysed_yet": {
+      "message": "Speicherwacht hat die Statistik dieses Speichers noch nicht gelesen; versuche es in einer Minute noch einmal."
+    }
+  },
+  "services": {
+    "report": {
+      "name": "Bericht",
+      "description": "Energie, Wirkungsgrad (mit Korrektur über den Ladezustand), Vollzyklen, Ruheverlust und geschätzte Kapazität eines Zeitraums, auch vor der Einrichtung (aus der Langzeitstatistik), mit Monaten.",
+      "fields": {
+        "config_entry": {
+          "name": "Speicher",
+          "description": "Der Speicherwacht-Eintrag."
+        },
+        "start": {
+          "name": "Beginn",
+          "description": "Ohne: 1. Januar des laufenden Jahres. Zeiten ohne Zone sind Ortszeit. Wirkungsgrad und Energie zählen nur ganze Tage."
+        },
+        "end": {
+          "name": "Ende",
+          "description": "Ohne: jetzt."
+        }
+      }
+    }
   }
 }

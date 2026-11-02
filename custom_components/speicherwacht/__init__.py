@@ -26,6 +26,7 @@ from .runtime import (
     ISSUE_UNIT,
     StorageRuntime,
 )
+from .services import async_setup_services
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -58,7 +59,9 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
-    """Follow renamed sources (once, for all entries)."""
+    """Register the actions and follow renamed sources (once, for all
+    entries)."""
+    async_setup_services(hass)
     _async_follow_renames(hass)
     return True
 

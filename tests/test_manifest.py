@@ -109,3 +109,29 @@ def test_hint_steps_exist() -> None:
             assert hasattr(
                 SpeicherwachtConfigFlow, f"async_step_entities_note_{template.key}"
             )
+
+
+def test_action_translated_and_has_an_icon() -> None:
+    strings = load(INTEGRATION / "strings.json")
+    icons = load(INTEGRATION / "icons.json")
+    services = (INTEGRATION / "services.yaml").read_text(encoding="utf-8")
+    assert set(strings["services"]) == set(icons["services"]) == {"report"}
+    for action, texts in strings["services"].items():
+        assert f"{action}:\n" in services
+        for field in texts["fields"]:
+            assert f"    {field}:" in services
+
+
+def test_exceptions_translated() -> None:
+    """Every translation key raised by the actions has a message."""
+    import re
+
+    source = (INTEGRATION / "services.py").read_text(encoding="utf-8")
+    raised = set(re.findall(r'translation_key="([a-z_]+)"', source))
+    assert raised
+    for path in (
+        INTEGRATION / "strings.json",
+        INTEGRATION / "translations" / "de.json",
+        INTEGRATION / "translations" / "en.json",
+    ):
+        assert set(load(path)["exceptions"]) == raised, path.name

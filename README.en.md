@@ -16,7 +16,7 @@
 ## Contents
 
 - [What Speicherwacht does](#what-speicherwacht-does) · [Requirements](#requirements) · [Installation](#installation) · [Setup](#setup)
-- [Entities](#entities) · [Health check](#health-check) · [How it calculates](#how-it-calculates) · [Limits](#limits)
+- [Entities](#entities) · [Action "Report"](#action-report) · [Health check](#health-check) · [How it calculates](#how-it-calculates) · [Limits](#limits)
 - [Troubleshooting](#troubleshooting) · [Privacy](#privacy) · [Removal](#removal) · [Related projects](#related-projects)
 
 ## What Speicherwacht does
@@ -27,6 +27,7 @@
 - **Rest loss:** mean power the resting battery loses (mostly the battery management's own consumption).
 - **Capacity (estimated):** energy taken out in discharges from full to empty, compared with the data sheet.
 - **Look-back from day one:** Speicherwacht works from Home Assistant's long-term statistics, so the time before the setup counts too.
+- **Report for any period** by action, per month.
 - **Repair issues** when a source is missing, unavailable for long or has a wrong unit.
 - No storage file of its own, no extra write load on SD cards.
 
@@ -117,6 +118,70 @@ Attributes show what a value is made of: charged, discharged, change of stored e
 The sensors can go on a dashboard like any other, for example as tiles with a statistics graph of the charge and discharge counters:
 
 <img src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/screenshots/dashboard_energie.png" alt="Dashboard section with efficiency per month, year and overall, rest loss, capacity, state of charge, full cycles and a bar chart of the energy charged and discharged per month (German UI)" width="720">
+
+## Action "Report"
+
+*Settings → Developer tools → Actions* → **Speicherwacht: Report**, choose the storage and the period, "Show response". The response can be used in scripts and automations too (`response_variable`). It holds the same figures as the sensors, only for any period, also before the setup, and per month.
+
+```yaml
+action: speicherwacht.report
+data:
+  config_entry: <choose the entry>
+  start: "2025-01-01 00:00:00"
+  end: "2026-01-01 00:00:00"
+```
+
+- **Without a start:** 1 January of the current year; **without an end:** now. Without both, the report gives the figures of "Efficiency year" and "Full cycles year". Times without a time zone are the local time of your Home Assistant.
+- **Energy, efficiency and full cycles** count whole days only, which begin and end within the period; the current day up to the latest hour when the period reaches now. As for the sensors, rest days do not count into the efficiency, but into energy and full cycles.
+- **Rest loss** is the mean over all rest hours of the period, **capacity (estimated)** the median of the latest ten discharges from full to empty within it (with the same thresholds as the sensors).
+- The report works from the statistics Speicherwacht read last (hourly, `data_until`). It needs the recorder and answers once Speicherwacht has calculated after the start (about a minute).
+
+Example response (made-up values); `reason` takes the same values as for the sensors:
+
+```yaml
+start: "2026-01-01T00:00:00+01:00"
+end: "2026-11-02T14:20:00+01:00"
+boundary: battery
+capacity_kwh: 10.0
+first_day: "2026-01-01"
+last_day: "2026-11-02"
+days: 306
+data_until: "2026-11-02T14:00:00+01:00"
+charged_kwh: 2210.45
+discharged_kwh: 2051.3
+full_cycles: 205.1
+efficiency:
+  percent: 93.1
+  charged_kwh: 2198.7
+  discharged_kwh: 2047.9
+  stored_change_kwh: -0.6
+  operating_days: 291
+  rest_days: 15
+  rest_loss_kwh: 4.8
+  days_without_soc: 0
+  incomplete_days: 0
+  reason: null
+rest_loss:
+  watts: 12
+  rest_hours: 1840
+  raw_watts: 12.4
+  reason: null
+capacity_estimate:
+  kwh: 9.42
+  share_of_data_sheet_percent: 94.2
+  samples: 10
+  reason: null
+months:
+  - month: "2026-01"
+    charged_kwh: 98.2
+    discharged_kwh: 88.9
+    full_cycles: 8.9
+    efficiency_percent: 89.6
+    efficiency_operating_days: 24
+    efficiency_rest_days: 7
+    efficiency_reason: null
+  # … one entry per month
+```
 
 ## Health check
 

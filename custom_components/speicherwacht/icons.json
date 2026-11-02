@@ -40,5 +40,10 @@
         "default": "mdi:battery-clock-outline"
       }
     }
+  },
+  "services": {
+    "report": {
+      "service": "mdi:file-chart-outline"
+    }
   }
 }

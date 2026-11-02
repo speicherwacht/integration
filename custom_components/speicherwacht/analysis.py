@@ -195,14 +195,21 @@ def _runs(hours: Sequence[Hour], keep) -> list[list[Hour]]:
     return runs
 
 
-def rest_loss(hours: Sequence[Hour], capacity: float, now: datetime) -> RestLoss:
-    """Mean loss while resting, from runs of quiet hours in the window.
+def rest_loss(
+    hours: Sequence[Hour],
+    capacity: float,
+    now: datetime,
+    since: datetime | None = None,
+) -> RestLoss:
+    """Mean loss while resting, from runs of quiet hours in the window
+    (default: REST_WINDOW before `now`; the report passes its period).
 
     Between the means of the first and the last hour of a run lie
     len(run) - 1 hours; the energy of those hours (half of the first and
     the last) is booked against the drop of the state of charge.
     """
-    since = now - REST_WINDOW
+    if since is None:
+        since = now - REST_WINDOW
     recent = [h for h in hours if since <= h.start < now]
     lost = span = 0.0
     for run in _runs(recent, lambda h: _quiet(h, capacity)):
@@ -233,10 +240,15 @@ def _discharging(hour: Hour, capacity: float) -> bool:
 
 
 def capacity_estimate(
-    hours: Sequence[Hour], capacity: float, now: datetime
+    hours: Sequence[Hour],
+    capacity: float,
+    now: datetime,
+    since: datetime | None = None,
 ) -> CapacityEstimate:
-    """Median energy per 100 % SoC over the latest full-to-empty discharges."""
-    since = now - CAPACITY_WINDOW
+    """Median energy per 100 % SoC over the latest full-to-empty discharges
+    in the window (default: CAPACITY_WINDOW before `now`)."""
+    if since is None:
+        since = now - CAPACITY_WINDOW
     recent = [h for h in hours if since <= h.start < now]
     samples = []
     for run in _runs(recent, lambda h: _discharging(h, capacity)):
@@ -270,13 +282,18 @@ def _close_today(day_list: list[Day], hours: Sequence[Hour], today: date) -> Non
     )
 
 
+def energy_days(hours: Sequence[Hour], tz: tzinfo, now: datetime) -> list[Day]:
+    """Local days with energy figures; today ends with the latest hour."""
+    day_list = [d for d in days(hours, tz) if d.energy_hours]
+    _close_today(day_list, hours, now.astimezone(tz).date())
+    return day_list
+
+
 def analyse(
     hours: Sequence[Hour], capacity: float, tz: tzinfo, now: datetime
 ) -> Analysis:
     """All figures at `now` (UTC)."""
-    day_list = [d for d in days(hours, tz) if d.energy_hours]
-    today = now.astimezone(tz).date()
-    _close_today(day_list, hours, today)
+    day_list = energy_days(hours, tz, now)
     result = {}
     for period in Period:
         first = period_start(period, now, tz)

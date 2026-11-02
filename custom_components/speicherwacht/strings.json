@@ -225,5 +225,36 @@
       "title": "Speicherwacht: unexpected unit",
       "description": "These entities of {name} have a unit Speicherwacht cannot use (counters Wh/kWh/MWh, state of charge %): {entities}. Choose others under Reconfigure."
     }
+  },
+  "exceptions": {
+    "start_after_end": {
+      "message": "The start must lie before the end."
+    },
+    "no_recorder": {
+      "message": "The report needs the recorder (long-term statistics)."
+    },
+    "not_analysed_yet": {
+      "message": "Speicherwacht has not read the statistics of this storage yet; try again in a minute."
+    }
+  },
+  "services": {
+    "report": {
+      "name": "Report",
+      "description": "Energy, efficiency (with the state of charge correction), full cycles, rest loss and estimated capacity of a period, also before the setup (from the long-term statistics), with months.",
+      "fields": {
+        "config_entry": {
+          "name": "Storage",
+          "description": "The Speicherwacht entry."
+        },
+        "start": {
+          "name": "Start",
+          "description": "Without: 1 January of the current year. Times without a zone are local time. Efficiency and energy count whole days only."
+        },
+        "end": {
+          "name": "End",
+          "description": "Without: now."
+        }
+      }
+    }
   }
 }
