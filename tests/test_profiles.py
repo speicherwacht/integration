@@ -15,6 +15,7 @@ from custom_components.speicherwacht.profiles import (
     HUAWEI_SOLAR,
     MARSTEK_MODBUS,
     SIGEN,
+    SOLAREDGE_MODBUS,
     SOLAREDGE_MODBUS_MULTI,
     SOLARMAN,
     SOLAX_MODBUS,
@@ -25,7 +26,7 @@ from custom_components.speicherwacht.profiles import (
     RegistryEntry,
 )
 
-from .conftest import load_fixture
+from .conftest import FIXTURES, load_fixture
 
 
 def entries(fixture: dict[str, Any], **changes: Any) -> list[RegistryEntry]:
@@ -171,6 +172,93 @@ def test_solaredge_one_storage_per_battery() -> None:
     signals, capacity = found["SE10K-RWB48BEN4_7E1A2B3C_B2"]
     assert signals[Signal.SOC] == "sensor.solaredge_i1_b2_state_of_energy"
     assert capacity == "sensor.solaredge_i1_b2_maximum_energy"
+
+
+def test_solaredge_core_one_storage_per_battery_not_the_meter() -> None:
+    fixture = load_fixture("solaredge_modbus_core.json")
+    found = SOLAREDGE_MODBUS.detect(entries(fixture))
+    assert sorted(found) == [
+        "7E2F4A61_battery_4B9C1D02",
+        "7E2F4A61_battery_4B9C1D07",
+    ]
+    signals, capacity = found["7E2F4A61_battery_4B9C1D07"]
+    assert signals == {
+        Signal.CHARGED: "sensor.battery_2_energy_imported",
+        Signal.DISCHARGED: "sensor.battery_2_energy_exported",
+        Signal.SOC: "sensor.battery_2_state_of_energy",
+    }
+    # Usable capacity and rated energy are disabled by default.
+    assert capacity is None
+
+
+def test_solaredge_core_capacity_once_enabled() -> None:
+    fixture = load_fixture("solaredge_modbus_core.json")
+    found = SOLAREDGE_MODBUS.detect(entries(fixture, usable=True))
+    _signals, capacity = found["7E2F4A61_battery_4B9C1D02"]
+    assert capacity == "sensor.battery_1_usable_capacity"
+    rated_only = [
+        e for e in entries(fixture, usable=True) if not e.unique_id.endswith("_max")
+    ]
+    _signals, capacity = SOLAREDGE_MODBUS.detect(rated_only)[
+        "7E2F4A61_battery_4B9C1D02"
+    ]
+    assert capacity == "sensor.battery_1_rated_energy"
+
+
+def test_solaredge_core_battery_without_serial_uses_the_slot() -> None:
+    """entity.py attachment_identity: "slot_<n>" when no serial is reported."""
+    fixture = load_fixture("solaredge_modbus_core.json")
+    slot = [
+        e._replace(unique_id=e.unique_id.replace("_4B9C1D02_", "_slot_1_"))
+        for e in entries(fixture)
+    ]
+    found = SOLAREDGE_MODBUS.detect(slot)
+    assert sorted(found) == ["7E2F4A61_battery_4B9C1D07", "7E2F4A61_battery_slot_1"]
+    assert found["7E2F4A61_battery_slot_1"][0][Signal.SOC] == (
+        "sensor.battery_1_state_of_energy"
+    )
+
+
+def test_solaredge_core_and_multi_stay_apart() -> None:
+    core = load_fixture("solaredge_modbus_core.json")
+    multi = load_fixture("solaredge_modbus_multi_storedge.json")
+    as_multi = entries(core, platform=SOLAREDGE_MODBUS_MULTI.platform, usable=True)
+    as_core = entries(multi, platform=SOLAREDGE_MODBUS.platform, usable=True)
+    assert SOLAREDGE_MODBUS_MULTI.detect(as_multi) == {}
+    assert SOLAREDGE_MODBUS.detect(as_core) == {}
+
+
+def test_solaredge_core_ignores_binsentsu_with_the_same_domain() -> None:
+    """binsentsu/home-assistant-solaredge-modbus is a HACS solaredge_modbus.
+
+    Its unique ids are "<hub name>_battery1_<key>" (const.py, BATTERIES) with
+    keys energy_charged/energy_discharged/state_of_charge.
+    """
+    custom = [
+        RegistryEntry(f"sensor.solaredge_{key}", "solaredge_modbus", f"SolarEdge_{key}")
+        for key in (
+            "battery1_energy_charged",
+            "battery1_energy_discharged",
+            "battery1_state_of_charge",
+            "battery1_size_max",
+        )
+    ]
+    assert SOLAREDGE_MODBUS.detect(custom) == {}
+    assert SOLAREDGE_MODBUS.without_counters(custom) == []
+
+
+@pytest.mark.parametrize(
+    "fixture_name",
+    sorted(p.name for p in FIXTURES.glob("*.json") if p.name != "_index.json"),
+)
+def test_no_template_takes_another_templates_fixture(fixture_name: str) -> None:
+    """Even on the same platform, a template finds nothing in a foreign fixture."""
+    fixture = load_fixture(fixture_name)
+    for template in TEMPLATES.values():
+        if template.platform == fixture["platform"]:
+            continue
+        foreign = entries(fixture, platform=template.platform, usable=True)
+        assert template.detect(foreign) == {}, template.key
 
 
 def test_solax_counters_disabled_by_default_get_the_hint() -> None:

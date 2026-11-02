@@ -304,6 +304,31 @@ SOLAREDGE_MODBUS_MULTI = Template(
     experimental=True,
 )
 
+# Core integration solaredge_modbus (since 2026.10; tag 2026.10.4, 357cae5,
+# library solaredged 0.5.0): unique id "<inverter serial>_battery_<battery
+# serial, or slot_<n> without one>_<key>", one device and one storage per
+# battery (up to three). Lifetime counters in Wh (suggested kWh); imported is
+# charged, exported discharged (integration documentation). The integration
+# keeps them monotonic itself (the highest value seen wins and is restored):
+# a battery that resets its counter freezes it instead, which the repair
+# issue counter_soc_mismatch reveals. Capacity: usable capacity, else rated
+# energy, both disabled by default. Neither the HACS solaredge_modbus_multi
+# (own template) nor binsentsu's HACS solaredge_modbus with the same domain
+# ("<hub name>_battery1_<key>", other keys) match.
+SOLAREDGE_MODBUS = Template(
+    key="solaredge_modbus",
+    label="SolarEdge StorEdge (solaredge_modbus, Core)",
+    platform="solaredge_modbus",
+    signals={
+        Signal.CHARGED: ("energy_imported",),
+        Signal.DISCHARGED: ("energy_exported",),
+        Signal.SOC: ("state_of_energy",),
+    },
+    id_format=r"(?P<prefix>.+_battery_.+)_(?P<key>{key})",
+    capacity=("energy_max", "rated_energy"),
+    experimental=True,
+)
+
 # HACS integration solax_modbus (wills106 2026.10.02, b6880b6): unique id
 # "<hub name>_<key>", one inverter per config entry. Lifetime counters are
 # "total" without last_reset, 0.1 kWh, disabled by default and then not even
@@ -426,6 +451,7 @@ TEMPLATES: dict[str, Template] = {
         GOODWE,
         VICTRON_GX,
         SOLAREDGE_MODBUS_MULTI,
+        SOLAREDGE_MODBUS,
         SOLAX_MODBUS,
         SUNGROW_MODBUS_YAML,
         SIGEN,

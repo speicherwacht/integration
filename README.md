@@ -63,6 +63,7 @@ Im ersten Schritt zeigt Speicherwacht die Speicher, die es erkannt hat, und „E
 | GoodWe ET, EH, BT, BH | Core `goodwe` | experimentell (beta) |
 | Victron mit BMV, SmartShunt oder Lynx | Core `victron_gx` | experimentell (beta) |
 | SolarEdge StorEdge | [solaredge_modbus_multi](https://github.com/WillCodeForCats/solaredge-modbus-multi) | experimentell (beta) |
+| SolarEdge StorEdge | Core `solaredge_modbus` (ab HA 2026.10) | experimentell (beta) |
 | SolaX, Sofar | [solax_modbus](https://github.com/wills106/homeassistant-solax-modbus) | experimentell (beta) |
 | Sungrow SH | [Modbus-YAML von mkaiser](https://github.com/mkaiser/Sungrow-SHx-Inverter-Modbus-Home-Assistant) | experimentell (beta) |
 | Sigenergy SigenStor | [sigen](https://github.com/TypQxQ/Sigenergy-Local-Modbus) | experimentell (beta) |
@@ -75,7 +76,8 @@ Im ersten Schritt zeigt Speicherwacht die Speicher, die es erkannt hat, und „E
 - **Anker SOLIX (Cloud):** Die Lebenszeit-Zähler kommen nur per MQTT mit dem Eigentümer-Konto, und die Integration legt sie erst an, wenn du die Kategorie `solarbank_energy` in ihren Optionen nicht mehr ausschließt. Speicherwacht weist in der Einrichtung darauf hin.
 - **GoodWe:** Batteriezähler gibt es nur bei ET, EH, BT und BH; ES, EM und BP liefern nur den Ladezustand.
 - **Victron:** Die Zähler kommen vom Batteriewächter (BMV, SmartShunt, Lynx). Ein Akku, der nur per CAN-BMS angebunden ist, hat keine. Die Werte „DC-Batterie Lade-/Entladeenergie“ des Systems beginnen bei jedem Neustart bei 0 und taugen nicht.
-- **SolarEdge:** Batterie-Entitäten gibt es erst mit der Option „Auto-Detect Batteries“. Bei LG- und BYD-Akkus springen die Zähler manchmal auf 0; die Integration hält dann den alten Wert fest, und Speicherwacht meldet „Zähler und Ladezustand passen nicht zusammen“.
+- **SolarEdge (`solaredge_modbus_multi`):** Batterie-Entitäten gibt es erst mit der Option „Auto-Detect Batteries“. Bei LG- und BYD-Akkus springen die Zähler manchmal auf 0; die Integration hält dann den alten Wert fest, und Speicherwacht meldet „Zähler und Ladezustand passen nicht zusammen“.
+- **SolarEdge (Core `solaredge_modbus`):** ein Speicher je Batterie („Battery 1“ bis „Battery 3“). „Energy imported“ ist geladen, „Energy exported“ entladen. Die Kapazität („Usable capacity“) ist ausgeschaltet; eingeschaltet schlägt Speicherwacht sie vor. Fällt ein Zähler zurück, hält die Integration den höchsten Wert fest; dann meldet Speicherwacht „Zähler und Ladezustand passen nicht zusammen“. Wechselrichter, die ihren Akku nicht über Modbus zeigen, haben nur „Storage state of charge“ ohne Zähler. Die gleichnamige HACS-Integration von binsentsu ersetzt die Core-Integration und hat andere Entitäten; dafür die eigene Zuordnung nehmen.
 - **SolaX:** „Battery Input Energy Total“ und „Battery Output Energy Total“ sind ausgeschaltet; einschalten und die Integration neu laden. Speicherwacht weist in der Einrichtung darauf hin.
 - **Sungrow:** Laut Paket läuft „Battery level“ nur zwischen dem minimalen und maximalen Ladezustand des Wechselrichters von 0 bis 100 %. Die geschätzte Kapazität zeigt dann nur dieses Fenster; ist es deutlich enger als der ganze Akku, trag seine Kapazität ein.
 - **Sigenergy:** Speicherwacht nimmt die Zähler der Anlage (ab Modbus-Protokoll v2.7). Ältere Firmware hat sie nicht; dann die Zähler des Wechselrichters selbst zuordnen.

@@ -1,0 +1,308 @@
+{
+  "platform": "solaredge_modbus",
+  "config_entry_id": "01K8SE4C0R3M0DBU5B4TTERY01",
+  "entities": [
+    {
+      "entity_id": "sensor.solaredge_se10000h_energy",
+      "unique_id": "7E2F4A61_ac_energy",
+      "state": "21873.402",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "SolarEdge SE10000H Energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.solaredge_se10000h_power",
+      "unique_id": "7E2F4A61_ac_power",
+      "state": "3120.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "SolarEdge SE10000H Power"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.meter_1_energy_imported",
+      "unique_id": "7E2F4A61_meter_7E5B0C13_energy_imported",
+      "state": "9412.77",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Meter 1 Energy imported"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.meter_1_energy_exported",
+      "unique_id": "7E2F4A61_meter_7E5B0C13_energy_exported",
+      "state": "11308.15",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Meter 1 Energy exported"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.battery_1_dc_power",
+      "unique_id": "7E2F4A61_battery_4B9C1D02_dc_power",
+      "state": "-845.0",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Battery 1 DC power"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.battery_1_energy_exported",
+      "unique_id": "7E2F4A61_battery_4B9C1D02_energy_exported",
+      "state": "1987.214",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Battery 1 Energy exported"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.battery_1_energy_imported",
+      "unique_id": "7E2F4A61_battery_4B9C1D02_energy_imported",
+      "state": "2163.508",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Battery 1 Energy imported"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.battery_1_state_of_energy",
+      "unique_id": "7E2F4A61_battery_4B9C1D02_state_of_energy",
+      "state": "58",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Battery 1 State of energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.battery_1_state_of_health",
+      "unique_id": "7E2F4A61_battery_4B9C1D02_state_of_health",
+      "state": "98",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "Battery 1 State of health"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.battery_1_available_energy",
+      "unique_id": "7E2F4A61_battery_4B9C1D02_energy_available",
+      "state": "5.62",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Battery 1 Available energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.battery_1_usable_capacity",
+      "unique_id": "7E2F4A61_battery_4B9C1D02_energy_max",
+      "state": "9.7",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Battery 1 Usable capacity"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.battery_1_rated_energy",
+      "unique_id": "7E2F4A61_battery_4B9C1D02_rated_energy",
+      "state": "9.7",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Battery 1 Rated energy"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.battery_1_status",
+      "unique_id": "7E2F4A61_battery_4B9C1D02_status",
+      "state": "charge",
+      "attributes": {
+        "device_class": "enum",
+        "options": [
+          "off",
+          "standby",
+          "init",
+          "charge",
+          "discharge",
+          "fault",
+          "preserve_charge",
+          "idle",
+          "power_saving"
+        ],
+        "friendly_name": "Battery 1 Status"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.battery_2_dc_power",
+      "unique_id": "7E2F4A61_battery_4B9C1D07_dc_power",
+      "state": "-838.5",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "friendly_name": "Battery 2 DC power"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.battery_2_energy_exported",
+      "unique_id": "7E2F4A61_battery_4B9C1D07_energy_exported",
+      "state": "1979.861",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Battery 2 Energy exported"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.battery_2_energy_imported",
+      "unique_id": "7E2F4A61_battery_4B9C1D07_energy_imported",
+      "state": "2155.093",
+      "attributes": {
+        "state_class": "total_increasing",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy",
+        "friendly_name": "Battery 2 Energy imported"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.battery_2_state_of_energy",
+      "unique_id": "7E2F4A61_battery_4B9C1D07_state_of_energy",
+      "state": "57",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Battery 2 State of energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.battery_2_state_of_health",
+      "unique_id": "7E2F4A61_battery_4B9C1D07_state_of_health",
+      "state": "97",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "friendly_name": "Battery 2 State of health"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.battery_2_available_energy",
+      "unique_id": "7E2F4A61_battery_4B9C1D07_energy_available",
+      "state": "5.51",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Battery 2 Available energy"
+      },
+      "disabled_by_default": false,
+      "entity_category": null
+    },
+    {
+      "entity_id": "sensor.battery_2_usable_capacity",
+      "unique_id": "7E2F4A61_battery_4B9C1D07_energy_max",
+      "state": "9.7",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Battery 2 Usable capacity"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.battery_2_rated_energy",
+      "unique_id": "7E2F4A61_battery_4B9C1D07_rated_energy",
+      "state": "9.7",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "kWh",
+        "device_class": "energy_storage",
+        "friendly_name": "Battery 2 Rated energy"
+      },
+      "disabled_by_default": true,
+      "entity_category": "diagnostic"
+    },
+    {
+      "entity_id": "sensor.battery_2_status",
+      "unique_id": "7E2F4A61_battery_4B9C1D07_status",
+      "state": "charge",
+      "attributes": {
+        "device_class": "enum",
+        "options": [
+          "off",
+          "standby",
+          "init",
+          "charge",
+          "discharge",
+          "fault",
+          "preserve_charge",
+          "idle",
+          "power_saving"
+        ],
+        "friendly_name": "Battery 2 Status"
+      },
+      "disabled_by_default": false,
+      "entity_category": "diagnostic"
+    }
+  ]
+}

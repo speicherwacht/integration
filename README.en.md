@@ -63,6 +63,7 @@ The first step lists the storages Speicherwacht detected plus "Map entities myse
 | GoodWe ET, EH, BT, BH | core `goodwe` | experimental (beta) |
 | Victron with BMV, SmartShunt or Lynx | core `victron_gx` | experimental (beta) |
 | SolarEdge StorEdge | [solaredge_modbus_multi](https://github.com/WillCodeForCats/solaredge-modbus-multi) | experimental (beta) |
+| SolarEdge StorEdge | Core `solaredge_modbus` (HA 2026.10 and later) | experimental (beta) |
 | SolaX, Sofar | [solax_modbus](https://github.com/wills106/homeassistant-solax-modbus) | experimental (beta) |
 | Sungrow SH | [Modbus YAML by mkaiser](https://github.com/mkaiser/Sungrow-SHx-Inverter-Modbus-Home-Assistant) | experimental (beta) |
 | Sigenergy SigenStor | [sigen](https://github.com/TypQxQ/Sigenergy-Local-Modbus) | experimental (beta) |
@@ -75,7 +76,8 @@ The first step lists the storages Speicherwacht detected plus "Map entities myse
 - **Anker SOLIX (cloud):** the lifetime counters come only by MQTT with the owner account, and the integration creates them only once you no longer exclude the category `solarbank_energy` in its options. The setup points this out.
 - **GoodWe:** only ET, EH, BT and BH have battery counters; ES, EM and BP report the state of charge only.
 - **Victron:** the counters come from the battery monitor (BMV, SmartShunt, Lynx). A battery connected by CAN-BMS only has none. The system's "DC battery charge/discharge energy" start at 0 after every restart and are not usable.
-- **SolarEdge:** battery entities exist only with the option "Auto-Detect Batteries". With LG and BYD batteries the counters sometimes drop to 0; the integration then holds the old value and Speicherwacht reports "counters and state of charge disagree".
+- **SolarEdge (`solaredge_modbus_multi`):** battery entities exist only with the option "Auto-Detect Batteries". With LG and BYD batteries the counters sometimes drop to 0; the integration then holds the old value and Speicherwacht reports "counters and state of charge disagree".
+- **SolarEdge (core `solaredge_modbus`):** one storage per battery ("Battery 1" to "Battery 3"). "Energy imported" is charged, "Energy exported" discharged. The capacity ("Usable capacity") is disabled; once enabled, Speicherwacht suggests it. If a counter falls back, the integration holds the highest value; Speicherwacht then reports "counters and state of charge disagree". Inverters that do not expose their battery over Modbus only have "Storage state of charge" without counters. The HACS integration of the same name by binsentsu replaces the core integration and has other entities; map those yourself.
 - **SolaX:** "Battery Input Energy Total" and "Battery Output Energy Total" are disabled; enable them and reload the integration. The setup points this out.
 - **Sungrow:** according to the package, "Battery level" runs from 0 to 100 % between the inverter's minimum and maximum state of charge. The estimated capacity then shows only that window; if it is much narrower than the whole battery, enter its capacity.
 - **Sigenergy:** Speicherwacht takes the plant's counters (Modbus protocol v2.7 and later). Older firmware lacks them; then map the inverter's counters yourself.

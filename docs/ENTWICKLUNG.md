@@ -14,7 +14,7 @@ Speicherwacht wertet aus vorhandenen Home-Assistant-Entitäten aus, wie gut ein 
 - Kapazität (geschätzt) aus Entladungen von voll bis leer.
 - Rückblick: alles aus der Langzeitstatistik, also auch vor der Einrichtung.
 - Reparaturhinweise für Datenfehler (Entität fehlt, Quelle nicht verfügbar, falsche Einheit).
-- Vorlagen: Fronius (echte Anlage), dazu als Beta Huawei Solar, solarman, Anker SOLIX (Cloud), Anker SOLIX (offiziell, lokal), GoodWe, Victron GX, SolarEdge (solaredge_modbus_multi), SolaX (solax_modbus), Sungrow (Modbus-YAML), Sigenergy, Zendure und Marstek Venus E.
+- Vorlagen: Fronius (echte Anlage), dazu als Beta Huawei Solar, solarman, Anker SOLIX (Cloud), Anker SOLIX (offiziell, lokal), GoodWe, Victron GX, SolarEdge (solaredge_modbus_multi und Core solaredge_modbus), SolaX (solax_modbus), Sungrow (Modbus-YAML), Sigenergy, Zendure und Marstek Venus E.
 
 **Später** (nicht im MVP): Wirtschaftlichkeit (Ersparnis, Amortisation; Entscheidung 2026-10-30 „später“), Problem-Sensoren (Wirkungsgrad oder Kapazität gesunken, Ruheverlust hoch), Verluste nach Leistungsklassen, Standby-Signal des Wechselrichters, Aktion „Bericht“.
 
@@ -141,7 +141,15 @@ Erkennung immer über die Entitäten-Registry (Plattform + `unique_id`), nie üb
 - WillCodeForCats/solaredge-modbus-multi 4.0.10 (`70aa159`). Batterie-Entitäten nur mit der Option „Auto-Detect Batteries“ (standardmäßig aus); ohne sie fehlt auch der SoC, ein Hinweis in der Einrichtung greift also nicht → README. unique_id `<Modell>_<Seriennummer>_B<1–3>_<Schlüssel>`, ein Speicher je Batterie.
 - `energy_import` (Laden) / `energy_export` (Entladen), Wh, `total_increasing`; SoC `battery_soe`; Kapazität `max_energy` (aktuelle Maximalenergie, nicht der Nennwert; Zusammenhang mit dem SoH nicht belegt). DC oder AC nicht dokumentiert.
 - **Zähler:** LG und BYD setzen sie auf 0, die SolarEdge Home Battery 48V springt und läuft rückwärts (Wiki „Known Issues“, #273, #606, #1156). Ohne die Option „Allow Battery Energy to Reset“ (Standard) hält die Integration den alten Wert; der Zähler friert dann ein, bis der Rohwert ihn wieder erreicht – Speicherwacht meldet das über `counter_soc_mismatch`. PR #1129 (geplant 4.1.0) summiert künftig selbst, gleiche IDs.
-- Die Core-Integration `solaredge_modbus` (seit 2026.10) ist eine eigene Plattform und nicht untersucht.
+- Die Core-Integration `solaredge_modbus` (seit 2026.10) ist eine eigene Plattform mit eigener Vorlage (nächster Abschnitt).
+
+### SolarEdge (Core `solaredge_modbus`, beta)
+
+- Core seit 2026.10.0 (geprüft an Tag 2026.10.4, `357cae5`; `sensor.py`/`entity.py` gleich in 2026.11.0b2 und auf `dev` vom 02.11.), Bibliothek frenck/python-solaredged 0.5.0 (`c80f8a8`). Nicht zu verwechseln mit der HACS-Integration `solaredge_modbus_multi` (oben) und mit binsentsu/home-assistant-solaredge-modbus (HACS, **dieselbe Domain** `solaredge_modbus`, ersetzt dann die Core-Integration; unique_id `<Hubname>_battery1_<Schlüssel>` mit `energy_charged`/`energy_discharged`, Stand `e6734e4`) – deren IDs trifft die Regex nicht (Test), dort bleibt die eigene Zuordnung.
+- unique_id `<Seriennummer des Wechselrichters>_battery_<Seriennummer der Batterie oder slot_<n>>_<Schlüssel>` (`entity.py` Z. 71–80, 115–119, 180–211); ein Gerät „Battery 1“ bis „Battery 3“ je Batterie (`sensor.py` Z. 836–870, drei Basisadressen in `const.py` der Bibliothek) → ein Speicher je Batterie, Gruppierung nach Präfix. Zähler (`meter_<id>_energy_imported`) und Wechselrichter haben dieselben Schlüssel ohne `_battery_` und werden nicht getroffen.
+- `energy_imported` (Laden) / `energy_exported` (Entladen), Wh mit Anzeigeeinheit kWh, `total_increasing` (`sensor.py` Z. 607–633); Laden/Entladen laut [Integrationsdoku](https://github.com/home-assistant/home-assistant.io/blob/a3be2e6f89a8cf2b4229ca445cb670e1ddf560d7/source/_integrations/solaredge_modbus.markdown) (Abschnitt Energy dashboard). SoC `state_of_energy` (%, `measurement`). Kapazität `energy_max` („Usable capacity“, konfigurierter Wert, von der Bibliothek auf den Nennwert begrenzt) vor `rated_energy` (Nennwert), beide standardmäßig deaktiviert. Leistung `dc_power`, negativ = Laden. DC oder AC nicht dokumentiert; der Batterieblock liegt am Akku, Grenze daher „Akku“ (**Annahme**).
+- **Zähler:** Die Integration hält sie selbst monoton (`SolarEdgeModbusEnergySensorEntity`, `sensor.py` Z. 954–1002): Der höchste gesehene Wert gilt und wird nach dem Neustart wiederhergestellt; ein niedrigerer Wert wird verworfen (Warnung im Log). Setzt ein Akku seinen Zähler zurück (bei `solaredge_modbus_multi` für LG/BYD belegt), friert er also ein, bis der Rohwert ihn wieder erreicht – Speicherwacht meldet das über `counter_soc_mismatch`.
+- Ohne Batterieblock (manche Home-Hub-Wechselrichter) gibt es nur `storage_state_of_charge` am Wechselrichter (`sensor.py` Z. 873–893, SunSpec-Modell 713) ohne Zähler → keine Vorlage, kein `counter_hint` (es gibt auch keine Leistung für einen Integral-Helfer).
 
 ### SolaX (HACS `solax_modbus`, beta)
 

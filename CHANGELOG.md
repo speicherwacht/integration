@@ -1,5 +1,9 @@
 # Changelog
 
+## Unveröffentlicht
+
+- **Neue Vorlage (Beta, aus dem Quellcode):** SolarEdge über die Core-Integration `solaredge_modbus` (ab HA 2026.10), ein Speicher je Batterie. Die bisherige Vorlage für die HACS-Integration `solaredge_modbus_multi` bleibt.
+
 ## 0.1.2 – 2026-10-30
 
 - **Ruheverlust nie mehr negativ:** Steigt der Ladezustand in Ruhephasen (Laden am Ladezähler vorbei, etwa PV direkt in den Akku bei DC-gekoppelten Balkonspeichern, oder Drift des Ladezustands), zeigte der Ruheverlust einen negativen Wert (gemeldet: −3 W). Jetzt ist er dann unbekannt mit dem Grund `soc_rose_at_rest`; der errechnete Wert steht im Attribut `raw_watts`. Ein Anstieg bis zu einer Stufe des Ladezustands (1 %) über alle Ruhestunden gilt als Rundung und zeigt 0 W. „Ruheverlust hoch“ bleibt dann unbekannt (Rückmeldung im simon42-Forum).
