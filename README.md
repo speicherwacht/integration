@@ -235,7 +235,9 @@ Geräte & Dienste → Speicherwacht → ⋮ → *Löschen*. Speicherwacht legt k
 
 ## Fehler melden
 
-[Issue anlegen](https://github.com/speicherwacht/integration/issues/new/choose), möglichst mit Diagnose-Datei, Speichermodell und Integration.
+[Issue anlegen](https://github.com/speicherwacht/integration/issues/new/choose), möglichst mit Diagnose-Datei, Speichermodell und Integration. Sicherheitslücken bitte vertraulich, siehe [SECURITY.md](https://github.com/speicherwacht/integration/blob/main/SECURITY.md).
+
+Pull Requests sind willkommen. Wie, steht in [CONTRIBUTING.md](https://github.com/speicherwacht/integration/blob/main/CONTRIBUTING.md).
 
 ## Verwandte Projekte
 

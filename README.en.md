@@ -235,7 +235,9 @@ Devices & services → Speicherwacht → ⋮ → *Delete*. Speicherwacht creates
 
 ## Reporting issues
 
-[Open an issue](https://github.com/speicherwacht/integration/issues/new/choose), ideally with the diagnostics file, battery model and integration.
+[Open an issue](https://github.com/speicherwacht/integration/issues/new/choose), ideally with the diagnostics file, battery model and integration. Please report security issues privately, see [SECURITY.md](https://github.com/speicherwacht/integration/blob/main/SECURITY.md).
+
+Pull requests are welcome, see [CONTRIBUTING.md](https://github.com/speicherwacht/integration/blob/main/CONTRIBUTING.md) (with an English summary at the end).
 
 ## Related projects
 
