@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Speicherwacht – Live-Demo</title>
+    <meta
+      name="description"
+      content="Speicherwacht zum Ausprobieren: Wirkungsgrad, Vollzyklen, Ruheverlust und geschätzte Kapazität von vier erfundenen Batteriespeichern – gerechnet vom Code der Integration."
+    />
+    <link rel="icon" href="../../custom_components/speicherwacht/brand/icon.png" />
+    <style>
+      /* Page chrome in the Speicherwacht colours (docs/BRAND.md), the cards
+         with Home Assistant's default theme variables. */
+      :root {
+        color-scheme: light;
+        --page-bg: #faf7f2;
+        --page-text: #1f1c18;
+        --page-muted: #6b6357;
+        --page-line: #e4ddd1;
+        --brand: #007d7f;
+        --accent: #f5a623;
+        --control-bg: #ffffff;
+        --primary-color: #03a9f4;
+        --card-background-color: #ffffff;
+        --primary-text-color: #212121;
+        --secondary-text-color: #727272;
+        --secondary-background-color: #f2f2f2;
+        --divider-color: rgba(0, 0, 0, 0.12);
+        --state-icon-color: #44739e;
+        --error-color: #db4437;
+        --success-color: #43a047;
+        --warning-color: #ff9800;
+        --charged: #007d7f;
+        --discharged: #f5a623;
+      }
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --page-bg: #14181d;
+        --page-text: #ece8e1;
+        --page-muted: #b9b2a6;
+        --page-line: #2a3038;
+        --brand: #3fb0b2;
+        --control-bg: #1d232a;
+        --card-background-color: #1c1c1c;
+        --primary-text-color: #e1e1e1;
+        --secondary-text-color: #9b9b9b;
+        --secondary-background-color: #282828;
+        --divider-color: rgba(225, 225, 225, 0.12);
+        --state-icon-color: #6aa7d8;
+        --charged: #3fb0b2;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--page-bg); color: var(--page-text);
+        font: 15px/1.5 Roboto, system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .page { max-width: 1280px; margin: 0 auto; padding: 24px 16px 48px; }
+      header { display: flex; gap: 14px; align-items: center; margin-bottom: 20px; }
+      header img { width: 52px; height: 52px; border-radius: 12px; }
+      h1 { margin: 0; font-size: 24px; line-height: 1.2; }
+      h1 span { color: var(--page-muted); font-weight: 400; }
+      .tagline { margin: 2px 0 0; color: var(--page-muted); }
+      header a.repo { margin-left: auto; color: var(--brand); text-decoration: none; font-weight: 600;
+        white-space: nowrap; }
+      .controls { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; margin-bottom: 20px; }
+      .group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+      .group > span { font-size: 12px; color: var(--page-muted); text-transform: uppercase; letter-spacing: .04em; }
+      .seg { display: inline-flex; flex-wrap: wrap; max-width: 100%; overflow: hidden;
+        border: 1px solid var(--page-line); border-radius: 8px; background: var(--control-bg); }
+      .seg button { border: 0; border-right: 1px solid var(--page-line); background: none; color: inherit;
+        font: inherit; padding: 6px 12px; cursor: pointer; }
+      .seg button:last-child { border-right: 0; }
+      .seg button[aria-pressed="true"] { background: var(--brand); color: #fff; }
+      :root[data-theme="dark"] .seg button[aria-pressed="true"] { color: #10181a; }
+      .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+      svg.mdi { width: 1em; height: 1em; fill: currentColor; flex: none; vertical-align: -0.125em; }
+      .banner { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; padding: 10px 14px;
+        border-radius: 10px; border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+        background: color-mix(in srgb, var(--accent) 14%, var(--page-bg)); font-size: 14px; }
+      .banner svg.mdi { font-size: 22px; color: var(--accent); }
+      .intro { margin: 0 0 20px; color: var(--page-muted); font-size: 14px; }
+
+      /* Dashboard: Home Assistant's sections view. */
+      .sections { display: grid; gap: 24px 16px;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+      .section { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+      .section.double { grid-column: span 2; }
+      @media (max-width: 720px) { .section.double { grid-column: auto; } header a.repo { display: none; } }
+      .heading { display: flex; align-items: center; gap: 8px; min-height: 36px; font-size: 16px;
+        font-weight: 500; color: var(--primary-text-color); }
+      .heading svg.mdi { font-size: 20px; color: var(--secondary-text-color); }
+      .subheading { font-size: 14px; font-weight: 500; color: var(--secondary-text-color); padding: 4px 4px 0; }
+      .card { background: var(--card-background-color); color: var(--primary-text-color);
+        border: 1px solid var(--divider-color); border-radius: 12px; overflow: hidden; }
+      .card-title { display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        padding: 14px 16px 4px; font-size: 20px; font-weight: 400; }
+      .card-title svg.mdi { font-size: 22px; color: var(--secondary-text-color); }
+      .card-title.small { font-size: 16px; font-weight: 500; padding-top: 12px; }
+
+      /* Tile card */
+      .tiles { display: grid; gap: 8px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      @media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      .tile { display: flex; gap: 10px; align-items: center; padding: 10px 12px; min-height: 56px; }
+      .tile svg.mdi { font-size: 24px; color: var(--state-icon-color); }
+      .tile b { display: block; font-size: 14px; font-weight: 500; line-height: 1.3; }
+      .tile small { display: block; font-size: 12px; color: var(--secondary-text-color); line-height: 1.3; }
+
+      /* Statistics graph */
+      svg.chart { display: block; width: 100%; height: auto; }
+      svg.chart text { fill: var(--secondary-text-color); font-size: 11px; }
+      svg.chart text.year { fill: var(--primary-text-color); font-weight: 600; }
+      svg.chart .grid { stroke: var(--divider-color); }
+      .legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; padding: 2px 12px 12px;
+        font-size: 12px; }
+      .legend i { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 5px;
+        border: 2px solid; vertical-align: -1px; }
+
+      /* Device page */
+      .area { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 0 4px;
+        font-size: 14px; color: var(--primary-color); font-weight: 500; }
+      .area span:last-child { display: flex; align-items: center; gap: 6px; color: var(--brand); font-weight: 600; }
+      .area img { width: 26px; height: 26px; border-radius: 6px; }
+      .info { padding: 4px 16px 0; font-size: 14px; }
+      .info p { margin: 0 0 6px; }
+      .info .muted { color: var(--secondary-text-color); }
+      .link-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; font-size: 14px;
+        color: var(--primary-color); font-weight: 500; border-top: 1px solid var(--divider-color); }
+      .link-row svg.mdi { font-size: 22px; }
+      .rows { padding: 4px 0; }
+      .row { display: flex; align-items: center; gap: 16px; padding: 10px 16px; font-size: 14px; }
+      .row > svg.mdi { font-size: 24px; color: var(--state-icon-color); }
+      .row > svg.mdi.on { color: var(--error-color); }
+      .row .value { margin-left: auto; text-align: right; white-space: nowrap; }
+      details.ent > summary { list-style: none; cursor: pointer; }
+      details.ent > summary::-webkit-details-marker { display: none; }
+      details.ent > summary:hover { background: var(--secondary-background-color); }
+      details.ent[open] > summary { background: var(--secondary-background-color); }
+      .attrs { margin: 0; padding: 8px 16px 10px 56px; font: 12px/1.6 ui-monospace, Consolas, monospace;
+        color: var(--secondary-text-color); overflow-wrap: anywhere; }
+      .attrs b { color: var(--primary-text-color); font-weight: 500; }
+      .disabled { padding: 6px 16px 12px; font-size: 14px; color: var(--primary-color); }
+      .hint { padding: 0 16px 12px; font-size: 12px; color: var(--secondary-text-color); }
+
+      /* Problem sensors */
+      .check .row { padding-bottom: 6px; }
+      .chip { margin-left: auto; padding: 2px 10px; border-radius: 12px; font-size: 13px; font-weight: 500;
+        white-space: nowrap; }
+      .chip.off { color: var(--success-color); background: color-mix(in srgb, var(--success-color) 15%, transparent); }
+      .chip.on { color: var(--error-color); background: color-mix(in srgb, var(--error-color) 15%, transparent); }
+      .chip.unknown { color: var(--secondary-text-color); background: var(--secondary-background-color); }
+      .explain { padding: 0 16px 8px 56px; font-size: 13px; color: var(--secondary-text-color); }
+      .explain b { color: var(--primary-text-color); font-weight: 500; }
+      .check .attrs { padding-top: 0; }
+
+      /* Action response */
+      .table-wrap { overflow-x: auto; }
+      table.months { width: 100%; border-collapse: collapse; font-size: 13px; }
+      table.months th, table.months td { padding: 6px 12px; text-align: right; border-bottom: 1px solid var(--divider-color);
+        white-space: nowrap; }
+      table.months th:first-child, table.months td:first-child { text-align: left; }
+      table.months th { font-weight: 500; color: var(--secondary-text-color); }
+      table.months tr.sum td { font-weight: 500; }
+      @media (max-width: 640px) { table.months th, table.months td { padding: 6px 6px; font-size: 12px; white-space: normal; } }
+      table.months td.na { color: var(--secondary-text-color); }
+      .call { padding: 8px 16px 4px; font-size: 13px; color: var(--secondary-text-color); }
+      details.yaml { padding: 4px 16px 12px; }
+      details.yaml summary { cursor: pointer; font-size: 14px; color: var(--brand); padding: 4px 0; }
+      pre { margin: 6px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--secondary-background-color);
+        font: 12px/1.5 ui-monospace, Consolas, monospace; overflow: auto; max-height: 460px; }
+
+      .below { margin-top: 28px; display: grid; gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
+      .box { border: 1px solid var(--page-line); border-radius: 10px; padding: 12px 14px; background: var(--control-bg); }
+      .box h2 { margin: 0 0 6px; font-size: 14px; }
+      .box p, .box li { margin: 0 0 6px; color: var(--page-muted); font-size: 14px; }
+      .box ul { margin: 0; padding-left: 18px; }
+      a { color: var(--brand); }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <img src="../../custom_components/speicherwacht/brand/icon.png" alt="" />
+        <div>
+          <h1>Speicherwacht <span data-t="demo"></span></h1>
+          <p class="tagline" data-t="tagline"></p>
+        </div>
+        <a class="repo" href="https://github.com/speicherwacht/integration">GitHub →</a>
+      </header>
+
+      <div class="controls">
+        <div class="group"><span data-t="battery"></span><div class="seg" id="battery"></div></div>
+        <div class="group"><span data-t="lang"></span><div class="seg" id="lang"></div></div>
+        <div class="group"><span data-t="theme"></span><div class="seg" id="dark"></div></div>
+      </div>
+
+      <div class="banner" id="banner"></div>
+      <p class="intro" id="intro"></p>
+      <main class="sections" id="dashboard"></main>
+
+      <div class="below">
+        <div class="box">
+          <h2 data-t="about"></h2>
+          <p data-t="data"></p>
+          <p data-t="credits"></p>
+        </div>
+        <div class="box">
+          <h2 data-t="howTitle"></h2>
+          <ul id="how"></ul>
+        </div>
+        <div class="box">
+          <h2 data-t="build"></h2>
+          <p data-t="cards"></p>
+          <p><a id="readme" data-t="readme"></a></p>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { PATHS } from "./icons.js";
+
+      const BATTERIES = ["healthy", "ageing", "balcony", "new"];
+      const ICONS = {
+        efficiency_today: "battery-charging-high",
+        efficiency_month: "battery-charging-high",
+        efficiency_year: "battery-charging-high",
+        efficiency_total: "battery-charging-high",
+        full_cycles_total: "battery-sync",
+        full_cycles_year: "battery-sync",
+        rest_loss: "battery-clock",
+        warranty_used: "shield-check-outline",
+        capacity_estimate: "battery-heart-variant",
+        efficiency_drop: "battery-arrow-down",
+        capacity_low: "battery-alert",
+        rest_loss_high: "battery-clock-outline",
+      };
+      // Unit and display precision as in sensor.py.
+      const FORMAT = {
+        efficiency_today: ["%", 1],
+        efficiency_month: ["%", 1],
+        efficiency_year: ["%", 1],
+        efficiency_total: ["%", 1],
+        full_cycles_total: ["", 1],
+        full_cycles_year: ["", 1],
+        rest_loss: ["W", 0],
+        warranty_used: ["%", 1],
+        capacity_estimate: ["kWh", 1],
+      };
+
+      const TEXT = {
+        de: {
+          demo: "Live-Demo",
+          tagline: "Wie gut arbeitet dein Batteriespeicher wirklich? So zeigt es Speicherwacht in Home Assistant.",
+          battery: "Speicher",
+          lang: "Sprache",
+          theme: "Darstellung",
+          batteries: { healthy: "Gesund", ageing: "Gealtert", balcony: "Balkon", new: "Frisch eingerichtet" },
+          auto: "Auto", light: "Hell", dark: "Dunkel",
+          banner: (time) =>
+            `Alle Speicher, Zählerstände und Werte sind erfunden – nur zur Vorführung. Demo-Zeit: ${time} Uhr.`,
+          intro: (d) =>
+            `${d.name}: ${kwh(d.capacity_kwh, 1)} nutzbar laut Datenblatt, die Zähler messen ${d.boundary === "system" ? "den ganzen Speicher (AC, Zwischenstecker)" : "den Akku (DC)"}, Statistik seit ${dateFmt(d.statistics_since, { day: "numeric", month: "long", year: "numeric" })}. `,
+          story: {
+            healthy: "Alle Prüfungen sind unauffällig; im Winter sinkt der Wirkungsgrad, weil der Speicher wenig arbeitet und das Batteriemanagement weiter Strom braucht.",
+            ageing: "Ein älterer Speicher mit über 1.500 Vollzyklen: Die geschätzte Kapazität liegt unter 80 % des Datenblatts, der Wirkungsgrad der letzten 30 Tage deutlich unter dem Vorjahr.",
+            balcony: "Die Verluste des Wechselrichters zählen mit, deshalb liegt der Wirkungsgrad niedriger als bei einem DC-Zähler. Noch kein Jahr Statistik: Der Vergleich mit dem Vorjahr bleibt unbekannt.",
+            new: "Vor drei Wochen eingerichtet: Wirkungsgrad und Ruheverlust gibt es schon. Für die geschätzte Kapazität fehlen Entladungen von voll bis leer, für den Vergleich mit dem Vorjahr ein Jahr Statistik.",
+          },
+          dashboard: "Batteriespeicher",
+          efficiencyLoss: "Wirkungsgrad und Verlust",
+          akku: "Akku",
+          tiles: {
+            efficiency_month: "Monat", efficiency_year: "Jahr", efficiency_total: "Gesamt", rest_loss: "Ruheverlust",
+            capacity_estimate: "Kapazität", soc: "Ladezustand", full_cycles_total: "Vollzyklen gesamt", full_cycles_year: "Vollzyklen Jahr",
+          },
+          chartTitle: "Geladen und entladen je Monat",
+          charged: "Geladen",
+          discharged: "Entladen",
+          device: (n) => `Gerät „${n}“`,
+          inArea: (a) => `In ${a}`,
+          serviceInfo: "Dienst-Informationen",
+          by: "von Speicherwacht",
+          version: (v) => `Version ${v}`,
+          diagnostics: "Diagnosedaten herunterladen",
+          sensors: "Sensoren",
+          disabled: (n) => `+${n} deaktivierte Entität`,
+          rowHint: "Tippe auf einen Sensor: Entitäts-ID und Attribute wie im Dialog des Sensors.",
+          unknown: "Unbekannt",
+          problem: { on: "Problem", off: "OK" },
+          health: "Gesundheits-Check",
+          last30: (v) => `Letzte 30 Tage <b>${pct(v)}</b>`,
+          dropKnown: (a) =>
+            `, dieselben Tage im Vorjahr <b>${pct(a.previous_year_percent)}</b>: ${num(Math.abs(a.drop_points), 1)} Punkte ${a.drop_points >= 0 ? "weniger" : "mehr"}. An ab ${num(a.threshold_points, 0)} Punkten.`,
+          capacityKnown: (a) =>
+            `Geschätzt <b>${kwh(a.estimate_kwh, 1)}</b> = ${pct(a.share_percent)} von ${kwh(a.data_sheet_kwh, 1)} (Datenblatt)` +
+            (a.year_ago_kwh === null ? "" : `, vor einem Jahr ${kwh(a.year_ago_kwh, 1)}`) +
+            `. An unter ${num(a.end_of_life_percent, 0)} % oder ${num(a.drop_threshold_points, 0)} Punkte unter dem Vorjahr.`,
+          restKnown: (a) =>
+            `<b>${num(a.watts, 1)} W</b>` + (a.previous_year_watts === null ? "" : `, dieselben Tage im Vorjahr ${num(a.previous_year_watts, 1)} W`) +
+            `. An über ${num(a.max_watts, 0)} W oder bei +50 % und +10 W gegenüber dem Vorjahr.`,
+          mismatch: "Reparaturhinweis „Zähler und Ladezustand passen nicht zusammen“",
+          mismatchOk: (a) => `keiner – im letzten Tag ${num(a.throughput_kwh, 1)} kWh Durchsatz, Ladezustand ${num(a.soc_range_points, 0)} Punkte Spanne.`,
+          reasons: {
+            no_data: "im Zeitraum keine Zählerwerte",
+            too_little_charge: "weniger geladen als eine Kapazität (Tag: eine halbe)",
+            no_soc: "kein Ladezustand an den Tagesgrenzen",
+            too_few_rest_hours: "weniger als 24 Ruhestunden in 30 Tagen",
+            soc_rose_at_rest: "Ladezustand stieg in Ruhephasen",
+            too_few_discharges: "weniger als drei Entladungen von voll bis leer in 90 Tagen",
+            no_previous_year: "Vorjahr fehlt (weniger als 15 Betriebstage in denselben Tagen vor einem Jahr)",
+            too_few_days: "zu wenige Betriebstage in den letzten 30 Tagen",
+            no_estimate: "noch keine geschätzte Kapazität",
+            no_rest_loss: "Ruheverlust unbekannt",
+            too_few_hours: "weniger als 24 vollständige Stunden",
+          },
+          reasonIs: (r) => `Unbekannt: ${r}.`,
+          report: "Aktion „Bericht“",
+          call: "Ohne Beginn und Ende: 1. Januar bis jetzt, je Monat aufgeschlüsselt.",
+          month: "Monat",
+          cycles: "Vollzyklen",
+          efficiency: "Wirkungsgrad",
+          year: "Zeitraum",
+          response: "Antwort der Aktion anzeigen",
+          answer: "Antwort:",
+          about: "Erfunden, aber echt gerechnet",
+          data:
+            "Die vier Speicher, ihr Wetter, Verbrauch, ihre Verluste und Alterung sind erfunden; dahinter steht kein echtes Gerät und keine echte Anlage. " +
+            "Ein kleiner Simulator schreibt daraus die Stundenwerte, die die Langzeitstatistik von Home Assistant hätte. Ab da rechnet der Code der Integration – genau wie in deinem Home Assistant.",
+          credits: "Symbole: Material Design Icons (Pictogrammers Free License).",
+          howTitle: "Wie gerechnet",
+          how: [
+            "Wirkungsgrad = (Entladung + Änderung des Ladezustands × Kapazität) / Ladung, über die Betriebstage – eine eigene Näherung.",
+            "Ruhetage (Laden und Entladen je unter 5 % der Kapazität) zählen nicht in den Wirkungsgrad.",
+            "Ruheverlust: Abfall des Ladezustands in Stunden ohne Laden und Entladen, mindestens drei am Stück, letzte 30 Tage.",
+            "Kapazität (geschätzt): Median der Entladungen von mindestens 90 % bis höchstens 15 %, letzte 90 Tage.",
+            "Vollzyklen: Entladung seit Inbetriebnahme (Zählerstand) geteilt durch die Kapazität.",
+          ],
+          build: "Selbst bauen",
+          cards:
+            "Der Abschnitt „Batteriespeicher“ besteht aus normalen Dashboard-Karten (Überschrift, Kachel, Statistik-Diagramm der Lade- und Entladezähler mit Zeitraum Monat).",
+          readme: "Sensoren und Dashboard in der README →",
+          readmeUrl: "https://github.com/speicherwacht/integration#entit%C3%A4ten",
+        },
+        en: {
+          demo: "live demo",
+          tagline: "How well does your home battery really work? This is how Speicherwacht shows it in Home Assistant.",
+          battery: "Battery",
+          lang: "Language",
+          theme: "Theme",
+          batteries: { healthy: "Healthy", ageing: "Ageing", balcony: "Balcony", new: "Just set up" },
+          auto: "Auto", light: "Light", dark: "Dark",
+          banner: (time) => `All batteries, meter readings and figures are made up – for demonstration only. Demo time: ${time}.`,
+          intro: (d) =>
+            `${d.name}: ${kwh(d.capacity_kwh, 1)} usable per data sheet, the counters measure ${d.boundary === "system" ? "the whole storage (AC, plug meter)" : "the battery (DC)"}, statistics since ${dateFmt(d.statistics_since, { day: "numeric", month: "long", year: "numeric" })}. `,
+          story: {
+            healthy: "All checks are fine; in winter the efficiency drops because the battery works little while its management keeps drawing power.",
+            ageing: "An older battery with more than 1,500 full cycles: the estimated capacity is below 80 % of the data sheet, the efficiency of the last 30 days clearly below last year.",
+            balcony: "The inverter's losses count too, so the efficiency is lower than with a DC counter. Less than a year of statistics: the comparison with last year stays unknown.",
+            new: "Set up three weeks ago: efficiency and rest loss are there already. The estimated capacity lacks discharges from full to empty, the comparison with last year a year of statistics.",
+          },
+          dashboard: "Home battery",
+          efficiencyLoss: "Efficiency and loss",
+          akku: "Battery",
+          tiles: {
+            efficiency_month: "Month", efficiency_year: "Year", efficiency_total: "Total", rest_loss: "Rest loss",
+            capacity_estimate: "Capacity", soc: "State of charge", full_cycles_total: "Full cycles total", full_cycles_year: "Full cycles year",
+          },
+          chartTitle: "Charged and discharged per month",
+          charged: "Charged",
+          discharged: "Discharged",
+          device: (n) => `Device “${n}”`,
+          inArea: (a) => `In ${a}`,
+          serviceInfo: "Service info",
+          by: "by Speicherwacht",
+          version: (v) => `Version ${v}`,
+          diagnostics: "Download diagnostics",
+          sensors: "Sensors",
+          disabled: (n) => `+${n} disabled entity`,
+          rowHint: "Tap a sensor: entity ID and attributes as in the sensor's dialog.",
+          unknown: "Unknown",
+          problem: { on: "Problem", off: "OK" },
+          health: "Health check",
+          last30: (v) => `Last 30 days <b>${pct(v)}</b>`,
+          dropKnown: (a) =>
+            `, same days last year <b>${pct(a.previous_year_percent)}</b>: ${num(Math.abs(a.drop_points), 1)} points ${a.drop_points >= 0 ? "less" : "more"}. On from ${num(a.threshold_points, 0)} points.`,
+          capacityKnown: (a) =>
+            `Estimated <b>${kwh(a.estimate_kwh, 1)}</b> = ${pct(a.share_percent)} of ${kwh(a.data_sheet_kwh, 1)} (data sheet)` +
+            (a.year_ago_kwh === null ? "" : `, a year ago ${kwh(a.year_ago_kwh, 1)}`) +
+            `. On below ${num(a.end_of_life_percent, 0)} % or ${num(a.drop_threshold_points, 0)} points below last year.`,
+          restKnown: (a) =>
+            `<b>${num(a.watts, 1)} W</b>` + (a.previous_year_watts === null ? "" : `, same days last year ${num(a.previous_year_watts, 1)} W`) +
+            `. On above ${num(a.max_watts, 0)} W or at +50 % and +10 W against last year.`,
+          mismatch: "Repair issue “Counters and state of charge disagree”",
+          mismatchOk: (a) => `none – in the last day ${num(a.throughput_kwh, 1)} kWh throughput, state of charge range ${num(a.soc_range_points, 0)} points.`,
+          reasons: {
+            no_data: "no counter values in the period",
+            too_little_charge: "less charged than one capacity (day: half)",
+            no_soc: "no state of charge at the day boundaries",
+            too_few_rest_hours: "fewer than 24 rest hours in 30 days",
+            soc_rose_at_rest: "state of charge rose while resting",
+            too_few_discharges: "fewer than three discharges from full to empty in 90 days",
+            no_previous_year: "no previous year (fewer than 15 operating days in the same days a year ago)",
+            too_few_days: "too few operating days in the last 30 days",
+            no_estimate: "no estimated capacity yet",
+            no_rest_loss: "rest loss unknown",
+            too_few_hours: "fewer than 24 complete hours",
+          },
+          reasonIs: (r) => `Unknown: ${r}.`,
+          report: "Action “Report”",
+          call: "Without start and end: 1 January until now, per month.",
+          month: "Month",
+          cycles: "Full cycles",
+          efficiency: "Efficiency",
+          year: "Period",
+          response: "Show the action's response",
+          answer: "Response:",
+          about: "Made up, but computed for real",
+          data:
+            "The four batteries, their weather, consumption, losses and ageing are made up; there is no real device or installation behind them. " +
+            "A small simulator writes the hourly values Home Assistant's long-term statistics would hold. From there the integration's own code computes – just as in your Home Assistant.",
+          credits: "Icons: Material Design Icons (Pictogrammers Free License).",
+          howTitle: "How it is computed",
+          how: [
+            "Efficiency = (discharge + change of state of charge × capacity) / charge, over the operating days – an approximation of its own.",
+            "Rest days (charge and discharge each below 5 % of the capacity) do not count into the efficiency.",
+            "Rest loss: drop of the state of charge in hours without charging or discharging, at least three in a row, last 30 days.",
+            "Capacity (estimated): median of the discharges from at least 90 % to at most 15 %, last 90 days.",
+            "Full cycles: discharge since commissioning (counter reading) divided by the capacity.",
+          ],
+          build: "Build it yourself",
+          cards:
+            "The “Home battery” section is made of standard dashboard cards (heading, tile, statistics graph of the charge and discharge counters with period month).",
+          readme: "Sensors and dashboard in the README →",
+          readmeUrl: "https://github.com/speicherwacht/integration/blob/main/README.en.md#entities",
+        },
+      };
+
+      // State, kept in the URL so a view can be linked.
+      const params = new URLSearchParams(location.search);
+      const pick = (value, allowed, fallback) => (allowed.includes(value) ? value : fallback);
+      const state = {
+        battery: pick(params.get("battery"), BATTERIES, "healthy"),
+        lang: pick(params.get("lang"), ["de", "en"], navigator.language?.startsWith("de") ? "de" : "en"),
+        dark: pick(params.get("dark"), ["auto", "0", "1"], "auto"),
+      };
+      const t = () => TEXT[state.lang];
+      const saveState = () => history.replaceState(null, "", `?${new URLSearchParams(state)}`);
+      const systemDark = matchMedia("(prefers-color-scheme: dark)");
+      const narrow = matchMedia("(max-width: 640px)");
+      const isDark = () => (state.dark === "auto" ? systemDark.matches : state.dark === "1");
+
+      const escapeHtml = (value) =>
+        String(value ?? "").replace(
+          /[&<>"']/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+        );
+      const icon = (name, cls = "") =>
+        `<svg class="mdi ${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${PATHS[name]}" /></svg>`;
+      const num = (value, digits) =>
+        new Intl.NumberFormat(state.lang, { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+      const pct = (value) => `${num(value, 1)} %`;
+      const kwh = (value, digits) => `${num(value, digits)} kWh`;
+      const dateFmt = (iso, opts) => new Date(iso).toLocaleDateString(state.lang, { timeZone: "Europe/Berlin", ...opts });
+
+      const cache = {};
+      async function load(key) {
+        cache[key] ??= await (await fetch(`data/${key}.json`)).json();
+        return cache[key];
+      }
+
+      // A sensor's state as Home Assistant shows it (unit, display precision).
+      function sensorValue(key, entity) {
+        if (entity.state === null) return t().unknown;
+        const [unit, digits] = FORMAT[key];
+        return unit ? `${num(entity.state, digits)} ${unit}` : num(entity.state, digits);
+      }
+      function problemValue(entity) {
+        return entity.state === null ? t().unknown : t().problem[entity.state];
+      }
+      function batteryIcon(level) {
+        if (level <= 5) return "battery-alert-variant-outline";
+        const step = Math.min(100, Math.round(level / 10) * 10);
+        return step >= 100 ? "battery" : `battery-${Math.max(10, step)}`;
+      }
+      const batteryColor = (level) =>
+        level >= 70 ? "var(--success-color)" : level >= 30 ? "var(--warning-color)" : "var(--error-color)";
+
+      // ---- Dashboard -----------------------------------------------------------------
+
+      const tile = (mdi, name, value, style = "") =>
+        `<div class="card tile">${icon(mdi).replace("<svg", `<svg style="${style}"`)}<div><b>${escapeHtml(name)}</b><small>${escapeHtml(value)}</small></div></div>`;
+
+      function niceStep(max) {
+        const raw = max / 5;
+        const p = 10 ** Math.floor(Math.log10(raw));
+        return [1, 2, 2.5, 5, 10].map((m) => m * p).find((s) => s >= raw);
+      }
+
+      function monthChart(months) {
+        const tx = t();
+        // Narrower drawing on phones, so the text keeps a readable size.
+        const W = narrow.matches ? 460 : 760, H = narrow.matches ? 260 : 300, L = 42, R = 10, T = 22, B = 30;
+        const max = Math.max(1, ...months.flatMap((m) => [m.charged_kwh, m.discharged_kwh]));
+        const step = niceStep(max);
+        const top = Math.ceil(max / step) * step;
+        const y = (v) => T + (1 - v / top) * (H - T - B);
+        const slot = (W - L - R) / months.length;
+        const bar = Math.min(26, (slot * 0.72) / 2);
+        const every = months.length > (narrow.matches ? 6 : 10) ? 2 : 1;
+        let svg = `<text x="${L - 4}" y="${T - 8}">kWh</text>`;
+        for (let v = 0; v <= top + 1e-9; v += step) {
+          svg += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" />
+            <text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${num(v, 0)}</text>`;
+        }
+        months.forEach((m, i) => {
+          const centre = L + (i + 0.5) * slot;
+          const date = `${m.month}-15T12:00:00+01:00`;
+          const title = dateFmt(date, { month: "long", year: "numeric" });
+          [["charged", m.charged_kwh, -1], ["discharged", m.discharged_kwh, 0]].forEach(([key, v, side]) => {
+            const x = side ? centre - bar - 1 : centre + 1;
+            const h = Math.max(0, y(0) - y(v));
+            svg += `<rect x="${x}" y="${y(v)}" width="${bar}" height="${h}" rx="3" fill="var(--${key})" fill-opacity="0.5" stroke="var(--${key})" stroke-width="1.5"><title>${escapeHtml(title)}: ${escapeHtml(tx[key])} ${kwh(v, 1)}</title></rect>`;
+          });
+          // Every second month counted from January, so January keeps its year label.
+          if ((Number(m.month.slice(5)) - 1) % every === 0) {
+            const january = m.month.endsWith("-01");
+            const label = january
+              ? dateFmt(date, narrow.matches ? { month: "short", year: "2-digit" } : { month: "long", year: "numeric" })
+              : dateFmt(date, { month: every > 1 || narrow.matches ? "short" : "long" });
+            svg += `<text x="${centre}" y="${H - 10}" text-anchor="middle" class="${january ? "year" : ""}">${escapeHtml(label)}</text>`;
+          }
+        });
+        return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${escapeHtml(tx.chartTitle)}">${svg}</svg>`;
+      }
+
+      function dashboardSection(data) {
+        const tx = t();
+        const s = data.sensors;
+        const tiles = (keys) => keys.map((k) => tile(ICONS[k], tx.tiles[k], sensorValue(k, s[k]))).join("");
+        const soc = tile(batteryIcon(data.soc), tx.tiles.soc, `${num(data.soc, 1)} %`, `color:${batteryColor(data.soc)}`);
+        return `
+          <section class="section double">
+            <div class="heading">${icon("home-battery")}<span>${tx.dashboard}</span></div>
+            <div class="subheading">${tx.efficiencyLoss}</div>
+            <div class="tiles">${tiles(["efficiency_month", "efficiency_year", "efficiency_total", "rest_loss"])}</div>
+            <div class="subheading">${tx.akku}</div>
+            <div class="tiles">${tiles(["capacity_estimate"])}${soc}${tiles(["full_cycles_total", "full_cycles_year"])}</div>
+            <div class="card">
+              <div class="card-title"><span>${tx.chartTitle}</span>${icon("chevron-right")}</div>
+              ${monthChart(data.months)}
+              <div class="legend"><span><i style="border-color:var(--charged);background:color-mix(in srgb, var(--charged) 50%, transparent)"></i>${tx.charged}</span><span><i style="border-color:var(--discharged);background:color-mix(in srgb, var(--discharged) 50%, transparent)"></i>${tx.discharged}</span></div>
+            </div>
+          </section>`;
+      }
+
+      // ---- Device page ---------------------------------------------------------------
+
+      function attributes(entityId, attrs) {
+        const lines = Object.entries(attrs).map(
+          ([k, v]) => `${escapeHtml(k)}: <b>${escapeHtml(v === null ? "null" : Array.isArray(v) ? `[${v.join(", ")}]` : v)}</b>`,
+        );
+        return `<div class="attrs">${escapeHtml(entityId)}<br />${lines.join("<br />")}</div>`;
+      }
+
+      function deviceSection(data, names) {
+        const tx = t();
+        const n = names[state.lang];
+        const rows = [];
+        let disabled = 0;
+        for (const [key, entity] of Object.entries(data.sensors)) {
+          if (entity.disabled) { disabled += 1; continue; }
+          rows.push({ name: n.sensor[key], icon: ICONS[key], value: sensorValue(key, entity), on: false,
+            id: data.entity_ids[`sensor.${key}`], attrs: entity.attributes });
+        }
+        for (const [key, entity] of Object.entries(data.binary_sensors)) {
+          rows.push({ name: n.binary_sensor[key], icon: ICONS[key], value: problemValue(entity), on: entity.state === "on",
+            id: data.entity_ids[`binary_sensor.${key}`], attrs: entity.attributes });
+        }
+        rows.sort((a, b) => a.name.localeCompare(b.name, state.lang));
+        const list = rows
+          .map((r) => `<details class="ent"><summary class="row">${icon(r.icon, r.on ? "on" : "")}<span>${escapeHtml(r.name)}</span><span class="value">${escapeHtml(r.value)}</span></summary>${attributes(r.id, r.attrs)}</details>`)
+          .join("");
+        return `
+          <section class="section">
+            <div class="heading">${icon("devices")}<span>${escapeHtml(tx.device(data.name))}</span></div>
+            <div class="area"><span>${escapeHtml(tx.inArea(data.area[state.lang]))}</span><span><img src="../../custom_components/speicherwacht/brand/icon.png" alt="" />Speicherwacht</span></div>
+            <div class="card">
+              <div class="card-title">${tx.serviceInfo}</div>
+              <div class="info"><p class="muted">${tx.by}</p><p>${tx.version(data.version)}</p></div>
+              <div class="link-row">${icon("download")}<span>${tx.diagnostics}</span></div>
+            </div>
+            <div class="card">
+              <div class="card-title">${tx.sensors}</div>
+              <div class="rows">${list}</div>
+              ${disabled ? `<div class="disabled">${tx.disabled(disabled)}</div>` : ""}
+              <div class="hint">${tx.rowHint}</div>
+            </div>
+          </section>`;
+      }
+
+      // ---- Health check --------------------------------------------------------------
+
+      function explain(key, entity) {
+        const tx = t();
+        const a = entity.attributes;
+        const reason = a.reason ? tx.reasonIs(tx.reasons[a.reason] ?? a.reason) : "";
+        if (key === "efficiency_drop") {
+          const head = a.current_percent === null ? "" : tx.last30(a.current_percent);
+          return entity.state === null ? `${head}${head ? ". " : ""}${reason}` : head + tx.dropKnown(a);
+        }
+        if (key === "capacity_low") return entity.state === null ? reason : tx.capacityKnown(a);
+        return entity.state === null ? reason : tx.restKnown(a);
+      }
+
+      function healthSection(data, names) {
+        const tx = t();
+        const n = names[state.lang];
+        const cards = Object.entries(data.binary_sensors)
+          .map(([key, entity]) => {
+            const cls = entity.state ?? "unknown";
+            return `
+              <div class="card check">
+                <div class="row">${icon(ICONS[key], entity.state === "on" ? "on" : "")}<span>${escapeHtml(n.binary_sensor[key])}</span><span class="chip ${cls}">${escapeHtml(problemValue(entity))}</span></div>
+                <div class="explain">${explain(key, entity)}</div>
+              </div>`;
+          })
+          .join("");
+        const m = data.mismatch;
+        return `
+          <section class="section">
+            <div class="heading">${icon("stethoscope")}<span>${tx.health}</span></div>
+            ${cards}
+            <div class="card check">
+              <div class="row">${icon("wrench-outline")}<span>${tx.mismatch}</span></div>
+              <div class="explain">${m.state === "on" ? "" : tx.mismatchOk(m.attributes)}</div>
+            </div>
+          </section>`;
+      }
+
+      // ---- Action "Bericht" ------------------------------------------------------------
+
+      function yaml(value, indent = "") {
+        if (Array.isArray(value)) {
+          if (!value.length) return "[]";
+          return value
+            .map((item) => {
+              const body = yaml(item, indent + "  ");
+              return typeof item === "object" && item ? `\n${indent}- ${body.trimStart()}` : `\n${indent}- ${body}`;
+            })
+            .join("");
+        }
+        if (value && typeof value === "object") {
+          return Object.entries(value)
+            .map(([k, v]) => {
+              const inner = yaml(v, indent + "  ");
+              return typeof v === "object" && v !== null && (!Array.isArray(v) || v.length)
+                ? `\n${indent}${k}:${inner}`
+                : `\n${indent}${k}: ${inner}`;
+            })
+            .join("");
+        }
+        if (value === null) return "null";
+        // Like Home Assistant's YAML view: dates and times in quotes.
+        return typeof value === "string" && /^\d/.test(value) ? `"${value}"` : String(value);
+      }
+
+      function reportSection(data, names) {
+        const tx = t();
+        const r = data.report;
+        const eff = (percent, reason) =>
+          percent === null ? `<td class="na" title="${escapeHtml(tx.reasons[reason] ?? reason)}">${tx.unknown}</td>` : `<td>${pct(percent)}</td>`;
+        const rows = r.months
+          .map((m) => `<tr><td>${escapeHtml(dateFmt(`${m.month}-15T12:00:00+01:00`, { month: "long", year: "numeric" }))}</td>
+            <td>${num(m.charged_kwh, 1)}</td><td>${num(m.discharged_kwh, 1)}</td><td>${num(m.full_cycles, 1)}</td>${eff(m.efficiency_percent, m.efficiency_reason)}</tr>`)
+          .join("");
+        const sum = `<tr class="sum"><td>${tx.year}</td><td>${num(r.charged_kwh, 1)}</td><td>${num(r.discharged_kwh, 1)}</td><td>${num(r.full_cycles, 1)}</td>${eff(r.efficiency.percent, r.efficiency.reason)}</tr>`;
+        const call = `action: speicherwacht.report\ndata:\n  config_entry: <${data.name}>\n\n# ${tx.answer}`;
+        return `
+          <section class="section double">
+            <div class="heading">${icon("file-chart-outline")}<span>${tx.report}</span></div>
+            <div class="card">
+              <div class="card-title small">${escapeHtml(names[state.lang].report)} – ${escapeHtml(data.name)}</div>
+              <div class="call">${tx.call}</div>
+              <div class="table-wrap"><table class="months">
+                <tr><th>${tx.month}</th><th>${tx.charged} (kWh)</th><th>${tx.discharged} (kWh)</th><th>${tx.cycles}</th><th>${tx.efficiency}</th></tr>
+                ${rows}${sum}
+              </table></div>
+              <details class="yaml"><summary>${tx.response}</summary><pre>${escapeHtml(call)}\n${escapeHtml(yaml(r).trimStart())}</pre></details>
+            </div>
+          </section>`;
+      }
+
+      // ---- Page ----------------------------------------------------------------------
+
+      async function render() {
+        const tx = t();
+        const [data, names] = await Promise.all([load(state.battery), load("names")]);
+        const clock = new Date(data.now).toLocaleString(state.lang, {
+          timeZone: "Europe/Berlin",
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        document.getElementById("banner").innerHTML = `${icon("information-outline")}<span>${tx.banner(clock)}</span>`;
+        document.getElementById("intro").textContent = tx.intro(data) + tx.story[state.battery];
+        document.getElementById("dashboard").innerHTML =
+          dashboardSection(data) + deviceSection(data, names) + healthSection(data, names) + reportSection(data, names);
+      }
+
+      function applyTheme() {
+        document.documentElement.dataset.theme = isDark() ? "dark" : "light";
+      }
+
+      function applyText() {
+        const tx = t();
+        document.documentElement.lang = state.lang;
+        for (const el of document.querySelectorAll("[data-t]")) el.textContent = tx[el.dataset.t];
+        document.getElementById("how").innerHTML = tx.how.map((line) => `<li>${escapeHtml(line)}</li>`).join("");
+        document.getElementById("readme").href = tx.readmeUrl;
+        segment("battery", BATTERIES, (v) => tx.batteries[v], render);
+        segment("lang", ["de", "en"], (v) => v.toUpperCase(), () => (applyText(), render()));
+        segment("dark", ["auto", "0", "1"], (v) => tx[{ auto: "auto", 0: "light", 1: "dark" }[v]], applyTheme);
+      }
+
+      function segment(id, values, label, onChange) {
+        const box = document.getElementById(id);
+        box.replaceChildren(
+          ...values.map((value) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.textContent = label(value);
+            button.setAttribute("aria-pressed", String(state[id] === value));
+            button.addEventListener("click", () => {
+              if (state[id] === value) return;
+              state[id] = value;
+              for (const b of box.children) b.setAttribute("aria-pressed", String(b === button));
+              saveState();
+              onChange();
+            });
+            return button;
+          }),
+        );
+      }
+
+      systemDark.addEventListener("change", () => state.dark === "auto" && applyTheme());
+      narrow.addEventListener("change", () => render());
+      applyText();
+      applyTheme();
+      saveState();
+      await render();
+    </script>
+  </body>
+</html>

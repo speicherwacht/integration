@@ -1,5 +1,11 @@
 # Changelog
 
+## Unveröffentlicht
+
+- **Live-Demo zum Ausprobieren ohne Installation:** [speicherwacht.github.io/integration](https://speicherwacht.github.io/integration/) zeigt Dashboard, Geräteseite, Gesundheits-Check und die Aktion „Bericht“ für vier Speicher (gesund, gealtert, Balkonspeicher, frisch eingerichtet). Alle Werte sind erfunden und so gekennzeichnet; gerechnet werden sie vom Code der Integration.
+- README: Hinweis „Neu“ auf die Angabe zu den Vorlagen gekürzt.
+- Intern: `tools/make_demo.py` erzeugt die Daten der Demo, der Workflow „Live-Demo“ veröffentlicht sie über GitHub Pages.
+
 ## 0.1.3 – 2026-11-03
 
 - **Aktion „Bericht“** (`speicherwacht.report`): Energie, Wirkungsgrad mit Korrektur über den Ladezustand, Vollzyklen, Ruheverlust und geschätzte Kapazität für einen beliebigen Zeitraum, je Monat aufgeschlüsselt, auch vor der Einrichtung. Ohne Angaben: 1. Januar bis jetzt, also die Werte der Jahressensoren. Gerechnet wird wie bei den Sensoren, über ganze Tage.

@@ -7,12 +7,15 @@
 [![Release](https://img.shields.io/github/v/release/speicherwacht/integration?color=007D7F)](https://github.com/speicherwacht/integration/releases)
 [![CI](https://github.com/speicherwacht/integration/actions/workflows/ci.yml/badge.svg)](https://github.com/speicherwacht/integration/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F5A623.svg)](LICENSE)
+[![Live demo](https://img.shields.io/badge/Live_demo-try_it-F5A623.svg)](https://speicherwacht.github.io/integration/?lang=en)
 
 [Deutsch](https://github.com/speicherwacht/integration/blob/main/README.md) · **English**
 
 **How well does my battery storage really work?** Speicherwacht is a Home Assistant integration that turns the existing counters of your home or balcony battery into its efficiency per month and year, full cycles, rest loss and the capacity you can actually take out – vendor-neutral, read-only, no cloud.
 
-> **New.** Speicherwacht is a young integration. The Fronius template is tested on a real installation, the others were built from the source code of the respective integration. Feedback is welcome.
+**Try it without installing:** the [live demo](https://speicherwacht.github.io/integration/?lang=en) shows the dashboard, device page, health check and report for four batteries – healthy, ageing, balcony storage, freshly set up – with made-up values, but computed by the integration's own code.
+
+> **Templates:** The Fronius template is tested on a real installation, the others were built from the source code of the respective integration.
 
 ## Contents
 

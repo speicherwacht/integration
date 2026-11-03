@@ -7,12 +7,15 @@
 [![Release](https://img.shields.io/github/v/release/speicherwacht/integration?color=007D7F)](https://github.com/speicherwacht/integration/releases)
 [![CI](https://github.com/speicherwacht/integration/actions/workflows/ci.yml/badge.svg)](https://github.com/speicherwacht/integration/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F5A623.svg)](LICENSE)
+[![Live-Demo](https://img.shields.io/badge/Live--Demo-ausprobieren-F5A623.svg)](https://speicherwacht.github.io/integration/?lang=de)
 
 **Deutsch** · [English](https://github.com/speicherwacht/integration/blob/main/README.en.md)
 
 **Wie gut arbeitet mein Batteriespeicher wirklich?** Speicherwacht ist eine Home-Assistant-Integration, die aus den vorhandenen Zählern deines Heim- oder Balkonspeichers den Wirkungsgrad je Monat und Jahr, die Vollzyklen, den Ruheverlust und die tatsächlich entnehmbare Kapazität berechnet – herstellerneutral, nur lesend, ohne Cloud.
 
-> **Neu.** Speicherwacht ist eine junge Integration. Die Vorlage für Fronius ist an einer echten Anlage erprobt, die übrigen stammen aus dem Quellcode der jeweiligen Integration. Rückmeldungen sind willkommen.
+**Ausprobieren ohne Installation:** Die [Live-Demo](https://speicherwacht.github.io/integration/?lang=de) zeigt Dashboard, Geräteseite, Gesundheits-Check und Bericht für vier Speicher – gesund, gealtert, Balkonspeicher, frisch eingerichtet – mit erfundenen Werten, aber gerechnet vom Code der Integration.
+
+> **Vorlagen:** Die Vorlage für Fronius ist an einer echten Anlage erprobt, die übrigen stammen aus dem Quellcode der jeweiligen Integration.
 
 ## Inhalt
 
