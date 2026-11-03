@@ -3,6 +3,7 @@
   <img alt="Speicherwacht – Jede Ladung. Jeder Zyklus." src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/github/readme-header-light@2x.png" width="640">
 </picture>
 
+[![HACS Default](https://img.shields.io/badge/HACS-Default-005B8C.svg)](https://hacs.xyz/)
 [![Release](https://img.shields.io/github/v/release/speicherwacht/integration?color=007D7F)](https://github.com/speicherwacht/integration/releases)
 [![CI](https://github.com/speicherwacht/integration/actions/workflows/ci.yml/badge.svg)](https://github.com/speicherwacht/integration/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F5A623.svg)](LICENSE)
@@ -44,11 +45,13 @@
 
 ## Installation
 
-Speicherwacht wird über HACS als benutzerdefiniertes Repository installiert. Jede Version ist ein reguläres GitHub-Release.
+Speicherwacht ist seit November 2026 in der Standardliste von [HACS](https://hacs.xyz/), ein benutzerdefiniertes Repository ist nicht mehr nötig.
 
-1. HACS → ⋮ → *Benutzerdefinierte Repositories* → `https://github.com/speicherwacht/integration`, Typ *Integration*.
-2. Speicherwacht suchen und herunterladen. Home Assistant neu starten.
+1. HACS öffnen, nach **Speicherwacht** suchen → *Herunterladen*.
+2. Home Assistant neu starten.
 3. *Einstellungen → Geräte & Dienste → Integration hinzufügen → Speicherwacht*.
+
+**Mit einem Klick:** [![In HACS öffnen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=speicherwacht&repository=integration&category=integration) → herunterladen, Home Assistant neu starten → [![Integration hinzufügen](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=speicherwacht)
 
 ## Einrichtung
 
