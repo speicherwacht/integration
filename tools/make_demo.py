@@ -119,7 +119,7 @@ BATTERIES = [
         first=datetime(2025, 4, 14, 10, tzinfo=BERLIN),
         lifetime=(1584.211, 1497.836),
         actual=_linear(date(2025, 4, 14), date(2026, 10, 28), 9.9, 9.68),
-        eta_in=_const(0.991),
+        eta_in=_const(0.993),
         eta_out=0.992,
         rest_watts=_const(9.0),
         surplus=(9.5, 8.0),
