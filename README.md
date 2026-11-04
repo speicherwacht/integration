@@ -7,13 +7,13 @@
 [![Release](https://img.shields.io/github/v/release/speicherwacht/integration?color=007D7F)](https://github.com/speicherwacht/integration/releases)
 [![CI](https://github.com/speicherwacht/integration/actions/workflows/ci.yml/badge.svg)](https://github.com/speicherwacht/integration/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F5A623.svg)](LICENSE)
-[![Live-Demo](https://img.shields.io/badge/Live--Demo-ausprobieren-F5A623.svg)](https://speicherwacht.github.io/integration/?lang=de)
+[![Demo](https://img.shields.io/badge/Demo-erfundene_Daten-F5A623.svg)](https://speicherwacht.github.io/integration/?lang=de)
 
 **Deutsch** · [English](https://github.com/speicherwacht/integration/blob/main/README.en.md)
 
 **Wie gut arbeitet mein Batteriespeicher wirklich?** Speicherwacht ist eine Home-Assistant-Integration, die aus den vorhandenen Zählern deines Heim- oder Balkonspeichers den Wirkungsgrad je Monat und Jahr, die Vollzyklen, den Ruheverlust und die tatsächlich entnehmbare Kapazität berechnet – herstellerneutral, nur lesend, ohne Cloud.
 
-**Ausprobieren ohne Installation:** Die [Live-Demo](https://speicherwacht.github.io/integration/?lang=de) zeigt Dashboard, Geräteseite, Gesundheits-Check und Bericht für vier Speicher – gesund, gealtert, Balkonspeicher, frisch eingerichtet – mit erfundenen Werten, aber gerechnet vom Code der Integration.
+**Ausprobieren ohne Installation:** Die [Demo](https://speicherwacht.github.io/integration/?lang=de) zeigt Dashboard, Geräteseite, Gesundheits-Check und Bericht für vier Speicher – gesund, gealtert, Balkonspeicher, frisch eingerichtet – mit erfundenen Werten, aber gerechnet vom Code der Integration.
 
 > **Vorlagen:** Die Vorlage für Fronius ist an einer echten Anlage erprobt, die übrigen stammen aus dem Quellcode der jeweiligen Integration.
 
@@ -256,12 +256,12 @@ Pull Requests sind willkommen. Wie, steht in [CONTRIBUTING.md](https://github.co
 Vom selben Autor und nach demselben Muster gebaut: Einrichtung über die Oberfläche, deutsch und englisch, schonend für SD-Karten.
 
 - **Energie**
-  - [Einspeisewacht](https://github.com/einspeisewacht/integration) – was negative Strompreise bei der PV-Einspeisung kosten (§ 51 EEG) · [Live-Demo](https://einspeisewacht.github.io/integration/?lang=de)
-  - [Tarifwacht](https://github.com/tarifwacht/integration) – was der eigene Strombezug mit anderen Tarifen gekostet hätte, auch dynamisch und mit Modul 3 · [Live-Demo](https://tarifwacht.github.io/integration/?lang=de)
+  - [Einspeisewacht](https://github.com/einspeisewacht/integration) – was negative Strompreise bei der PV-Einspeisung kosten (§ 51 EEG) · [Demo](https://einspeisewacht.github.io/integration/?lang=de)
+  - [Tarifwacht](https://github.com/tarifwacht/integration) – was der eigene Strombezug mit anderen Tarifen gekostet hätte, auch dynamisch und mit Modul 3 · [Demo](https://tarifwacht.github.io/integration/?lang=de)
   - [Wärmewacht](https://github.com/waermewacht/integration) – Arbeitszahlen und Gesundheits-Check der Wärmepumpe
 - **Alltag**
-  - [Eilwacht](https://github.com/eilwacht/integration) – Tagesschau-Eilmeldungen und Regionalnachrichten als Auslöser für Automationen · [Live-Demo](https://eilwacht.github.io/integration/?lang=de)
-  - [Streckenwacht](https://github.com/streckenwacht/integration) – Baustellen, Sperrungen und Staus auf den eigenen Strecken · [Live-Demo](https://streckenwacht.github.io/integration/?lang=de)
+  - [Eilwacht](https://github.com/eilwacht/integration) – Tagesschau-Eilmeldungen und Regionalnachrichten als Auslöser für Automationen · [Demo](https://eilwacht.github.io/integration/?lang=de)
+  - [Streckenwacht](https://github.com/streckenwacht/integration) – Baustellen, Sperrungen und Staus auf den eigenen Strecken · [Demo](https://streckenwacht.github.io/integration/?lang=de)
 
 ## Lizenz
 

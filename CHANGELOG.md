@@ -2,9 +2,9 @@
 
 ## Unveröffentlicht
 
-- **Live-Demo zum Ausprobieren ohne Installation:** [speicherwacht.github.io/integration](https://speicherwacht.github.io/integration/) zeigt Dashboard, Geräteseite, Gesundheits-Check und die Aktion „Bericht“ für vier Speicher (gesund, gealtert, Balkonspeicher, frisch eingerichtet). Alle Werte sind erfunden und so gekennzeichnet; gerechnet werden sie vom Code der Integration.
+- **Demo zum Ausprobieren ohne Installation:** [speicherwacht.github.io/integration](https://speicherwacht.github.io/integration/) zeigt Dashboard, Geräteseite, Gesundheits-Check und die Aktion „Bericht“ für vier Speicher (gesund, gealtert, Balkonspeicher, frisch eingerichtet). Alle Werte sind erfunden und so gekennzeichnet; gerechnet werden sie vom Code der Integration.
 - README: Hinweis „Neu“ auf die Angabe zu den Vorlagen gekürzt.
-- Intern: `tools/make_demo.py` erzeugt die Daten der Demo, der Workflow „Live-Demo“ veröffentlicht sie über GitHub Pages.
+- Intern: `tools/make_demo.py` erzeugt die Daten der Demo, der Workflow „Demo“ veröffentlicht sie über GitHub Pages.
 
 ## 0.1.3 – 2026-11-03
 

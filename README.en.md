@@ -7,13 +7,13 @@
 [![Release](https://img.shields.io/github/v/release/speicherwacht/integration?color=007D7F)](https://github.com/speicherwacht/integration/releases)
 [![CI](https://github.com/speicherwacht/integration/actions/workflows/ci.yml/badge.svg)](https://github.com/speicherwacht/integration/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F5A623.svg)](LICENSE)
-[![Live demo](https://img.shields.io/badge/Live_demo-try_it-F5A623.svg)](https://speicherwacht.github.io/integration/?lang=en)
+[![Demo](https://img.shields.io/badge/Demo-sample_data-F5A623.svg)](https://speicherwacht.github.io/integration/?lang=en)
 
 [Deutsch](https://github.com/speicherwacht/integration/blob/main/README.md) · **English**
 
 **How well does my battery storage really work?** Speicherwacht is a Home Assistant integration that turns the existing counters of your home or balcony battery into its efficiency per month and year, full cycles, rest loss and the capacity you can actually take out – vendor-neutral, read-only, no cloud.
 
-**Try it without installing:** the [live demo](https://speicherwacht.github.io/integration/?lang=en) shows the dashboard, device page, health check and report for four batteries – healthy, ageing, balcony storage, freshly set up – with made-up values, but computed by the integration's own code.
+**Try it without installing:** the [demo](https://speicherwacht.github.io/integration/?lang=en) shows the dashboard, device page, health check and report for four batteries – healthy, ageing, balcony storage, freshly set up – with made-up values, but computed by the integration's own code.
 
 > **Templates:** The Fronius template is tested on a real installation, the others were built from the source code of the respective integration.
 
@@ -256,12 +256,12 @@ Pull requests are welcome, see [CONTRIBUTING.md](https://github.com/speicherwach
 By the same author and built the same way: set up in the UI, in German and English, gentle on SD cards.
 
 - **Energy**
-  - [Einspeisewacht](https://github.com/einspeisewacht/integration) – what negative electricity prices cost your PV feed-in (German EEG § 51) · [live demo](https://einspeisewacht.github.io/integration/?lang=en)
-  - [Tarifwacht](https://github.com/tarifwacht/integration) – what your grid consumption would have cost with other tariffs, including dynamic ones and Modul 3 · [live demo](https://tarifwacht.github.io/integration/?lang=en)
+  - [Einspeisewacht](https://github.com/einspeisewacht/integration) – what negative electricity prices cost your PV feed-in (German EEG § 51) · [demo](https://einspeisewacht.github.io/integration/?lang=en)
+  - [Tarifwacht](https://github.com/tarifwacht/integration) – what your grid consumption would have cost with other tariffs, including dynamic ones and Modul 3 · [demo](https://tarifwacht.github.io/integration/?lang=en)
   - [Wärmewacht](https://github.com/waermewacht/integration) – performance factors and health check for your heat pump
 - **Everyday**
-  - [Eilwacht](https://github.com/eilwacht/integration) – Tagesschau breaking news and regional news as automation triggers (German) · [live demo](https://eilwacht.github.io/integration/?lang=en)
-  - [Streckenwacht](https://github.com/streckenwacht/integration) – roadworks, closures and traffic jams on your own routes (Germany, Luxembourg) · [live demo](https://streckenwacht.github.io/integration/?lang=en)
+  - [Eilwacht](https://github.com/eilwacht/integration) – Tagesschau breaking news and regional news as automation triggers (German) · [demo](https://eilwacht.github.io/integration/?lang=en)
+  - [Streckenwacht](https://github.com/streckenwacht/integration) – roadworks, closures and traffic jams on your own routes (Germany, Luxembourg) · [demo](https://streckenwacht.github.io/integration/?lang=en)
 
 ## License
 
