@@ -42,6 +42,7 @@ from .const import (
 )
 from .counter import UNIT_FACTORS, looks_like_day_counter
 from .day_counters import WINDOW as DAY_COUNTER_WINDOW
+from .entity import own_entities
 from .health import Health, check
 from .hours import Series, SocRow, build
 from .model import Boundary, Signal
@@ -75,6 +76,7 @@ ISSUE_UNAVAILABLE = "source_unavailable"
 ISSUE_UNIT = "source_unit"
 ISSUE_RESETS = "counter_resets"
 ISSUE_MISMATCH = "counter_soc_mismatch"
+ISSUE_OWN = "own_entity"
 
 
 class StorageRuntime:
@@ -85,8 +87,15 @@ class StorageRuntime:
         self.entry = entry
         self.tz = dt_util.get_default_time_zone()
         configured: dict[str, str] = dict(entry.data[CONF_ENTITIES])
+        # Sensors of Speicherwacht itself (an entry from before the form
+        # refused them, up to 0.1.3): a repair issue until removed. An own
+        # state of charge is not read (the figures that need it stay unknown
+        # with reason no_soc); the counters are required and stay.
+        self.own = own_entities(hass, configured.values())
         self.entities: dict[Signal, str] = {
-            Signal(key): entity_id for key, entity_id in configured.items()
+            Signal(key): entity_id
+            for key, entity_id in configured.items()
+            if not (key == Signal.SOC and entity_id in self.own)
         }
         self.capacity: float = entry.data[CONF_CAPACITY]
         self.boundary = Boundary(entry.data.get(CONF_BOUNDARY, Boundary.BATTERY))
@@ -223,7 +232,7 @@ class StorageRuntime:
 
     async def _async_read(self, start: datetime, end: datetime) -> None:
         counters = {self.entities[Signal.CHARGED], self.entities[Signal.DISCHARGED]}
-        soc_id = self.entities[Signal.SOC]
+        soc_id = self.entities.get(Signal.SOC)
         instance = get_instance(self.hass)
         rows = await instance.async_add_executor_job(
             statistics_during_period,
@@ -235,15 +244,19 @@ class StorageRuntime:
             {"energy": "kWh"},
             {"state"},
         )
-        soc_rows = await instance.async_add_executor_job(
-            statistics_during_period,
-            self.hass,
-            start,
-            end,
-            {soc_id},
-            "hour",
-            None,
-            {"mean", "min", "max"},
+        soc_rows = (
+            await instance.async_add_executor_job(
+                statistics_during_period,
+                self.hass,
+                start,
+                end,
+                {soc_id},
+                "hour",
+                None,
+                {"mean", "min", "max"},
+            )
+            if soc_id
+            else {}
         )
         for signal, target in (
             (Signal.CHARGED, self._charged),
@@ -288,6 +301,7 @@ class StorageRuntime:
             minutes=str(int(UNAVAILABLE_AFTER.total_seconds() // 60)),
         )
         self._issue(ISSUE_UNIT, unit)
+        self._issue(ISSUE_OWN, self.own)
 
     def _check_mismatch(self, now: datetime) -> None:
         """Repair issue when counters and state of charge disagree over the
@@ -302,7 +316,7 @@ class StorageRuntime:
                 if mismatch.details.get("kind") == "soc_still"
                 else Signal.CHARGED
             )
-            entities = [self.entities[signal]]
+            entities = [self.entities[signal]] if signal in self.entities else []
             if signal is Signal.CHARGED:
                 entities.append(self.entities[Signal.DISCHARGED])
         self._issue(ISSUE_MISMATCH, entities)

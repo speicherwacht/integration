@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity import Entity
 
@@ -12,6 +15,20 @@ from .const import DOMAIN, VERSION
 if TYPE_CHECKING:
     from . import SpeicherwachtConfigEntry
     from .runtime import StorageRuntime
+
+
+def own_entities(hass: HomeAssistant, entity_ids: Iterable[str]) -> list[str]:
+    """Those of Speicherwacht itself: an entry reading one would read its
+    own results (an efficiency sensor is in % with measurement and passes as
+    state of charge; seen in Wärmewacht 2026-11). The form refuses them;
+    older entries leave them out (runtime.py)."""
+    registry = er.async_get(hass)
+    return sorted(
+        entity_id
+        for entity_id in set(entity_ids)
+        if (entry := registry.async_get(entity_id)) is not None
+        and entry.platform == DOMAIN
+    )
 
 
 class StorageEntity(Entity):

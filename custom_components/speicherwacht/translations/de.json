@@ -222,6 +222,10 @@
       "title": "Speicherwacht: Quelle nicht erreichbar",
       "description": "Diese Entitäten von {name} sind seit mehr als {minutes} Minuten nicht verfügbar: {entities}. Solange fehlen Speicherwacht Werte. Prüfe die Quell-Integration. Der Hinweis verschwindet, sobald wieder Werte kommen."
     },
+    "own_entity": {
+      "title": "Speicherwacht: eigener Sensor als Quelle",
+      "description": "{name} nutzt Sensoren von Speicherwacht selbst als Quelle: {entities}. Der Eintrag würde damit seine eigenen Ergebnisse lesen. Einen eigenen Ladezustand liest Speicherwacht deshalb nicht; Wirkungsgrad, Ruheverlust und geschätzte Kapazität bleiben unbekannt, bis ein echter gewählt ist. Wähle unter Einstellungen → Geräte & Dienste → Speicherwacht → ⋮ → Neu konfigurieren die Entitäten des Speichers bzw. des Wechselrichters. Die bisher aufgezeichneten Werte bleiben; danach rechnet Speicherwacht alles neu aus der Langzeitstatistik."
+    },
     "source_unit": {
       "title": "Speicherwacht: unerwartete Einheit",
       "description": "Diese Entitäten von {name} haben eine Einheit, mit der Speicherwacht nicht rechnen kann (Zähler Wh/kWh/MWh, Ladezustand %): {entities}. Wähle unter Neu konfigurieren andere."

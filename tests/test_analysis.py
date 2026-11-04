@@ -9,6 +9,7 @@ import pytest
 
 from custom_components.speicherwacht.analysis import (
     NO_DATA,
+    NO_SOC,
     SOC_ROSE_AT_REST,
     TOO_FEW_DISCHARGES,
     TOO_FEW_REST_HOURS,
@@ -150,6 +151,21 @@ def test_without_data_everything_is_unknown() -> None:
     assert result.rest.reason == TOO_FEW_REST_HOURS
     assert result.capacity.reason == TOO_FEW_DISCHARGES
     assert result.first_day is None
+
+
+def test_without_soc_only_the_counters_count() -> None:
+    """An own sensor mapped as state of charge is left out (runtime.py):
+    cycles from the counters, everything needing the SoC unknown."""
+    hours = [
+        replace(h, soc=None, soc_min=None, soc_max=None)
+        for h in simulate(JUNE, 30, rest_watts=0.0)
+    ]
+    result = analyse(hours, 10.0, BERLIN, END)
+    assert result.efficiency[Period.MONTH].reason == NO_SOC
+    assert result.efficiency[Period.MONTH].ratio is None
+    assert result.rest.reason == TOO_FEW_REST_HOURS
+    assert result.capacity.reason == TOO_FEW_DISCHARGES
+    assert result.cycles_year > 0
 
 
 def test_counters_starting_mid_day_leave_that_day_out() -> None:

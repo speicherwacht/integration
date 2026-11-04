@@ -218,6 +218,56 @@ async def test_missing_source_gives_a_repair_issue(
     assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is None
 
 
+@pytest.mark.freeze_time(NOW)
+async def test_own_sensor_as_soc_is_ignored_with_an_issue(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory
+) -> None:
+    """An entry from before the form refused it: an own efficiency sensor
+    as state of charge. Not read, and a repair issue until it is replaced
+    under Reconfigure; then everything is calculated anew."""
+    await hass.config.async_set_time_zone("Europe/Berlin")
+    import_statistics(hass)
+    await async_wait_recording_done(hass)
+    own = er.async_get(hass).async_get_or_create(
+        "sensor", DOMAIN, "01JZ_efficiency_month", suggested_object_id="old_month"
+    )
+    hass.states.async_set(
+        own.entity_id,
+        "93.0",
+        {"unit_of_measurement": "%", "state_class": "measurement"},
+    )
+    entities = {"charged": CHARGED, "discharged": DISCHARGED, "soc": own.entity_id}
+    entry = await setup_entry(hass, **{CONF_ENTITIES: entities})
+    runtime = entry.runtime_data
+    assert own.entity_id not in runtime.entities.values()
+    await runtime.async_refresh()
+    await hass.async_block_till_done()
+    month = state(hass, entry, "efficiency_month")
+    assert month.state == "unknown"
+    assert month.attributes["reason"] == "no_soc"
+    issue_id = f"{entry.entry_id}_own_entity"
+    await tick(hass, freezer)
+    await tick(hass, freezer)
+    issue = ir.async_get(hass).async_get_issue(DOMAIN, issue_id)
+    assert issue is not None
+    assert issue.translation_placeholders["entities"] == own.entity_id
+
+    hass.config_entries.async_update_entry(
+        entry, data={**entry.data, CONF_ENTITIES: {**entities, "soc": SOC}}
+    )
+    await hass.async_block_till_done()
+    assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is None
+    runtime = entry.runtime_data
+    assert runtime.own == []
+    await runtime.async_refresh()
+    await hass.async_block_till_done()
+    month = state(hass, entry, "efficiency_month")
+    assert float(month.state) == pytest.approx(90.0, abs=0.5)
+    await tick(hass, freezer)
+    await tick(hass, freezer)
+    assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is None
+
+
 async def test_unload_and_remove(hass: HomeAssistant) -> None:
     entry = await setup_entry(hass)
     assert await hass.config_entries.async_unload(entry.entry_id)

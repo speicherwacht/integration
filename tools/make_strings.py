@@ -239,6 +239,12 @@ ISSUES = {
         "These entities of {name} have been unavailable for more than {minutes} minutes: {entities}. Speicherwacht lacks values meanwhile. Check the source integration. The issue disappears once values arrive again.",
         "Diese Entitäten von {name} sind seit mehr als {minutes} Minuten nicht verfügbar: {entities}. Solange fehlen Speicherwacht Werte. Prüfe die Quell-Integration. Der Hinweis verschwindet, sobald wieder Werte kommen.",
     ),
+    "own_entity": (
+        "Speicherwacht: own sensor as source",
+        "Speicherwacht: eigener Sensor als Quelle",
+        "{name} uses sensors of Speicherwacht itself as a source: {entities}. The entry would read its own results. Speicherwacht therefore does not read an own state of charge; efficiency, rest loss and capacity estimate stay unknown until a real one is chosen. Choose the entities of the storage or the inverter under Settings → Devices & services → Speicherwacht → ⋮ → Reconfigure. The values recorded so far stay; afterwards Speicherwacht calculates everything anew from the long-term statistics.",
+        "{name} nutzt Sensoren von Speicherwacht selbst als Quelle: {entities}. Der Eintrag würde damit seine eigenen Ergebnisse lesen. Einen eigenen Ladezustand liest Speicherwacht deshalb nicht; Wirkungsgrad, Ruheverlust und geschätzte Kapazität bleiben unbekannt, bis ein echter gewählt ist. Wähle unter Einstellungen → Geräte & Dienste → Speicherwacht → ⋮ → Neu konfigurieren die Entitäten des Speichers bzw. des Wechselrichters. Die bisher aufgezeichneten Werte bleiben; danach rechnet Speicherwacht alles neu aus der Langzeitstatistik.",
+    ),
     "source_unit": (
         "Speicherwacht: unexpected unit",
         "Speicherwacht: unerwartete Einheit",

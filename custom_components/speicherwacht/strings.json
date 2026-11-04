@@ -222,6 +222,10 @@
       "title": "Speicherwacht: source not available",
       "description": "These entities of {name} have been unavailable for more than {minutes} minutes: {entities}. Speicherwacht lacks values meanwhile. Check the source integration. The issue disappears once values arrive again."
     },
+    "own_entity": {
+      "title": "Speicherwacht: own sensor as source",
+      "description": "{name} uses sensors of Speicherwacht itself as a source: {entities}. The entry would read its own results. Speicherwacht therefore does not read an own state of charge; efficiency, rest loss and capacity estimate stay unknown until a real one is chosen. Choose the entities of the storage or the inverter under Settings → Devices & services → Speicherwacht → ⋮ → Reconfigure. The values recorded so far stay; afterwards Speicherwacht calculates everything anew from the long-term statistics."
+    },
     "source_unit": {
       "title": "Speicherwacht: unexpected unit",
       "description": "These entities of {name} have a unit Speicherwacht cannot use (counters Wh/kWh/MWh, state of charge %): {entities}. Choose others under Reconfigure."

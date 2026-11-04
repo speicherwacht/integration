@@ -131,6 +131,12 @@ def test_mismatch_needs_a_day_of_hours() -> None:
     assert counter_soc_mismatch(simulate(THIS_YEAR, 0), 10.0).reason == TOO_FEW_HOURS
 
 
+def test_mismatch_without_soc_is_unknown() -> None:
+    """No state of charge (an own sensor left out): no complete hours."""
+    hours = [replace(h, soc=None) for h in simulate(THIS_YEAR, 3)]
+    assert counter_soc_mismatch(hours, 10.0).reason == TOO_FEW_HOURS
+
+
 def test_soc_rising_at_rest_is_no_alarm() -> None:
     hours = simulate(THIS_YEAR, 30, rest_watts=-3.0)
     result = rest_loss_high(hours, 10.0, NOW)

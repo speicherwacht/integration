@@ -21,6 +21,7 @@ from .rename import renamed_data, renamed_unique_id, sources
 from .runtime import (
     ISSUE_MISMATCH,
     ISSUE_MISSING,
+    ISSUE_OWN,
     ISSUE_RESETS,
     ISSUE_UNAVAILABLE,
     ISSUE_UNIT,
@@ -37,6 +38,7 @@ ISSUES = (
     ISSUE_UNIT,
     ISSUE_RESETS,
     ISSUE_MISMATCH,
+    ISSUE_OWN,
 )
 
 type SpeicherwachtConfigEntry = ConfigEntry[StorageRuntime]

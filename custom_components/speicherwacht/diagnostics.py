@@ -40,6 +40,8 @@ async def async_get_config_entry_diagnostics(
         "version": VERSION,
         "data": dict(entry.data),
         "sources": sources,
+        # Sensors of Speicherwacht itself in the mapping (not read).
+        "own_entities": runtime.own,
         "problem": runtime.problem,
         "hours": {
             "count": len(hours),
