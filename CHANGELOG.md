@@ -3,6 +3,7 @@
 ## Unveröffentlicht
 
 - **Demo zum Ausprobieren ohne Installation:** [speicherwacht.github.io/integration](https://speicherwacht.github.io/integration/) zeigt Dashboard, Geräteseite, Gesundheits-Check und die Aktion „Bericht“ für vier Speicher (gesund, gealtert, Balkonspeicher, frisch eingerichtet). Alle Werte sind erfunden und so gekennzeichnet; gerechnet werden sie vom Code der Integration.
+- **Eigene Sensoren sind als Quelle gesperrt:** Einrichtung und Neu konfigurieren lehnen Entitäten von Speicherwacht selbst ab. Ein Wirkungsgrad-Sensor (in %, Zustandsklasse measurement) ging bisher als Ladezustand durch; der Eintrag hätte dann seine eigenen Ergebnisse gelesen. Anlass war eine Rückmeldung aus der Schwester Wärmewacht, wo genau das passiert ist.
 - README: Hinweis „Neu“ auf die Angabe zu den Vorlagen gekürzt.
 - Intern: `tools/make_demo.py` erzeugt die Daten der Demo, der Workflow „Demo“ veröffentlicht sie über GitHub Pages.
 

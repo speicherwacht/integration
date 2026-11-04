@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import Any
 
 import voluptuous as vol
@@ -171,9 +172,23 @@ def entities_schema(values: dict[str, Any]) -> vol.Schema:
     )
 
 
+def _own_entity(hass: HomeAssistant, entity_ids: Iterable[str]) -> bool:
+    """Whether one of them belongs to Speicherwacht itself: an entry would
+    read its own results (an efficiency sensor is in % with measurement and
+    passes as state of charge; seen in Wärmewacht 2026-11)."""
+    registry = er.async_get(hass)
+    return any(
+        (entry := registry.async_get(entity_id)) is not None
+        and entry.platform == DOMAIN
+        for entity_id in entity_ids
+    )
+
+
 def validate(hass: HomeAssistant, values: dict[str, Any]) -> str | None:
     """Error key for the form, None if the entities are usable."""
     entities = [values[s.value] for s in REQUIRED]
+    if _own_entity(hass, entities):
+        return "own_entity"
     if len(set(entities)) != len(entities):
         return "same_entity"
     for signal in REQUIRED:

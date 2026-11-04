@@ -100,6 +100,55 @@ async def test_same_entity_twice(hass: HomeAssistant) -> None:
     assert result["errors"] == {"base": "same_entity"}
 
 
+async def test_own_sensor_as_source_is_refused(hass: HomeAssistant) -> None:
+    """An own efficiency sensor (in %, measurement) passes every other check
+    as state of charge; the entry would read its own results (seen in
+    Wärmewacht, 2026-11)."""
+    set_sources(hass)
+    own = er.async_get(hass).async_get_or_create(
+        "sensor", DOMAIN, "01JZ_efficiency_month", suggested_object_id="akku_month"
+    )
+    hass.states.async_set(own.entity_id, "93.0", PERCENT)
+    result = await start_manual(hass)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {**MANUAL, "soc": own.entity_id}
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": "own_entity"}
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], MANUAL)
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+
+
+async def test_reconfigure_refuses_own_sensor(hass: HomeAssistant) -> None:
+    set_sources(hass)
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title="Akku",
+        unique_id=CHARGED,
+        data={
+            "name": "Akku",
+            CONF_TEMPLATE: "manual",
+            CONF_ENTITIES: {"charged": CHARGED, "discharged": DISCHARGED, "soc": SOC},
+            CONF_CAPACITY: 10.0,
+            CONF_BOUNDARY: "battery",
+        },
+    )
+    entry.add_to_hass(hass)
+    own = er.async_get(hass).async_get_or_create(
+        "sensor",
+        DOMAIN,
+        f"{entry.entry_id}_warranty_used",
+        suggested_object_id="akku_warranty_used",
+        config_entry=entry,
+    )
+    hass.states.async_set(own.entity_id, "12.0", PERCENT)
+    result = await entry.start_reconfigure_flow(hass)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {**MANUAL, "soc": own.entity_id}
+    )
+    assert result["errors"] == {"base": "own_entity"}
+
+
 async def test_detected_fronius_storage(hass: HomeAssistant) -> None:
     fixture = load_fixture("fronius_gen24_byd_hvs.json")
     fronius = MockConfigEntry(domain="fronius")

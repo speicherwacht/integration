@@ -156,6 +156,10 @@ ENTITIES = {
     },
 }
 ERRORS = {
+    "own_entity": (
+        "A sensor of Speicherwacht itself is chosen as a source: the entry would read its own results. Choose the entities of the storage or the inverter.",
+        "Als Quelle ist ein Sensor von Speicherwacht selbst gewählt: Der Eintrag würde seine eigenen Ergebnisse lesen. Bitte die Entitäten des Speichers bzw. des Wechselrichters wählen.",
+    ),
     "counter_in_use": (
         "This charge counter already belongs to another Speicherwacht entry.",
         "Dieser Ladezähler gehört schon zu einem anderen Speicherwacht-Eintrag.",

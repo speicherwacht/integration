@@ -135,6 +135,7 @@
       }
     },
     "error": {
+      "own_entity": "Als Quelle ist ein Sensor von Speicherwacht selbst gewählt: Der Eintrag würde seine eigenen Ergebnisse lesen. Bitte die Entitäten des Speichers bzw. des Wechselrichters wählen.",
       "counter_in_use": "Dieser Ladezähler gehört schon zu einem anderen Speicherwacht-Eintrag.",
       "day_counter": "Ein Zähler ist an mehreren Tagen zur selben Uhrzeit zurückgefallen: Er sieht nach einem Tageszähler aus (Energie heute). Speicherwacht braucht Lebenszeit-Zähler (Gesamtenergie). Ist es doch ein Gesamtzähler, unverändert noch einmal absenden.",
       "same_entity": "Wähle drei verschiedene Entitäten.",

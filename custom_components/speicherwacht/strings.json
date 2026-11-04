@@ -135,6 +135,7 @@
       }
     },
     "error": {
+      "own_entity": "A sensor of Speicherwacht itself is chosen as a source: the entry would read its own results. Choose the entities of the storage or the inverter.",
       "counter_in_use": "This charge counter already belongs to another Speicherwacht entry.",
       "day_counter": "A counter fell back at the same time of day on several days: it looks like a day counter (energy today). Speicherwacht needs lifetime counters (total energy). If it is a total counter after all, submit again unchanged.",
       "same_entity": "Choose three different entities.",
