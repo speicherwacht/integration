@@ -48,13 +48,13 @@
 
 ## Installation
 
-Speicherwacht has been in the [HACS](https://hacs.xyz/) default list since November 2026, no custom repository needed.
+From Home Assistant 2026.11 Speicherwacht is in the built-in Marketplace, in older versions in the [HACS](https://hacs.xyz/) default list.
 
-1. Open HACS, search for **Speicherwacht** → *Download*.
+1. *Settings → Marketplace → Browse*, search for **Speicherwacht** → *Install* (before 2026.11: in HACS → *Download*).
 2. Restart Home Assistant.
 3. *Settings → Devices & services → Add integration → Speicherwacht*.
 
-**One click:** [![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=speicherwacht&repository=integration&category=integration) → download, restart Home Assistant → [![Add integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=speicherwacht)
+**One click:** [![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=speicherwacht&repository=integration&category=integration) → install, restart Home Assistant → [![Add integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=speicherwacht)
 
 ## Setup
 
@@ -238,7 +238,7 @@ Speicherwacht fetches nothing from the internet and sends nothing. The diagnosti
 
 ## Removal
 
-Devices & services → Speicherwacht → ⋮ → *Delete*. Speicherwacht creates no files; the long-term statistics of its own sensors stay in the recorder until you delete them under *Tools → Statistics*. Then uninstall it in HACS.
+Devices & services → Speicherwacht → ⋮ → *Delete*. Speicherwacht creates no files; the long-term statistics of its own sensors stay in the recorder until you delete them under *Tools → Statistics*. Then uninstall it in the Marketplace (before 2026.11: remove it in HACS).
 
 ## Reporting issues
 
@@ -259,7 +259,7 @@ By the same author and built the same way: set up in the UI, in German and Engli
 - **Energy**
   - [Einspeisewacht](https://github.com/einspeisewacht/integration) – what negative electricity prices cost your PV feed-in (German EEG § 51) · [demo](https://einspeisewacht.github.io/integration/?lang=en)
   - [Tarifwacht](https://github.com/tarifwacht/integration) – what your grid consumption would have cost with other tariffs, including dynamic ones and Modul 3 · [demo](https://tarifwacht.github.io/integration/?lang=en)
-  - [Wärmewacht](https://github.com/waermewacht/integration) – performance factors and health check for your heat pump
+  - [Wärmewacht](https://github.com/waermewacht/integration) – performance factors and health check for your heat pump · [demo](https://waermewacht.github.io/integration/?lang=en)
 - **Everyday**
   - [Eilwacht](https://github.com/eilwacht/integration) – Tagesschau breaking news and regional news as automation triggers (German) · [demo](https://eilwacht.github.io/integration/?lang=en)
   - [Streckenwacht](https://github.com/streckenwacht/integration) – roadworks, closures and traffic jams on your own routes (Germany, Luxembourg) · [demo](https://streckenwacht.github.io/integration/?lang=en)

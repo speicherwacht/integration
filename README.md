@@ -48,13 +48,13 @@
 
 ## Installation
 
-Speicherwacht ist seit November 2026 in der Standardliste von [HACS](https://hacs.xyz/), ein benutzerdefiniertes Repository ist nicht mehr nötig.
+Speicherwacht steht ab Home Assistant 2026.11 im eingebauten Marketplace, in älteren Versionen in der Standardliste von [HACS](https://hacs.xyz/).
 
-1. HACS öffnen, nach **Speicherwacht** suchen → *Herunterladen*.
+1. *Einstellungen → Marketplace → Durchstöbern*, nach **Speicherwacht** suchen → *Installieren* (vor 2026.11: in HACS → *Herunterladen*).
 2. Home Assistant neu starten.
 3. *Einstellungen → Geräte & Dienste → Integration hinzufügen → Speicherwacht*.
 
-**Mit einem Klick:** [![In HACS öffnen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=speicherwacht&repository=integration&category=integration) → herunterladen, Home Assistant neu starten → [![Integration hinzufügen](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=speicherwacht)
+**Mit einem Klick:** [![Im Marketplace öffnen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=speicherwacht&repository=integration&category=integration) → installieren, Home Assistant neu starten → [![Integration hinzufügen](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=speicherwacht)
 
 ## Einrichtung
 
@@ -238,7 +238,7 @@ Speicherwacht ruft nichts aus dem Netz ab und sendet nichts. Die Diagnose-Datei 
 
 ## Entfernen
 
-Geräte & Dienste → Speicherwacht → ⋮ → *Löschen*. Speicherwacht legt keine Dateien an; die Langzeitstatistik der eigenen Sensoren bleibt im Recorder, bis du sie unter *Werkzeuge → Statistik* (vor 2026.8: Entwicklerwerkzeuge) löschst. Danach in HACS deinstallieren.
+Geräte & Dienste → Speicherwacht → ⋮ → *Löschen*. Speicherwacht legt keine Dateien an; die Langzeitstatistik der eigenen Sensoren bleibt im Recorder, bis du sie unter *Werkzeuge → Statistik* (vor 2026.8: Entwicklerwerkzeuge) löschst. Danach im Marketplace deinstallieren (vor 2026.11: in HACS entfernen).
 
 ## Fehler melden
 
@@ -259,7 +259,7 @@ Vom selben Autor und nach demselben Muster gebaut: Einrichtung über die Oberfl�
 - **Energie**
   - [Einspeisewacht](https://github.com/einspeisewacht/integration) – was negative Strompreise bei der PV-Einspeisung kosten (§ 51 EEG) · [Demo](https://einspeisewacht.github.io/integration/?lang=de)
   - [Tarifwacht](https://github.com/tarifwacht/integration) – was der eigene Strombezug mit anderen Tarifen gekostet hätte, auch dynamisch und mit Modul 3 · [Demo](https://tarifwacht.github.io/integration/?lang=de)
-  - [Wärmewacht](https://github.com/waermewacht/integration) – Arbeitszahlen und Gesundheits-Check der Wärmepumpe
+  - [Wärmewacht](https://github.com/waermewacht/integration) – Arbeitszahlen und Gesundheits-Check der Wärmepumpe · [Demo](https://waermewacht.github.io/integration/?lang=de)
 - **Alltag**
   - [Eilwacht](https://github.com/eilwacht/integration) – Tagesschau-Eilmeldungen und Regionalnachrichten als Auslöser für Automationen · [Demo](https://eilwacht.github.io/integration/?lang=de)
   - [Streckenwacht](https://github.com/streckenwacht/integration) – Baustellen, Sperrungen und Staus auf den eigenen Strecken · [Demo](https://streckenwacht.github.io/integration/?lang=de)
