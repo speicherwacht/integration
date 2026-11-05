@@ -45,6 +45,13 @@ BINARY = {
         "mdi:battery-clock-outline",
     ),
 }
+BUTTONS = {
+    "issue_report": (
+        "Report for a bug report",
+        "Bericht für Fehlermeldung",
+        "mdi:clipboard-text-outline",
+    ),
+}
 
 USER = {
     "title": ("Battery storage", "Batteriespeicher"),
@@ -342,6 +349,7 @@ def build(lang: int) -> dict:
         "entity": {
             "sensor": sensor,
             "binary_sensor": {k: {"name": v[lang]} for k, v in BINARY.items()},
+            "button": {k: {"name": v[lang]} for k, v in BUTTONS.items()},
         },
         "issues": {
             key: {"title": text[lang], "description": text[2 + lang]}
@@ -369,6 +377,7 @@ def icons() -> dict:
         "entity": {
             "sensor": sensor,
             "binary_sensor": {k: {"default": v[2]} for k, v in BINARY.items()},
+            "button": {k: {"default": v[2]} for k, v in BUTTONS.items()},
         },
         "services": {
             key: {"service": action["icon"]} for key, action in SERVICES.items()

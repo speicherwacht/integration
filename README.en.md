@@ -107,6 +107,7 @@ After the setup Speicherwacht calculates after about a minute and then every hou
 | Warranted throughput used | discharge since commissioning in % of the warranted throughput (only if entered) |
 | Rest loss | mean power lost while resting over the last 30 days, in W |
 | Capacity (estimated) | median energy per 100 % state of charge from discharges from full to empty (90 days) |
+| Report for a bug report | button under *Diagnostic*: shows a short report to copy into an issue, see [Reporting issues](#reporting-issues) |
 
 Attributes show what a value is made of: charged, discharged, change of stored energy, operating and rest days, loss on rest days, boundary, period. If a value is unknown, `reason` says why:
 
@@ -230,11 +231,11 @@ Sources and reasons: [docs/ENTWICKLUNG.md](docs/ENTWICKLUNG.md) (German), sectio
 - **All values stay unknown:** do the counters and the state of charge have long-term statistics? *Tools → Statistics* (before 2026.8: Developer tools) shows it. Without a state class there are none.
 - **Efficiency above 100 %:** usually the charge and discharge counters measure at different places, energy enters the battery past the charge counter (say PV straight into the battery of a DC-coupled balcony storage), or the state of charge is mapped wrongly.
 - **Rest loss unknown with `soc_rose_at_rest`:** in hours without charging and discharging the state of charge rose. Then something charges past the charge counter (see above) or the state of charge drifts. Up to one step of the state of charge (1 %) over all rest hours Speicherwacht shows 0 W, as that can be rounding. The health check "Rest loss high" stays unknown then.
-- **Diagnostics file:** Devices & services → Speicherwacht → ⋮ → *Download diagnostics*; it also lists the values the counter module rejected.
+- **Report for a bug report:** button on the device under *Diagnostic*, see [Reporting issues](#reporting-issues). **Diagnostics file:** Devices & services → Speicherwacht → ⋮ → *Download diagnostics*; it also lists the values the counter module rejected.
 
 ## Privacy
 
-Speicherwacht fetches nothing from the internet and sends nothing. The diagnostics file contains energy sums and the states of your source entities – check it before sharing.
+Speicherwacht fetches nothing from the internet and sends nothing. The diagnostics file contains energy sums and the states of your source entities – check it before sharing. For a bug report the shorter [report for a bug report](#reporting-issues) is usually enough.
 
 ## Removal
 
@@ -242,7 +243,16 @@ Devices & services → Speicherwacht → ⋮ → *Delete*. Speicherwacht creates
 
 ## Reporting issues
 
-[Open an issue](https://github.com/speicherwacht/integration/issues/new/choose), ideally with the diagnostics file, battery model and integration. Please report security issues privately, see [SECURITY.md](https://github.com/speicherwacht/integration/blob/main/SECURITY.md).
+[Open an issue](https://github.com/speicherwacht/integration/issues/new/choose) with the battery model, the integration and the **report for a bug report**: press *Devices & services → Speicherwacht → device of the storage → Diagnostic → Report for a bug report* (not to be confused with the action "Report"). The report shows up as a notification (bell at the bottom left) to copy. It holds the versions, the mapping by role (integration, unit, classes and state of the charge counter, discharge counter and state of charge), capacity, balance boundary and warranted throughput, the template, how many hours of statistics there are and which counter readings were rejected, which sensors are unknown and why, and open repair issues. Entity ids, names and areas are not in it. Still read it before sharing and delete what you would rather not show. Please report security issues privately, see [SECURITY.md](https://github.com/speicherwacht/integration/blob/main/SECURITY.md).
+
+### What is in the diagnostics file?
+
+If the report is not enough, the issue will ask for the diagnostics file (*⋮ → Download diagnostics*). It is more detailed, and not all of it comes from Speicherwacht:
+
+- **From Home Assistant** (every integration gets this header, Speicherwacht cannot change it): version and installation type, operating system, time zone and under `custom_components` the list of **all** installed custom integrations with versions. You may delete these blocks before uploading; they are not needed.
+- **From Speicherwacht** (under `data`): the settings of the entry including the name you gave it and the entity ids of the sources, their current states (that is, counter readings and state of charge), number and span of the hours from the statistics, the latest readings the counter module rejected with their time, and all figures with their energy sums. Speicherwacht replaces nothing with made-up values; you may change names or entity ids you would rather not show before uploading.
+
+If you would rather not share the file publicly, that is fine: the report and the specific details asked for in the issue are usually enough.
 
 Pull requests are welcome, see [CONTRIBUTING.md](https://github.com/speicherwacht/integration/blob/main/CONTRIBUTING.md) (with an English summary at the end).
 

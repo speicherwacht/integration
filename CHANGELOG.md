@@ -1,5 +1,9 @@
 # Changelog
 
+## Unveröffentlicht
+
+- **Neu: Schaltfläche „Bericht für Fehlermeldung“** am Gerät (unter *Diagnose*). Sie zeigt einen kurzen Bericht als Benachrichtigung zum Kopieren in ein Issue: Versionen, die Zuordnung nach Rolle (Integration, Einheit, Klassen, Zustand von Lade-, Entladezähler und Ladezustand), Kapazität, Bilanzgrenze und Garantie-Durchsatz, Vorlage, Stunden der Statistik und verworfene Zählerwerte, unbekannte Sensoren mit Grund und offene Reparaturhinweise – ohne Entity-IDs, Namen und Bereiche. Viele wollen die Diagnose-Datei nicht öffentlich teilen, weil Home Assistant ihr unter anderem die Liste aller installierten Integrationen voranstellt (so in allen Wachten). Die README erklärt jetzt unter „Fehler melden“, was in der Diagnose-Datei steht und welche Teile man vor dem Teilen löschen darf.
+
 ## 0.1.4 – 2026-11-05
 
 - **Demo zum Ausprobieren ohne Installation:** [speicherwacht.github.io/integration](https://speicherwacht.github.io/integration/) zeigt Dashboard, Geräteseite, Gesundheits-Check und die Aktion „Bericht“ für vier Speicher (gesund, gealtert, Balkonspeicher, frisch eingerichtet). Alle Werte sind erfunden und so gekennzeichnet; gerechnet werden sie vom Code der Integration.

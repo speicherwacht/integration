@@ -203,6 +203,11 @@
       "rest_loss_high": {
         "name": "Rest loss high"
       }
+    },
+    "button": {
+      "issue_report": {
+        "name": "Report for a bug report"
+      }
     }
   },
   "issues": {

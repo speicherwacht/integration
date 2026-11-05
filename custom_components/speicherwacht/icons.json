@@ -39,6 +39,11 @@
       "rest_loss_high": {
         "default": "mdi:battery-clock-outline"
       }
+    },
+    "button": {
+      "issue_report": {
+        "default": "mdi:clipboard-text-outline"
+      }
     }
   },
   "services": {

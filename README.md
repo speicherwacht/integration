@@ -107,6 +107,7 @@ Nach der Einrichtung rechnet Speicherwacht nach etwa einer Minute zum ersten Mal
 | Garantie-Durchsatz genutzt | Entladung seit Inbetriebnahme in % des Garantie-Durchsatzes (nur, wenn eingetragen) |
 | Ruheverlust | mittlere Verlustleistung in Ruhephasen der letzten 30 Tage, in W |
 | Kapazität (geschätzt) | Median der entnehmbaren Energie je 100 % Ladezustand aus Entladungen von voll bis leer (90 Tage) |
+| Bericht für Fehlermeldung | Schaltfläche unter *Diagnose*: zeigt einen kurzen Bericht zum Kopieren in ein Issue, siehe [Fehler melden](#fehler-melden) |
 
 Attribute zeigen, woraus ein Wert entsteht: geladen, entladen, Änderung der gespeicherten Energie, Betriebs- und Ruhetage, Verlust an Ruhetagen, Bilanzgrenze, Zeitraum. Ist ein Wert unbekannt, nennt `reason` den Grund:
 
@@ -230,11 +231,11 @@ Quellen und Begründungen: [docs/ENTWICKLUNG.md](docs/ENTWICKLUNG.md), Abschnitt
 - **Alle Werte bleiben unbekannt:** Haben die Zähler und der Ladezustand Langzeitstatistik? *Werkzeuge → Statistik* (vor 2026.8: Entwicklerwerkzeuge) zeigt es. Ohne Zustandsklasse gibt es keine.
 - **Wirkungsgrad über 100 %:** Meist messen Lade- und Entladezähler an verschiedenen Stellen, Energie fließt am Ladezähler vorbei in den Akku (etwa PV direkt in den Akku bei DC-gekoppelten Balkonspeichern), oder der Ladezustand ist falsch zugeordnet.
 - **Ruheverlust unbekannt mit `soc_rose_at_rest`:** In Stunden ohne Laden und Entladen stieg der Ladezustand. Dann lädt etwas am Ladezähler vorbei (siehe oben) oder der Ladezustand driftet. Bis auf eine Stufe des Ladezustands (1 %) über alle Ruhestunden zeigt Speicherwacht 0 W, weil das Rundung sein kann. Der Gesundheits-Check „Ruheverlust hoch“ bleibt dann unbekannt.
-- **Diagnose-Datei:** Geräte & Dienste → Speicherwacht → ⋮ → *Diagnose herunterladen*; sie enthält auch die vom Zählerbaustein verworfenen Werte.
+- **Bericht für Fehlermeldung:** Schaltfläche am Gerät unter *Diagnose*, siehe [Fehler melden](#fehler-melden). **Diagnose-Datei:** Geräte & Dienste → Speicherwacht → ⋮ → *Diagnose herunterladen*; sie enthält auch die vom Zählerbaustein verworfenen Werte.
 
 ## Datenschutz
 
-Speicherwacht ruft nichts aus dem Netz ab und sendet nichts. Die Diagnose-Datei enthält Energiesummen und die Zustände deiner Quell-Entitäten – prüfe sie, bevor du sie teilst.
+Speicherwacht ruft nichts aus dem Netz ab und sendet nichts. Die Diagnose-Datei enthält Energiesummen und die Zustände deiner Quell-Entitäten – prüfe sie, bevor du sie teilst. Für eine Fehlermeldung reicht meist der kürzere [Bericht für Fehlermeldung](#fehler-melden).
 
 ## Entfernen
 
@@ -242,7 +243,16 @@ Geräte & Dienste → Speicherwacht → ⋮ → *Löschen*. Speicherwacht legt k
 
 ## Fehler melden
 
-[Issue anlegen](https://github.com/speicherwacht/integration/issues/new/choose), möglichst mit Diagnose-Datei, Speichermodell und Integration. Sicherheitslücken bitte vertraulich, siehe [SECURITY.md](https://github.com/speicherwacht/integration/blob/main/SECURITY.md).
+[Issue anlegen](https://github.com/speicherwacht/integration/issues/new/choose), mit Speichermodell, Integration und dem **Bericht für Fehlermeldung**: *Geräte & Dienste → Speicherwacht → Gerät des Speichers → Diagnose → Bericht für Fehlermeldung* drücken (nicht zu verwechseln mit der Aktion „Bericht“). Der Bericht erscheint als Benachrichtigung (Glocke unten links) zum Kopieren. Er enthält Versionen, die Zuordnung nach Rolle (Integration, Einheit, Klassen, Zustand von Lade-, Entladezähler und Ladezustand), Kapazität, Bilanzgrenze und Garantie-Durchsatz, die Vorlage, wie viele Stunden Statistik vorliegen und welche Zählerwerte verworfen wurden, welche Sensoren unbekannt sind und warum, und offene Reparaturhinweise. Entity-IDs, Namen und Bereiche stehen nicht darin. Lies ihn trotzdem vor dem Teilen und lösche, was du nicht zeigen willst. Sicherheitslücken bitte vertraulich, siehe [SECURITY.md](https://github.com/speicherwacht/integration/blob/main/SECURITY.md).
+
+### Was steht in der Diagnose-Datei?
+
+Reicht der Bericht nicht, kommt im Issue die Bitte um die Diagnose-Datei (*⋮ → Diagnose herunterladen*). Sie ist ausführlicher, und nicht alles darin kommt von Speicherwacht:
+
+- **Von Home Assistant** (jede Integration hat diesen Kopf, Speicherwacht kann ihn nicht ändern): Version und Installationsart, Betriebssystem, Zeitzone und unter `custom_components` die Liste **aller** installierten benutzerdefinierten Integrationen mit Versionen. Diese Blöcke darfst du vor dem Hochladen löschen, sie werden nicht gebraucht.
+- **Von Speicherwacht** (unter `data`): die Einstellungen des Eintrags samt dem Namen, den du vergeben hast, und den Entity-IDs der Quellen, deren aktuelle Zustände (also Zählerstände und Ladezustand), Anzahl und Zeitraum der Stunden aus der Statistik, die letzten vom Zählerbaustein verworfenen Werte mit Uhrzeit und alle Kennzahlen mit ihren Energiesummen. Speicherwacht ersetzt darin nichts durch erfundene Werte; Namen oder Entity-IDs, die du nicht zeigen willst, darfst du vor dem Hochladen ändern.
+
+Willst du die Datei nicht öffentlich teilen, ist das in Ordnung: Dann reichen meist der Bericht und gezielte Angaben, nach denen im Issue gefragt wird.
 
 Pull Requests sind willkommen. Wie, steht in [CONTRIBUTING.md](https://github.com/speicherwacht/integration/blob/main/CONTRIBUTING.md).
 

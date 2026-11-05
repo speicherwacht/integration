@@ -139,6 +139,34 @@ def state(hass: HomeAssistant, entry: MockConfigEntry, key: str):
     return hass.states.get(entity_id)
 
 
+async def issue_report(hass: HomeAssistant, entry: MockConfigEntry) -> str:
+    """Press the button "Report for a bug report"; the notification text."""
+    button = er.async_get(hass).async_get_entity_id(
+        "button", DOMAIN, f"{entry.entry_id}_issue_report"
+    )
+    assert button
+    with patch(
+        "custom_components.speicherwacht.issue_report.persistent_notification.async_create"
+    ) as create:
+        await hass.services.async_call(
+            "button", "press", {"entity_id": button}, blocking=True
+        )
+    assert create.call_args.kwargs["notification_id"] == (
+        f"speicherwacht_issue_report_{entry.entry_id}"
+    )
+    message: str = create.call_args.args[1]
+    # Roles and properties, never entity ids or the entry's name.
+    for entity_id in (CHARGED, DISCHARGED, SOC, "sensor.", "binary_sensor."):
+        assert entity_id not in message
+    assert entry.title not in message
+    return message
+
+
+def open_repairs(message: str) -> list[str]:
+    line = next(x for x in message.splitlines() if x.startswith("open: "))
+    return line.removeprefix("open: ").split(", ")
+
+
 @pytest.mark.freeze_time(NOW)
 async def test_figures_from_statistics(hass: HomeAssistant) -> None:
     await hass.config.async_set_time_zone("Europe/Berlin")
@@ -176,6 +204,22 @@ async def test_figures_from_statistics(hass: HomeAssistant) -> None:
     assert drop.attributes["reason"] == "no_previous_year"
     assert problem_state(hass, entry, "capacity_low").state == "off"
     assert problem_state(hass, entry, "rest_loss_high").state == "off"
+
+    # The report for a bug report.
+    message = await issue_report(hass, entry)
+    assert "template: own mapping" in message
+    assert "problem: none" in message
+    assert "days (total): 30 operating" in message
+    assert "rejected readings: none" in message
+    assert (
+        "charged: no registry entry, kWh, energy, total_increasing, state 1000.0"
+        in message
+    )
+    assert "soc: no registry entry, %, battery, measurement, state 50.0" in message
+    assert "capacity: 10.0" in message
+    assert "warranty_mwh: 30.0" in message
+    assert "efficiency_drop: unknown (no_previous_year)" in message
+    assert "open: none" in message
     # The day sensor exists but is disabled by default.
     entity_id = er.async_get(hass).async_get_entity_id(
         "sensor", DOMAIN, f"{entry.entry_id}_efficiency_today"
@@ -212,6 +256,9 @@ async def test_missing_source_gives_a_repair_issue(
     assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is None
     await tick(hass, freezer)
     assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is not None
+    message = await issue_report(hass, entry)
+    assert "missing_entity" in open_repairs(message)
+    assert "soc: no registry entry, no state" in message
 
     hass.states.async_set(SOC, "40.0", {"unit_of_measurement": "%"})
     await tick(hass, freezer)
@@ -251,6 +298,12 @@ async def test_own_sensor_as_soc_is_ignored_with_an_issue(
     issue = ir.async_get(hass).async_get_issue(DOMAIN, issue_id)
     assert issue is not None
     assert issue.translation_placeholders["entities"] == own.entity_id
+    # The report shows the own sensor by its integration, not by its id.
+    message = await issue_report(hass, entry)
+    assert "soc: speicherwacht, %, measurement, state 93.0" in message
+    assert "own entities as source: 1" in message
+    assert "own_entity" in open_repairs(message)
+    assert "efficiency_month: unknown (no_soc)" in message
 
     hass.config_entries.async_update_entry(
         entry, data={**entry.data, CONF_ENTITIES: {**entities, "soc": SOC}}

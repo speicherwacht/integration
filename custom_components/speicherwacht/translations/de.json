@@ -203,6 +203,11 @@
       "rest_loss_high": {
         "name": "Ruheverlust hoch"
       }
+    },
+    "button": {
+      "issue_report": {
+        "name": "Bericht für Fehlermeldung"
+      }
     }
   },
   "issues": {

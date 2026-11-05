@@ -78,6 +78,12 @@ def test_every_problem_sensor_translated_and_has_an_icon() -> None:
     assert set(strings) == set(icons) == set(CHECKS)
 
 
+def test_every_button_translated_and_has_an_icon() -> None:
+    strings = load(INTEGRATION / "strings.json")["entity"]["button"]
+    icons = load(INTEGRATION / "icons.json")["entity"]["button"]
+    assert set(strings) == set(icons) == {"issue_report"}
+
+
 def test_issues_translated() -> None:
     assert set(load(INTEGRATION / "strings.json")["issues"]) == set(ISSUES)
 
