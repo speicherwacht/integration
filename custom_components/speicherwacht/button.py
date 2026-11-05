@@ -20,7 +20,7 @@ from .const import (
 )
 from .days import Period
 from .entity import StorageEntity
-from .issue_report import build, show
+from .issue_report import build, settings, show
 from .profiles import TEMPLATES
 
 if TYPE_CHECKING:
@@ -66,7 +66,7 @@ class IssueReport(StorageEntity, ButtonEntity):
             entry,
             mapping=mapping,
             extra=_lines(entry, self.runtime),
-            options={key: entry.data.get(key) for key in SETTINGS},
+            setting_lines=settings({key: entry.data.get(key) for key in SETTINGS}),
         )
         show(self.hass, DOMAIN, NAME, entry, report)
 
