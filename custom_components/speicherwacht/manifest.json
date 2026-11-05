@@ -5,6 +5,10 @@
     "energy",
     "recorder"
   ],
+  "categories": [
+    "energy.solar_batteries",
+    "energy.meters_monitoring"
+  ],
   "codeowners": [
     "@n42net"
   ],
