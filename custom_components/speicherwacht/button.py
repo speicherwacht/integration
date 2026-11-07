@@ -20,7 +20,7 @@ from .const import (
 )
 from .days import Period
 from .entity import StorageEntity
-from .issue_report import build, settings, show
+from .issue_report import build, settings, show, text
 from .profiles import TEMPLATES
 
 if TYPE_CHECKING:
@@ -80,9 +80,9 @@ def _lines(
         ("template", "own mapping" if template is None else key),
     ]
     if template is not None:
-        lines.append(("beta template", str(template.experimental)))
+        lines.append(("beta template", text(template.experimental)))
     lines += [
-        ("day values", str(runtime.day_values)),
+        ("day values", text(runtime.day_values)),
         ("problem", str(runtime.problem or "none")),
         ("own entities as source", str(len(runtime.own))),
     ]

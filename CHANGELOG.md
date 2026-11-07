@@ -1,5 +1,9 @@
 # Changelog
 
+## Unveröffentlicht
+
+- **Bericht für Fehlermeldung lesbarer:** Einstellungen ohne Python-Schreibweise – `yes`/`no` statt `True`/`False`, `none` statt `None`, Listen ohne Klammern, Zeitpunkte als `2026-11-07 12:39 UTC`. Auch „beta template“ und „day values“.
+
 ## 0.1.5 – 2026-11-07
 
 - **Neu: Schaltfläche „Bericht für Fehlermeldung“** am Gerät (unter *Diagnose*). Sie zeigt einen kurzen Bericht als Benachrichtigung zum Kopieren in ein Issue: Versionen, die Zuordnung nach Rolle (Integration, Einheit, Klassen, Zustand von Lade-, Entladezähler und Ladezustand), Kapazität, Bilanzgrenze und Garantie-Durchsatz, Vorlage, Stunden der Statistik und verworfene Zählerwerte, unbekannte Sensoren mit Grund und offene Reparaturhinweise – ohne Entity-IDs, Namen und Bereiche. Viele wollen die Diagnose-Datei nicht öffentlich teilen, weil Home Assistant ihr unter anderem die Liste aller installierten Integrationen voranstellt (so in allen Wachten). Die README erklärt jetzt unter „Fehler melden“, was in der Diagnose-Datei steht und welche Teile man vor dem Teilen löschen darf.
