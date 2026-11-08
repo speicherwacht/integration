@@ -75,102 +75,176 @@
       },
       "entities": {
         "title": "Entities and capacity",
-        "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.",
+        "description": "Speicherwacht calculates from the long-term statistics of these entities, including the time before the setup.",
         "data": {
           "charged": "Energy charged (lifetime)",
           "discharged": "Energy discharged (lifetime)",
           "soc": "State of charge",
-          "capacity": "Usable capacity",
-          "boundary": "The counters measure",
-          "warranty_mwh": "Warranted throughput (optional)"
+          "capacity": "Usable capacity"
         },
         "data_description": {
           "charged": "Energy that flows into the battery – not the PV production. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
           "discharged": "Energy that comes out of the battery – not what the whole system delivers to the house.",
           "soc": "In %.",
-          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
-          "boundary": "Results of the two boundaries are not comparable.",
-          "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it."
+        },
+        "sections": {
+          "more": {
+            "name": "More: where the counters measure, warranty",
+            "data": {
+              "boundary": "The counters measure",
+              "warranty_mwh": "Warranted throughput (optional)"
+            },
+            "data_description": {
+              "boundary": "Results of the two boundaries are not comparable.",
+              "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+            }
+          }
+        }
+      },
+      "reconfigure": {
+        "title": "Entities and capacity",
+        "description": "{summary}\n\nSpeicherwacht calculates from the long-term statistics of these entities, including the time before the setup.",
+        "data": {
+          "charged": "Energy charged (lifetime)",
+          "discharged": "Energy discharged (lifetime)",
+          "soc": "State of charge",
+          "capacity": "Usable capacity"
+        },
+        "data_description": {
+          "charged": "Energy that flows into the battery – not the PV production. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
+          "discharged": "Energy that comes out of the battery – not what the whole system delivers to the house.",
+          "soc": "In %.",
+          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it."
+        },
+        "sections": {
+          "more": {
+            "name": "More: where the counters measure, warranty",
+            "data": {
+              "boundary": "The counters measure",
+              "warranty_mwh": "Warranted throughput (optional)"
+            },
+            "data_description": {
+              "boundary": "Results of the two boundaries are not comparable.",
+              "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+            }
+          }
         }
       },
       "entities_tarifwacht": {
         "title": "Entities and capacity",
-        "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.\n\nCounters prefilled from Tarifwacht \"{tarifwacht}\" – please check.",
+        "description": "Speicherwacht calculates from the long-term statistics of these entities, including the time before the setup.\n\nCounters prefilled from Tarifwacht \"{tarifwacht}\" – please check.",
         "data": {
           "charged": "Energy charged (lifetime)",
           "discharged": "Energy discharged (lifetime)",
           "soc": "State of charge",
-          "capacity": "Usable capacity",
-          "boundary": "The counters measure",
-          "warranty_mwh": "Warranted throughput (optional)"
+          "capacity": "Usable capacity"
         },
         "data_description": {
           "charged": "Energy that flows into the battery – not the PV production. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
           "discharged": "Energy that comes out of the battery – not what the whole system delivers to the house.",
           "soc": "In %.",
-          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
-          "boundary": "Results of the two boundaries are not comparable.",
-          "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it."
+        },
+        "sections": {
+          "more": {
+            "name": "More: where the counters measure, warranty",
+            "data": {
+              "boundary": "The counters measure",
+              "warranty_mwh": "Warranted throughput (optional)"
+            },
+            "data_description": {
+              "boundary": "Results of the two boundaries are not comparable.",
+              "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+            }
+          }
         }
       },
       "entities_tarifwacht_tip": {
         "title": "Entities and capacity",
-        "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.\n\nTip: [Tarifwacht]({tarifwacht_url}) shows what the battery saves in euros. Once it is set up, Speicherwacht takes the counters from there.",
+        "description": "Speicherwacht calculates from the long-term statistics of these entities, including the time before the setup.\n\nTip: [Tarifwacht]({tarifwacht_url}) shows what the battery saves in euros. Once it is set up, Speicherwacht takes the counters from there.",
         "data": {
           "charged": "Energy charged (lifetime)",
           "discharged": "Energy discharged (lifetime)",
           "soc": "State of charge",
-          "capacity": "Usable capacity",
-          "boundary": "The counters measure",
-          "warranty_mwh": "Warranted throughput (optional)"
+          "capacity": "Usable capacity"
         },
         "data_description": {
           "charged": "Energy that flows into the battery – not the PV production. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
           "discharged": "Energy that comes out of the battery – not what the whole system delivers to the house.",
           "soc": "In %.",
-          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
-          "boundary": "Results of the two boundaries are not comparable.",
-          "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it."
+        },
+        "sections": {
+          "more": {
+            "name": "More: where the counters measure, warranty",
+            "data": {
+              "boundary": "The counters measure",
+              "warranty_mwh": "Warranted throughput (optional)"
+            },
+            "data_description": {
+              "boundary": "Results of the two boundaries are not comparable.",
+              "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+            }
+          }
         }
       },
       "entities_note_sungrow_modbus_yaml": {
         "title": "Entities and capacity",
-        "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.\n\nSungrow (Modbus YAML): according to the package, 'Battery level' runs from 0 to 100 % between the minimum and maximum SoC set in the inverter. The estimated capacity then shows only that window (e.g. 5–100 %: about 95 %). If your window is much narrower, enter its capacity instead of the whole battery, so that 'Capacity dropped' does not report it.",
+        "description": "Speicherwacht calculates from the long-term statistics of these entities, including the time before the setup.\n\nSungrow (Modbus YAML): according to the package, 'Battery level' runs from 0 to 100 % between the minimum and maximum SoC set in the inverter. The estimated capacity then shows only that window (e.g. 5–100 %: about 95 %). If your window is much narrower, enter its capacity instead of the whole battery, so that 'Capacity dropped' does not report it.",
         "data": {
           "charged": "Energy charged (lifetime)",
           "discharged": "Energy discharged (lifetime)",
           "soc": "State of charge",
-          "capacity": "Usable capacity",
-          "boundary": "The counters measure",
-          "warranty_mwh": "Warranted throughput (optional)"
+          "capacity": "Usable capacity"
         },
         "data_description": {
           "charged": "Energy that flows into the battery – not the PV production. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
           "discharged": "Energy that comes out of the battery – not what the whole system delivers to the house.",
           "soc": "In %.",
-          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
-          "boundary": "Results of the two boundaries are not comparable.",
-          "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it."
+        },
+        "sections": {
+          "more": {
+            "name": "More: where the counters measure, warranty",
+            "data": {
+              "boundary": "The counters measure",
+              "warranty_mwh": "Warranted throughput (optional)"
+            },
+            "data_description": {
+              "boundary": "Results of the two boundaries are not comparable.",
+              "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+            }
+          }
         }
       },
       "entities_note_zendure_ha": {
         "title": "Entities and capacity",
-        "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.\n\nZendure: the integration sums up its counters in Home Assistant from the reported battery power; the device itself has none. Speicherwacht can therefore only check them for consistency, not measure the device. Renaming the device in the Zendure app changes its entity ids: then choose them again under Reconfigure.",
+        "description": "Speicherwacht calculates from the long-term statistics of these entities, including the time before the setup.\n\nZendure: the integration sums up its counters in Home Assistant from the reported battery power; the device itself has none. Speicherwacht can therefore only check them for consistency, not measure the device. Renaming the device in the Zendure app changes its entity ids: then choose them again under Reconfigure.",
         "data": {
           "charged": "Energy charged (lifetime)",
           "discharged": "Energy discharged (lifetime)",
           "soc": "State of charge",
-          "capacity": "Usable capacity",
-          "boundary": "The counters measure",
-          "warranty_mwh": "Warranted throughput (optional)"
+          "capacity": "Usable capacity"
         },
         "data_description": {
           "charged": "Energy that flows into the battery – not the PV production. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
           "discharged": "Energy that comes out of the battery – not what the whole system delivers to the house.",
           "soc": "In %.",
-          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
-          "boundary": "Results of the two boundaries are not comparable.",
-          "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it."
+        },
+        "sections": {
+          "more": {
+            "name": "More: where the counters measure, warranty",
+            "data": {
+              "boundary": "The counters measure",
+              "warranty_mwh": "Warranted throughput (optional)"
+            },
+            "data_description": {
+              "boundary": "Results of the two boundaries are not comparable.",
+              "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+            }
+          }
         }
       }
     },

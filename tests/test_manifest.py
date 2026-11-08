@@ -89,9 +89,16 @@ def test_issues_translated() -> None:
 
 
 def test_entity_form_translated() -> None:
-    step = load(INTEGRATION / "strings.json")["config"]["step"]["entities"]
-    fields = {str(key) for key in entities_schema({}).schema}
-    assert set(step["data"]) == set(step["data_description"]) == fields
+    steps = load(INTEGRATION / "strings.json")["config"]["step"]
+    schema = entities_schema({}).schema
+    fields = {str(key) for key in schema if str(key) != "more"}
+    more = {str(key) for key in schema["more"].schema.schema}
+    for step_id in ("entities", "reconfigure"):
+        step = steps[step_id]
+        assert set(step["data"]) == set(step["data_description"]) == fields
+        section = step["sections"]["more"]
+        assert set(section["data"]) == set(section["data_description"]) == more
+    assert steps["reconfigure"]["description"].startswith("{summary}")
 
 
 def test_selectors_translated() -> None:

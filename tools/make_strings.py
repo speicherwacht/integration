@@ -131,23 +131,16 @@ SISTER_HINTS = {
 ENTITIES = {
     "title": ("Entities and capacity", "Entitäten und Kapazität"),
     "description": (
-        "Counters need a state class (total or total_increasing), the state "
-        "of charge the state class measurement: Speicherwacht works from "
-        "their long-term statistics, including the time before the setup.",
-        "Zähler brauchen eine Zustandsklasse (total oder total_increasing), "
-        "der Ladezustand die Zustandsklasse measurement: Speicherwacht rechnet "
-        "aus deren Langzeitstatistik, auch für die Zeit vor der Einrichtung.",
+        "Speicherwacht calculates from the long-term statistics of these "
+        "entities, including the time before the setup.",
+        "Speicherwacht rechnet aus der Langzeitstatistik dieser Entitäten, "
+        "auch für die Zeit vor der Einrichtung.",
     ),
     "data": {
         "charged": ("Energy charged (lifetime)", "Energie geladen (Lebenszeit)"),
         "discharged": ("Energy discharged (lifetime)", "Energie entladen (Lebenszeit)"),
         "soc": ("State of charge", "Ladezustand"),
         "capacity": ("Usable capacity", "Nutzbare Kapazität"),
-        "boundary": ("The counters measure", "Die Zähler messen"),
-        "warranty_mwh": (
-            "Warranted throughput (optional)",
-            "Garantie-Durchsatz (optional)",
-        ),
     },
     "data_description": {
         "charged": (
@@ -163,6 +156,22 @@ ENTITIES = {
             "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
             "Laut Datenblatt (nutzbar, nicht brutto). Nötig für die Korrektur über den Ladezustand und die Vollzyklen; die geschätzte Kapazität ersetzt sie nie.",
         ),
+    },
+}
+# Rarely changed fields of the entities form, collapsed (config_flow.py).
+MORE = {
+    "name": (
+        "More: where the counters measure, warranty",
+        "Weitere Angaben: Messpunkt der Zähler, Garantie",
+    ),
+    "data": {
+        "boundary": ("The counters measure", "Die Zähler messen"),
+        "warranty_mwh": (
+            "Warranted throughput (optional)",
+            "Garantie-Durchsatz (optional)",
+        ),
+    },
+    "data_description": {
         "boundary": (
             "Results of the two boundaries are not comparable.",
             "Ergebnisse der beiden Grenzen sind nicht vergleichbar.",
@@ -336,6 +345,19 @@ def build(lang: int) -> dict:
         "description": ENTITIES["description"][lang],
         "data": _pick(ENTITIES["data"], lang),
         "data_description": _pick(ENTITIES["data_description"], lang),
+        "sections": {
+            "more": {
+                "name": MORE["name"][lang],
+                "data": _pick(MORE["data"], lang),
+                "data_description": _pick(MORE["data_description"], lang),
+            }
+        },
+    }
+    # Reconfigure: the same form with the summary of the entry on top
+    # (summary.py; placeholders are not translated).
+    steps["reconfigure"] = {
+        **steps["entities"],
+        "description": "{summary}\n\n" + steps["entities"]["description"],
     }
     for key, text in SISTER_HINTS.items():
         steps[f"entities_{key}"] = {

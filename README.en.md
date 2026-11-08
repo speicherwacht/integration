@@ -58,7 +58,7 @@ From Home Assistant 2026.11 Speicherwacht is in the built-in Marketplace, in old
 
 ## Setup
 
-The first step lists the storages Speicherwacht detected plus "Map entities myself". In the second step you check the entities, enter the usable capacity and choose what the counters measure.
+The first step lists the storages Speicherwacht detected plus "Map entities myself". In the second step you check the entities and enter the usable capacity. What the counters measure and the warranted throughput are below in the collapsed section "More"; the default mostly fits.
 
 | Source | Integration | Status |
 | --- | --- | --- |
@@ -92,7 +92,7 @@ The first step lists the storages Speicherwacht detected plus "Map entities myse
 - **Marstek:** Venus E only. On Venus A and D the solar power passes through the discharge counter; they are not detected. The counters measure at the socket, i.e. the whole storage.
 - **The counters measure:** *the battery* (DC, e.g. the inverter's battery counters) or *the whole storage* (AC, e.g. a plug meter in front of a balcony battery). Values of the two boundaries are not comparable; AC includes the inverter losses.
 - **Warranted throughput (optional):** the energy in MWh your warranty covers. Adds the sensor "Warranted throughput used".
-- **Reconfigure:** Devices & services → Speicherwacht → ⋮ → *Reconfigure*.
+- **Reconfigure:** Devices & services → Speicherwacht → ⋮ → *Reconfigure*. On top the form sums up the entry (template or own mapping, counters and unit, state of charge, capacity from the data sheet and estimated, what is evaluated, data since) and lists under "Missing" what a gap costs, e.g. "State of charge … does not exist: for new days no efficiency, no rest loss, no estimated capacity". Saving without opening "More" keeps its values as they are.
 
 After the setup Speicherwacht calculates after about a minute and then every hour (shortly after :12, once Home Assistant has written the hourly statistics).
 

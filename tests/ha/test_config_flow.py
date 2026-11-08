@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 from homeassistant.config_entries import SOURCE_USER
 from homeassistant.core import HomeAssistant
-from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.data_entry_flow import FlowResultType, section
 from homeassistant.helpers import entity_registry as er
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -29,6 +29,13 @@ MANUAL = {
     "discharged": DISCHARGED,
     "soc": SOC,
     CONF_CAPACITY: 10.0,
+    "more": {CONF_BOUNDARY: "battery"},
+}
+STORED = {
+    "name": "Akku",
+    CONF_TEMPLATE: "manual",
+    CONF_ENTITIES: {"charged": CHARGED, "discharged": DISCHARGED, "soc": SOC},
+    CONF_CAPACITY: 10.0,
     CONF_BOUNDARY: "battery",
 }
 
@@ -45,13 +52,46 @@ async def start_manual(hass: HomeAssistant) -> dict[str, Any]:
 
 
 def suggested(result: dict[str, Any]) -> dict[str, Any]:
-    """Prefilled values of a form."""
+    """Prefilled values of a form (fields of sections flat)."""
     values = {}
-    for key in result["data_schema"].schema:
-        description = key.description or {}
-        if "suggested_value" in description:
-            values[str(key)] = description["suggested_value"]
+
+    def walk(schema: dict[Any, Any]) -> None:
+        for key, value in schema.items():
+            if isinstance(value, section):
+                walk(value.schema.schema)
+                continue
+            description = key.description or {}
+            if "suggested_value" in description:
+                values[str(key)] = description["suggested_value"]
+
+    walk(result["data_schema"].schema)
     return values
+
+
+def unchanged_input(result: dict[str, Any]) -> dict[str, Any]:
+    """What the frontend sends for a form submitted unchanged, without
+    opening a section (computeInitialHaFormData): each field's suggested
+    value, else its default; sections nested, collapsed or not."""
+
+    def values(schema: dict[Any, Any]) -> dict[str, Any]:
+        data: dict[str, Any] = {}
+        for key, value in schema.items():
+            if isinstance(value, section):
+                data[str(key)] = values(value.schema.schema)
+                continue
+            suggested_value = (key.description or {}).get("suggested_value")
+            if suggested_value is not None:
+                data[str(key)] = suggested_value
+            elif key.default is not type(key)("x").default:
+                data[str(key)] = key.default()
+        return data
+
+    return values(result["data_schema"].schema)
+
+
+def more_collapsed(result: dict[str, Any]) -> bool:
+    schema = result["data_schema"].schema
+    return next(v for k, v in schema.items() if k == "more").options["collapsed"]
 
 
 async def test_own_mapping(hass: HomeAssistant) -> None:
@@ -63,8 +103,11 @@ async def test_own_mapping(hass: HomeAssistant) -> None:
         "tarifwacht_url": "https://github.com/tarifwacht/integration"
     }
     assert not suggested(result).get("charged")
+    # Boundary and warranty in the collapsed section "more".
+    assert more_collapsed(result)
     result = await hass.config_entries.flow.async_configure(
-        result["flow_id"], {**MANUAL, CONF_WARRANTY_MWH: 30.82}
+        result["flow_id"],
+        {**MANUAL, "more": {CONF_BOUNDARY: "battery", CONF_WARRANTY_MWH: 30.82}},
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "Akku"
@@ -76,6 +119,18 @@ async def test_own_mapping(hass: HomeAssistant) -> None:
     assert result["data"][CONF_CAPACITY] == 10.0
     assert result["data"][CONF_TEMPLATE] == "manual"
     assert result["data"][CONF_WARRANTY_MWH] == 30.82
+    assert result["data"][CONF_BOUNDARY] == "battery"
+
+
+async def test_own_mapping_without_the_section(hass: HomeAssistant) -> None:
+    """A section left out of the input: boundary battery, no warranty."""
+    set_sources(hass)
+    result = await start_manual(hass)
+    plain = {k: v for k, v in MANUAL.items() if k != "more"}
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], plain)
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert result["data"][CONF_BOUNDARY] == "battery"
+    assert result["data"][CONF_WARRANTY_MWH] is None
 
 
 @pytest.mark.parametrize(
@@ -127,18 +182,7 @@ async def test_own_sensor_as_source_is_refused(hass: HomeAssistant) -> None:
 
 async def test_reconfigure_refuses_own_sensor(hass: HomeAssistant) -> None:
     set_sources(hass)
-    entry = MockConfigEntry(
-        domain=DOMAIN,
-        title="Akku",
-        unique_id=CHARGED,
-        data={
-            "name": "Akku",
-            CONF_TEMPLATE: "manual",
-            CONF_ENTITIES: {"charged": CHARGED, "discharged": DISCHARGED, "soc": SOC},
-            CONF_CAPACITY: 10.0,
-            CONF_BOUNDARY: "battery",
-        },
-    )
+    entry = MockConfigEntry(domain=DOMAIN, title="Akku", unique_id=CHARGED, data=STORED)
     entry.add_to_hass(hass)
     own = er.async_get(hass).async_get_or_create(
         "sensor",
@@ -245,12 +289,13 @@ async def test_detected_fronius_storage(hass: HomeAssistant) -> None:
     assert prefill["soc"] == "sensor.byd_battery_box_premium_hv_ladezustand"
     assert prefill[CONF_CAPACITY] == pytest.approx(10.24)
     values = {key: prefill[key] for key in ("charged", "discharged", "soc")}
+    assert more_collapsed(result)
     result = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        {**values, CONF_CAPACITY: 10.24, CONF_BOUNDARY: "battery"},
+        result["flow_id"], unchanged_input(result)
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["data"][CONF_TEMPLATE] == "fronius"
+    assert result["data"][CONF_BOUNDARY] == "battery"
     # The charge counter identifies the storage, whichever way it was chosen.
     assert result["result"].unique_id == values["charged"]
 
@@ -263,7 +308,7 @@ async def test_detected_fronius_storage(hass: HomeAssistant) -> None:
     )
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
-        {**values, CONF_CAPACITY: 10.24, CONF_BOUNDARY: "battery"},
+        {**values, CONF_CAPACITY: 10.24, "more": {CONF_BOUNDARY: "battery"}},
     )
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == {"base": "counter_in_use"}
@@ -271,23 +316,15 @@ async def test_detected_fronius_storage(hass: HomeAssistant) -> None:
 
 async def test_reconfigure(hass: HomeAssistant) -> None:
     set_sources(hass)
-    entry = MockConfigEntry(
-        domain=DOMAIN,
-        title="Akku",
-        data={
-            "name": "Akku",
-            CONF_TEMPLATE: "manual",
-            CONF_ENTITIES: {"charged": CHARGED, "discharged": DISCHARGED, "soc": SOC},
-            CONF_CAPACITY: 10.0,
-            CONF_BOUNDARY: "battery",
-        },
-    )
+    entry = MockConfigEntry(domain=DOMAIN, title="Akku", data=STORED)
     entry.add_to_hass(hass)
     result = await entry.start_reconfigure_flow(hass)
-    assert result["step_id"] == "entities"
+    assert result["step_id"] == "reconfigure"
     assert suggested(result)[CONF_CAPACITY] == 10.0
+    assert more_collapsed(result)
     result = await hass.config_entries.flow.async_configure(
-        result["flow_id"], {**MANUAL, CONF_CAPACITY: 9.5, CONF_BOUNDARY: "system"}
+        result["flow_id"],
+        {**MANUAL, CONF_CAPACITY: 9.5, "more": {CONF_BOUNDARY: "system"}},
     )
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "reconfigure_successful"
@@ -295,17 +332,85 @@ async def test_reconfigure(hass: HomeAssistant) -> None:
     assert entry.data[CONF_BOUNDARY] == "system"
 
 
+async def test_reconfigure_unchanged_keeps_every_value(hass: HomeAssistant) -> None:
+    """Saved without opening the section (or without the section at all):
+    boundary and warranty stay as stored, never the defaults."""
+    set_sources(hass)
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title="Akku",
+        data={**STORED, CONF_BOUNDARY: "system", CONF_WARRANTY_MWH: 30.82},
+    )
+    entry.add_to_hass(hass)
+    result = await entry.start_reconfigure_flow(hass)
+    # A boundary other than expected or a warranty: the section is open.
+    assert not more_collapsed(result)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], unchanged_input(result)
+    )
+    assert result["reason"] == "reconfigure_successful"
+    assert entry.data[CONF_BOUNDARY] == "system"
+    assert entry.data[CONF_WARRANTY_MWH] == 30.82
+    assert entry.data[CONF_CAPACITY] == 10.0
+
+    result = await entry.start_reconfigure_flow(hass)
+    plain = {k: v for k, v in unchanged_input(result).items() if k != "more"}
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], plain)
+    assert result["reason"] == "reconfigure_successful"
+    assert entry.data[CONF_BOUNDARY] == "system"
+    assert entry.data[CONF_WARRANTY_MWH] == 30.82
+
+
+async def test_reconfigure_summary(hass: HomeAssistant) -> None:
+    """The summary on top: own mapping matching Tarifwacht, the language of
+    Home Assistant, the entry not loaded (statistics not read)."""
+    set_sources(hass)
+    add_tarifwacht(hass, dict(TARIFF), dict(SOLAR))
+    entry = MockConfigEntry(domain=DOMAIN, title="Akku", data=STORED)
+    entry.add_to_hass(hass)
+    hass.config.language = "de"
+    result = await entry.start_reconfigure_flow(hass)
+    summary = result["description_placeholders"]["summary"]
+    assert summary.startswith(
+        "**Eingerichtet**\n"
+        "- Quelle: eigene Zuordnung, Zähler wie in Tarifwacht „Haus“\n"
+        "- Zähler: Gesamtzähler (Lebenszeit) in kWh, messen den Akku (DC)\n"
+        "- Ladezustand: jetzt 50 %\n"
+        "- Kapazität: 10 kWh laut Datenblatt\n"
+    )
+    assert "- Daten: noch nicht gelesen (kurz nach dem Start)" in summary
+    assert "Kein Garantie-Durchsatz" in summary
+
+
+async def test_reconfigure_summary_template_and_missing_soc(
+    hass: HomeAssistant,
+) -> None:
+    set_sources(hass)
+    hass.states.async_remove(SOC)
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title="Akku",
+        data={**STORED, CONF_TEMPLATE: "fronius", CONF_WARRANTY_MWH: 20.0},
+    )
+    entry.add_to_hass(hass)
+    hass.config.language = "en"
+    result = await entry.start_reconfigure_flow(hass)
+    summary = result["description_placeholders"]["summary"]
+    assert summary.startswith(
+        "**Set up**\n- Source: template Fronius (GEN24, Modbus TCP)\n"
+    )
+    assert summary.endswith(
+        "**Missing**\n"
+        f"- State of charge {SOC} does not exist: for new days no efficiency, "
+        "no rest loss, no estimated capacity."
+    )
+
+
 async def test_reconfigure_keeps_its_own_counters(hass: HomeAssistant) -> None:
     """Its own charge counter is no conflict; another entry's is."""
     set_sources(hass)
     hass.states.async_set("sensor.other_charged", "5.0", ENERGY)
-    data = {
-        "name": "Akku",
-        CONF_TEMPLATE: "manual",
-        CONF_ENTITIES: {"charged": CHARGED, "discharged": DISCHARGED, "soc": SOC},
-        CONF_CAPACITY: 10.0,
-        CONF_BOUNDARY: "battery",
-    }
+    data = STORED
     other = MockConfigEntry(
         domain=DOMAIN,
         title="Zweiter",
@@ -331,18 +436,7 @@ async def test_reconfigure_moves_the_unique_id(hass: HomeAssistant) -> None:
     """Another charge counter identifies the entry from now on."""
     set_sources(hass)
     hass.states.async_set("sensor.new_charged", "5.0", ENERGY)
-    entry = MockConfigEntry(
-        domain=DOMAIN,
-        title="Akku",
-        unique_id=CHARGED,
-        data={
-            "name": "Akku",
-            CONF_TEMPLATE: "manual",
-            CONF_ENTITIES: {"charged": CHARGED, "discharged": DISCHARGED, "soc": SOC},
-            CONF_CAPACITY: 10.0,
-            CONF_BOUNDARY: "battery",
-        },
-    )
+    entry = MockConfigEntry(domain=DOMAIN, title="Akku", unique_id=CHARGED, data=STORED)
     entry.add_to_hass(hass)
     result = await entry.start_reconfigure_flow(hass)
     result = await hass.config_entries.flow.async_configure(

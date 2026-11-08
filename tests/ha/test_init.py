@@ -376,7 +376,7 @@ MAPPING = {
     "discharged": DISCHARGED,
     "soc": SOC,
     CONF_CAPACITY: 10.0,
-    CONF_BOUNDARY: "battery",
+    "more": {CONF_BOUNDARY: "battery"},
 }
 
 
@@ -439,6 +439,11 @@ async def test_day_counter_gives_a_repair_issue(hass: HomeAssistant) -> None:
     )
     assert issue is not None
     assert issue.translation_placeholders["entities"] == CHARGED
+    # The summary of Reconfigure names it, with the statistics read.
+    result = await entry.start_reconfigure_flow(hass)
+    summary = result["description_placeholders"]["summary"]
+    assert "- Data since " in summary
+    assert "- A counter starts anew every day like a day counter" in summary
 
 
 @pytest.mark.freeze_time(NOW)

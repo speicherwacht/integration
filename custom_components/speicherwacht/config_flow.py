@@ -7,6 +7,7 @@ from typing import Any
 import voluptuous as vol
 from homeassistant.config_entries import (
     SOURCE_RECONFIGURE,
+    ConfigEntryState,
     ConfigFlow,
     ConfigFlowResult,
 )
@@ -14,10 +15,13 @@ from homeassistant.const import (
     ATTR_UNIT_OF_MEASUREMENT,
     PERCENTAGE,
     STATE_UNAVAILABLE,
+    STATE_UNKNOWN,
     UnitOfEnergy,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.data_entry_flow import section
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers import selector
 
 from .const import (
@@ -35,7 +39,9 @@ from .day_counters import async_day_counters
 from .entity import own_entities
 from .model import REQUIRED, Boundary, Signal
 from .profiles import TEMPLATES, RegistryEntry
+from .runtime import ISSUE_RESETS
 from .sisters import TARIFWACHT, TARIFWACHT_URL, tarifwacht_battery
+from .summary import MISSING, OWN, UNIT, Source, storage_summary
 
 CONF_SOURCE = "source"
 DEFAULT_NAME = "Speicher"
@@ -46,6 +52,10 @@ MEASUREMENT = "measurement"
 # Tarifwacht, or a tip when it has none (own step ids, own texts).
 HINT_TARIFWACHT = "tarifwacht"
 HINT_TARIFWACHT_TIP = "tarifwacht_tip"
+# Rarely changed fields of the entities form, in a section that starts
+# collapsed (forms got too full, 08.11.2026). Stored flat as ever.
+SECTION_MORE = "more"
+MORE_FIELDS = (CONF_BOUNDARY, CONF_WARRANTY_MWH)
 
 
 def _entries(hass: HomeAssistant) -> list[RegistryEntry]:
@@ -111,7 +121,13 @@ async def async_energy_prefill(hass: HomeAssistant) -> dict[str, Any]:
     return prefill
 
 
-def entities_schema(values: dict[str, Any]) -> vol.Schema:
+def entities_schema(
+    values: dict[str, Any], expected_boundary: str = Boundary.BATTERY.value
+) -> vol.Schema:
+    """The entities form; `values` prefill it. The section "more" starts
+    collapsed unless it holds a warranty or a boundary other than the
+    expected one (the template's, else the battery). It is optional without
+    a default: the frontend would take a default over its fields' values."""
     counter = selector.EntitySelector(
         selector.EntitySelectorConfig(
             filter=selector.EntityFilterSelectorConfig(
@@ -131,6 +147,8 @@ def entities_schema(values: dict[str, Any]) -> vol.Schema:
 
     def suggested(key: str) -> dict[str, Any]:
         return {"suggested_value": values.get(key)}
+
+    boundary = values.get(CONF_BOUNDARY) or expected_boundary
 
     return vol.Schema(
         {
@@ -152,29 +170,53 @@ def entities_schema(values: dict[str, Any]) -> vol.Schema:
                     )
                 )
             ),
-            vol.Required(
-                CONF_BOUNDARY,
-                default=values.get(CONF_BOUNDARY, Boundary.BATTERY.value),
-            ): selector.SelectSelector(
-                selector.SelectSelectorConfig(
-                    options=[b.value for b in Boundary],
-                    translation_key=CONF_BOUNDARY,
-                    mode=selector.SelectSelectorMode.LIST,
-                )
-            ),
-            vol.Optional(
-                CONF_WARRANTY_MWH, description=suggested(CONF_WARRANTY_MWH)
-            ): selector.NumberSelector(
-                selector.NumberSelectorConfig(
-                    min=0.1,
-                    max=10000,
-                    step=0.01,
-                    unit_of_measurement=UnitOfEnergy.MEGA_WATT_HOUR,
-                    mode=selector.NumberSelectorMode.BOX,
-                )
+            vol.Optional(SECTION_MORE): section(
+                vol.Schema(
+                    {
+                        vol.Required(
+                            CONF_BOUNDARY, default=boundary
+                        ): selector.SelectSelector(
+                            selector.SelectSelectorConfig(
+                                options=[b.value for b in Boundary],
+                                translation_key=CONF_BOUNDARY,
+                                mode=selector.SelectSelectorMode.LIST,
+                            )
+                        ),
+                        vol.Optional(
+                            CONF_WARRANTY_MWH,
+                            description=suggested(CONF_WARRANTY_MWH),
+                        ): selector.NumberSelector(
+                            selector.NumberSelectorConfig(
+                                min=0.1,
+                                max=10000,
+                                step=0.01,
+                                unit_of_measurement=UnitOfEnergy.MEGA_WATT_HOUR,
+                                mode=selector.NumberSelectorMode.BOX,
+                            )
+                        ),
+                    }
+                ),
+                {
+                    "collapsed": not values.get(CONF_WARRANTY_MWH)
+                    and boundary == expected_boundary
+                },
             ),
         }
     )
+
+
+def flat_input(
+    user_input: dict[str, Any], before: dict[str, Any], expected_boundary: str
+) -> dict[str, Any]:
+    """The form's input without the section. A section left out of the input
+    keeps the values from before (stored or prefilled), never the default."""
+    values = {k: v for k, v in user_input.items() if k != SECTION_MORE}
+    more = user_input.get(SECTION_MORE)
+    if more is None:
+        more = {k: before[k] for k in MORE_FIELDS if before.get(k) is not None}
+        more.setdefault(CONF_BOUNDARY, expected_boundary)
+    values.update(more)
+    return values
 
 
 def validate(hass: HomeAssistant, values: dict[str, Any]) -> str | None:
@@ -285,8 +327,10 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         errors: dict[str, str] = {}
         values = self._prefill
+        template = TEMPLATES.get(self._template)
+        expected = (template.boundary if template else Boundary.BATTERY).value
         if user_input is not None:
-            values = user_input
+            values = flat_input(user_input, self._prefill, expected)
             error = validate(self.hass, values)
             if error is None and self._counter_in_use(values):
                 error = "counter_in_use"
@@ -301,10 +345,13 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
             if error is None:
                 return await self._async_finish(values)
             errors["base"] = error
-        # A source with a known limit: say so next to its entities.
-        template = TEMPLATES.get(self._template)
         placeholders: dict[str, str] = {}
-        if template and template.note:
+        if self.source == SOURCE_RECONFIGURE:
+            # The summary of the entry on top (built when the form opens).
+            step_id = "reconfigure"
+            placeholders["summary"] = await self._async_summary()
+        # A source with a known limit: say so next to its entities.
+        elif template and template.note:
             step_id = f"entities_note_{template.key}"
         elif self._hint is not None:
             step_id = f"entities_{self._hint}"
@@ -316,7 +363,7 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id = "entities"
         return self.async_show_form(
             step_id=step_id,
-            data_schema=entities_schema(values),
+            data_schema=entities_schema(values, expected),
             errors=errors,
             description_placeholders=placeholders,
         )
@@ -359,14 +406,67 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_reconfigure(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
+        """The entities form of the entry, with its summary on top."""
+        if user_input is None:
+            entry = self._get_reconfigure_entry()
+            self._template = entry.data.get(CONF_TEMPLATE) or TEMPLATE_MANUAL
+            self._prefill = {
+                **entry.data[CONF_ENTITIES],
+                CONF_CAPACITY: entry.data[CONF_CAPACITY],
+                CONF_BOUNDARY: entry.data.get(CONF_BOUNDARY, Boundary.BATTERY.value),
+                CONF_WARRANTY_MWH: entry.data.get(CONF_WARRANTY_MWH),
+            }
+        return await self.async_step_entities(user_input)
+
+    async def _async_summary(self) -> str:
+        """What the entry reads and evaluates, and what is missing: from the
+        stored data, the current states, the energy settings, Tarifwacht and
+        the last analysis (nothing is read from the statistics for it)."""
         entry = self._get_reconfigure_entry()
-        self._prefill = {
-            **entry.data[CONF_ENTITIES],
-            CONF_CAPACITY: entry.data[CONF_CAPACITY],
-            CONF_BOUNDARY: entry.data.get(CONF_BOUNDARY, Boundary.BATTERY.value),
-            CONF_WARRANTY_MWH: entry.data.get(CONF_WARRANTY_MWH),
+        entities: dict[str, str] = entry.data[CONF_ENTITIES]
+        own = own_entities(self.hass, entities.values())
+        sources = {
+            signal: _source(self.hass, signal, entities[signal.value], own)
+            for signal in REQUIRED
+            if entities.get(signal.value)
         }
-        return await self.async_step_entities()
+        template = TEMPLATES.get(entry.data.get(CONF_TEMPLATE) or "")
+        counters = {
+            s.value: entities.get(s.value) for s in (Signal.CHARGED, Signal.DISCHARGED)
+        }
+        energy = False
+        tarifwacht = None
+        if template is None:
+            prefill = await async_energy_prefill(self.hass)
+            energy = all(prefill.get(s) == e for s, e in counters.items())
+            found = tarifwacht_battery(
+                self.hass.config_entries.async_entries(TARIFWACHT, include_ignore=False)
+            )
+            if found is not None and found[1] == counters:
+                tarifwacht = found[0]
+        runtime = (
+            getattr(entry, "runtime_data", None)
+            if entry.state is ConfigEntryState.LOADED
+            else None
+        )
+        issue = ir.async_get(self.hass).async_get_issue(
+            DOMAIN, f"{entry.entry_id}_{ISSUE_RESETS}"
+        )
+        return storage_summary(
+            entry.data,
+            sources,
+            template_label=_label(template.label, template.experimental)
+            if template
+            else None,
+            day_values=bool(template and template.day_values),
+            energy_dashboard=energy,
+            tarifwacht=tarifwacht,
+            analysis=getattr(runtime, "analysis", None),
+            day_counter=issue is not None
+            and issue.active
+            and issue.dismissed_version is None,
+            language=self.hass.config.language,
+        )
 
     async def _async_day_counters(self, values: dict[str, Any]) -> list[str]:
         """Day counters among the counters; on a reconfigure only among the
@@ -432,6 +532,26 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
             title=self._name,
             data={CONF_NAME: self._name, CONF_TEMPLATE: self._template, **data},
         )
+
+
+def _source(
+    hass: HomeAssistant, signal: Signal, entity_id: str, own: list[str]
+) -> Source:
+    """A source entity with its unit, current value and problem."""
+    state = hass.states.get(entity_id)
+    if signal is Signal.SOC and entity_id in own:
+        return Source(entity_id, problem=OWN)
+    if state is None:
+        return Source(entity_id, problem=MISSING)
+    unit = state.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
+    try:
+        value: float | None = float(state.state)
+    except ValueError:
+        value = None
+    usable = unit == PERCENTAGE if signal is Signal.SOC else unit in UNIT_FACTORS
+    # An unavailable source may lack its unit for a while.
+    known = state.state not in (STATE_UNAVAILABLE, STATE_UNKNOWN)
+    return Source(entity_id, unit, value, UNIT if known and not usable else None)
 
 
 def _label(label: str, experimental: bool) -> str:

@@ -58,7 +58,7 @@ Speicherwacht steht ab Home Assistant 2026.11 im eingebauten Marketplace, in äl
 
 ## Einrichtung
 
-Im ersten Schritt zeigt Speicherwacht die Speicher, die es erkannt hat, und „Eigene Zuordnung“. Im zweiten Schritt prüfst du die Entitäten, trägst die nutzbare Kapazität ein und wählst, was die Zähler messen.
+Im ersten Schritt zeigt Speicherwacht die Speicher, die es erkannt hat, und „Eigene Zuordnung“. Im zweiten Schritt prüfst du die Entitäten und trägst die nutzbare Kapazität ein. Was die Zähler messen und den Garantie-Durchsatz findest du darunter im eingeklappten Abschnitt „Weitere Angaben“; die Vorgabe passt meist.
 
 | Quelle | Integration | Stand |
 | --- | --- | --- |
@@ -92,7 +92,7 @@ Im ersten Schritt zeigt Speicherwacht die Speicher, die es erkannt hat, und „E
 - **Marstek:** nur Venus E. Bei Venus A und D läuft der Solarstrom durch den Entladezähler; sie werden nicht erkannt. Die Zähler messen an der Steckdose, also den ganzen Speicher.
 - **Die Zähler messen:** *den Akku* (DC, z. B. die Batteriezähler des Wechselrichters) oder *den ganzen Speicher* (AC, z. B. ein Zwischenstecker vor einem Balkonspeicher). Die Werte beider Grenzen sind nicht vergleichbar; AC enthält die Verluste des Wechselrichters.
 - **Garantie-Durchsatz (optional):** die Energie in MWh, die die Garantie abdeckt (Garantiebedingungen deines Speichers). Dann entsteht der Sensor „Garantie-Durchsatz genutzt“.
-- **Neu konfigurieren:** Geräte & Dienste → Speicherwacht → ⋮ → *Neu konfigurieren*.
+- **Neu konfigurieren:** Geräte & Dienste → Speicherwacht → ⋮ → *Neu konfigurieren*. Oben fasst das Formular den Eintrag zusammen (Vorlage oder eigene Zuordnung, Zähler und Einheit, Ladezustand, Kapazität laut Datenblatt und geschätzt, was ausgewertet wird, Daten seit) und nennt unter „Was fehlt“, was eine Lücke kostet, etwa „Ladezustand … gibt es nicht: für neue Tage kein Wirkungsgrad, kein Ruheverlust, keine geschätzte Kapazität“. Speichern, ohne „Weitere Angaben“ aufzuklappen, lässt deren Werte, wie sie sind.
 
 Nach der Einrichtung rechnet Speicherwacht nach etwa einer Minute zum ersten Mal und dann jede Stunde (kurz nach :12, wenn Home Assistant die Stundenstatistik geschrieben hat).
 
