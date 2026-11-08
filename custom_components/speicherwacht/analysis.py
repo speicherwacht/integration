@@ -77,6 +77,9 @@ class Efficiency:
     # Days the counters did not cover from midnight to midnight (first day
     # of the counters, missing readings): left out like days without SoC.
     incomplete_days: int = 0
+    # Days with a rejected counter reading (implausible jump, restart of a
+    # lifetime counter): the energy of that hour is unknown, left out too.
+    implausible_days: int = 0
     reason: str | None = None
     first_day: date | None = None
 
@@ -128,10 +131,13 @@ def efficiency(
 ) -> Efficiency:
     """Efficiency over the given days (with energy figures)."""
     charged = discharged = stored = rest_loss = 0.0
-    operating = rest = without_soc = incomplete = 0
+    operating = rest = without_soc = incomplete = implausible = 0
     for day in selected:
         if not (day.covered_start and day.covered_end):
             incomplete += 1
+            continue
+        if day.rejected_hours:
+            implausible += 1
             continue
         day_stored = _stored(day, capacity)
         if day_stored is None:
@@ -151,7 +157,7 @@ def efficiency(
     reason = None
     if not selected:
         reason = NO_DATA
-    elif not operating and (without_soc or incomplete):
+    elif not operating and (without_soc or incomplete or implausible):
         reason = NO_SOC
     elif charged < min_charge * capacity:
         reason = TOO_LITTLE_CHARGE
@@ -165,6 +171,7 @@ def efficiency(
         rest_loss=rest_loss,
         days_without_soc=without_soc,
         incomplete_days=incomplete,
+        implausible_days=implausible,
         reason=reason,
         first_day=first,
     )

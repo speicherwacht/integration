@@ -114,7 +114,8 @@ def _lines(
                 "days (total)",
                 f"{total.operating_days} operating, {total.rest_days} rest, "
                 f"{total.days_without_soc} without SoC, "
-                f"{total.incomplete_days} incomplete",
+                f"{total.incomplete_days} incomplete, "
+                f"{total.implausible_days} implausible",
             )
         )
     return lines

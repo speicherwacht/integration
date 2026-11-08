@@ -106,6 +106,8 @@ class Day:
     # counters may start in the middle of a day, readings may be missing).
     covered_start: bool = False
     covered_end: bool = False
+    # Hours with a rejected counter reading: their energy is missing.
+    rejected_hours: int = 0
 
     @property
     def complete(self) -> bool:
@@ -143,6 +145,7 @@ def days(hours: Iterable[Hour], tz: tzinfo) -> list[Day]:
                 ),
                 covered_start=_read(by_start, last_hour_before(start)),
                 covered_end=_read(by_start, last_hour_before(end)),
+                rejected_hours=sum(1 for h in members if h.rejected),
             )
         )
     return result

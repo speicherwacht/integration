@@ -66,6 +66,7 @@ def _efficiency_attrs(
             "rest_loss_kwh": _kwh(result.rest_loss),
             "days_without_soc": result.days_without_soc,
             "incomplete_days": result.incomplete_days,
+            "implausible_days": result.implausible_days,
             "since": result.first_day.isoformat() if result.first_day else None,
             "boundary": runtime.boundary.value,
             "reason": result.reason,

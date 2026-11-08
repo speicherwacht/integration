@@ -181,6 +181,7 @@ efficiency:
   rest_loss_kwh: 4.8
   days_without_soc: 0
   incomplete_days: 0
+  implausible_days: 0
   reason: null
 rest_loss:
   watts: 12
@@ -192,6 +193,9 @@ capacity_estimate:
   share_of_data_sheet_percent: 94.2
   samples: 10
   reason: null
+hours_implausible:
+  count: 0
+  hours: []
 months:
   - month: "2026-01"
     charged_kwh: 98.2
@@ -221,6 +225,7 @@ Die Vergleiche mit dem Vorjahr brauchen ein Jahr Langzeitstatistik; vorher sind 
 ## Wie gerechnet wird
 
 - **Grundlage** sind die Stundenwerte der Langzeitstatistik. Speicherwacht liest den Zählerstand je Stunde und fängt Rücksprünge, Neustarts des Zählers und Ausreißer selbst ab (manche Integrationen melden Zähler ohne Reset-Kennung oder kurz einen falschen Wert).
+- **Unplausible Stunden:** Steigt ein Zähler in einer Stunde um mehr, als der Speicher laden oder entladen kann (doppelte Kapazität je Stunde × 1,5 + 1 kWh), oder fängt ein Gesamtzähler neu an, ist die Energie dieser Stunde unbekannt – etwa wenn eine Quelle kurz Wh als kWh meldet (107 → 109.851,5 → 110,1). Solche Stunden lässt Speicherwacht aus Ruheverlust und Kapazität heraus, ihre Tage aus dem Wirkungsgrad (Attribut `implausible_days`); in den Vollzyklen fehlt die Energie dieser Stunden. Die Aktion „Bericht“ nennt sie unter `hours_implausible` (Anzahl und die ersten fünf), die Diagnose-Datei ebenso.
 - **Korrektur über den Ladezustand:** Wirkungsgrad = (Entladung + ΔLadezustand × Kapazität) / Ladung. Das ist eine **eigene Näherung**: Prüfstände wie die HTW-Stromspeicher-Inspektion messen stattdessen nur zwischen gleichen Ladezuständen (voll → leer → voll). Über einen Monat oder ein Jahr bleibt der Unterschied klein (unter 1 %), weil der Durchsatz viele Kapazitäten beträgt; einzelne Tage schwanken stärker.
 - **Ruhetag:** Laden und Entladen jeweils unter 5 % der Kapazität.
 - **Ruheverlust:** Abfall des Ladezustands in Stunden ohne nennenswertes Laden oder Entladen, mindestens drei Stunden am Stück.

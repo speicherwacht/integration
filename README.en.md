@@ -181,6 +181,7 @@ efficiency:
   rest_loss_kwh: 4.8
   days_without_soc: 0
   incomplete_days: 0
+  implausible_days: 0
   reason: null
 rest_loss:
   watts: 12
@@ -192,6 +193,9 @@ capacity_estimate:
   share_of_data_sheet_percent: 94.2
   samples: 10
   reason: null
+hours_implausible:
+  count: 0
+  hours: []
 months:
   - month: "2026-01"
     charged_kwh: 98.2
@@ -221,6 +225,7 @@ The comparisons with last year need a year of long-term statistics; until then t
 ## How it calculates
 
 - **Basis** are the hourly values of the long-term statistics. Speicherwacht reads the counter reading per hour and handles steps back, counter restarts and outliers itself (some integrations report counters without a reset marker or briefly a wrong value).
+- **Implausible hours:** if a counter rises in one hour by more than the battery can charge or discharge (twice the capacity per hour × 1.5 + 1 kWh), or a lifetime counter starts anew, the energy of that hour is unknown – for example when a source briefly reports Wh as kWh (107 → 109,851.5 → 110.1). Speicherwacht leaves such hours out of rest loss and capacity, and their days out of the efficiency (attribute `implausible_days`); the full cycles miss the energy of these hours. The action "Report" lists them under `hours_implausible` (count and the first five), so does the diagnostics file.
 - **Correction by the state of charge:** efficiency = (discharge + Δstate of charge × capacity) / charge. This is **an approximation of its own**: test benches such as the HTW Berlin storage inspection measure only between equal states of charge (full → empty → full). Over a month or a year the difference stays small (below 1 %) because the throughput is many capacities; single days vary more.
 - **Rest day:** charge and discharge each below 5 % of the capacity.
 - **Rest loss:** drop of the state of charge in hours without noteworthy charging or discharging, at least three hours in a row.

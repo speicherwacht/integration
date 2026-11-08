@@ -43,7 +43,15 @@ def test_glitch_to_zero_and_back_books_nothing() -> None:
     charged = {h(0): 2800.0, h(1): 2801.0, h(2): 0.0, h(3): 2802.0, h(4): 2803.5}
     series = build(charged, dict.fromkeys(charged, 50.0), {}, CAPACITY)
     booked = [hour.charged for hour in series.hours]
-    assert booked == [None, pytest.approx(1.0), 0, 0, pytest.approx(1.5)]
+    # The energy of the glitch hours is unknown: none booked, hours rejected.
+    assert booked == [None, pytest.approx(1.0), None, None, pytest.approx(1.5)]
+    assert [hour.rejected for hour in series.hours] == [
+        False,
+        False,
+        True,
+        True,
+        False,
+    ]
     events = [(i.hour, i.event) for i in series.issues if i.signal == "charged"]
     assert events == [(h(2), CounterEvent.RESET), (h(3), CounterEvent.JUMP)]
 

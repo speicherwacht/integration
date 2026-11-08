@@ -10,6 +10,8 @@ long-term statistics, only over another span:
   sensors' figures.
 - Rest loss and capacity estimate over the hours of [start, end), with the
   thresholds of the sensors (capacity: the latest discharges of the period).
+- Hours of [start, end) with a rejected counter reading (`hours_implausible`):
+  left out of all figures, their days out of the efficiency.
 """
 
 from __future__ import annotations
@@ -27,6 +29,7 @@ from .analysis import (
     rest_loss,
 )
 from .days import Day, local_midnight
+from .hours import rejected_summary
 from .model import Hour
 
 HOUR = timedelta(hours=1)
@@ -68,6 +71,7 @@ def efficiency_figures(result: Efficiency) -> dict[str, Any]:
         "rest_loss_kwh": _kwh(result.rest_loss),
         "days_without_soc": result.days_without_soc,
         "incomplete_days": result.incomplete_days,
+        "implausible_days": result.implausible_days,
         "reason": result.reason,
     }
 
@@ -91,7 +95,8 @@ def report(
     until = min(end, now)
     rest = rest_loss(hours, capacity, until, since=start)
     estimate = capacity_estimate(hours, capacity, until, since=start)
-    latest = [h.start for h in hours if start <= h.start < until and h.read]
+    within = [h for h in hours if start <= h.start < until]
+    latest = [h.start for h in within if h.read]
     return {
         "first_day": chosen[0].day.isoformat() if chosen else None,
         "last_day": chosen[-1].day.isoformat() if chosen else None,
@@ -117,6 +122,7 @@ def report(
             "samples": len(estimate.samples),
             "reason": estimate.reason,
         },
+        "hours_implausible": rejected_summary(within, tz),
         "months": [
             {
                 "month": month,

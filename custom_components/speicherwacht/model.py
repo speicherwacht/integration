@@ -36,7 +36,11 @@ class Hour:
     for this hour (kWh); None when the counter had no usable reading. `soc`
     is the mean state of charge (%), `soc_min`/`soc_max` its range; None
     without statistics. `gap` marks the first hour after missing readings:
-    its energy may belong to earlier hours.
+    its energy may belong to earlier hours. `rejected` marks an hour in which
+    the counter module rejected a reading of a counter (implausible jump,
+    restart of a lifetime counter): that counter's energy of the hour is
+    unknown (None) and missing from its day, so the day is left out of the
+    efficiency and the hour of all other figures.
     """
 
     start: datetime
@@ -47,6 +51,7 @@ class Hour:
     soc_max: float | None = None
     gap: bool = False
     read: bool = False
+    rejected: bool = False
 
     @property
     def complete(self) -> bool:
@@ -55,4 +60,5 @@ class Hour:
             and self.discharged is not None
             and self.soc is not None
             and not self.gap
+            and not self.rejected
         )

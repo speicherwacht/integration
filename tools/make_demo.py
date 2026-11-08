@@ -337,6 +337,7 @@ def sensors(battery: Battery, series: Series, analysis: Analysis) -> dict[str, A
                 "rest_loss_kwh": _kwh(eff.rest_loss),
                 "days_without_soc": eff.days_without_soc,
                 "incomplete_days": eff.incomplete_days,
+                "implausible_days": eff.implausible_days,
                 "since": eff.first_day.isoformat() if eff.first_day else None,
                 "boundary": battery.boundary,
                 "reason": eff.reason,

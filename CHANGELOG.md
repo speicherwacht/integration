@@ -1,5 +1,9 @@
 # Changelog
 
+## Unveröffentlicht
+
+- **Unplausible Zählerstunden aus allen Kennzahlen:** Meldet eine Quelle kurz Wh als kWh (Muster aus einem echten Zähler: 107 → 109.851,5 → 110,1 kWh je Stunde), verwarf Speicherwacht den Sprung schon bisher, buchte die beiden Stunden aber mit 0 kWh. Der Tag zählte so mit fehlender Ladung oder Entladung in den Wirkungsgrad (im Test rund ein Prozentpunkt im Monat). Jetzt ist die Energie solcher Stunden unbekannt: Wirkungsgrad lässt ihren Tag weg (neues Attribut `implausible_days`), Ruheverlust, Kapazitätsschätzung und der Abgleich von Zählern und Ladezustand die Stunden. Die Aktion „Bericht“ nennt sie unter `hours_implausible` (Anzahl und die ersten fünf Stunden), ebenso die Diagnose-Datei; der Bericht für Fehlermeldung zählt die Tage. Dasselbe gilt für den Neustart eines Gesamtzählers. Anlass: derselbe Fund in der Schwester Tarifwacht.
+
 ## 0.1.6 – 2026-11-08
 
 - **README: Maxxisun-Einzelakkus summieren.** Die Gesamtwerte der Maxxisun-Integration für Laden und Entladen sind gerechnet (PV minus CCU) und lagen in einem geprüften Fall 15–30 % daneben. Der neue Abschnitt zeigt den genaueren Weg: Template-Sensoren mit der Summe der Lade- und Entladeleistungen der einzelnen Akkus, darauf zwei Integral-Helfer als Zähler, den Ladezustand aus der gespeicherten Energie.

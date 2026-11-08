@@ -9,9 +9,10 @@ a step back becomes a negative change. The counter module handles both.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, tzinfo
+from typing import Any
 
 from .counter import Counter, CounterEvent
 from .model import Hour
@@ -24,6 +25,8 @@ READING_OFFSET = HOUR - timedelta(seconds=1)
 # balcony batteries charge at most at about 1 C; 2 C leaves margin (own
 # assumption, see docs/ENTWICKLUNG.md).
 MAX_C_RATE = 2.0
+# Hours with a rejected reading listed by rejected_summary.
+REJECTED_SHOWN = 5
 
 
 @dataclass(frozen=True, slots=True)
@@ -60,25 +63,36 @@ def _booked(
     counter: Counter,
     signal: str,
     issues: list[CounterIssue],
-) -> tuple[dict[datetime, float], set[datetime]]:
-    """Increments per hour and the hours that follow missing rows."""
+) -> tuple[dict[datetime, float], set[datetime], set[datetime]]:
+    """Increments per hour, the hours that follow missing rows and the
+    hours whose reading was rejected (no increment: the energy is unknown).
+
+    A jump (e.g. a reading in Wh reported as kWh: 107 -> 109851.5) moves a
+    lifetime counter's baseline, and the fall back after it (-> 110.131) is a
+    restart: the energy of both hours is lost. A small step back (DIP) holds
+    the baseline and loses nothing.
+    """
     booked: dict[datetime, float] = {}
     gaps: set[datetime] = set()
+    rejected: set[datetime] = set()
     previous: datetime | None = None
     # A day counter starting anew at midnight is no issue.
     unexpected = {CounterEvent.JUMP, CounterEvent.DIP}
     if counter.day_tz is None:
         unexpected.add(CounterEvent.RESET)
+    lost = unexpected - {CounterEvent.DIP}
     for hour in sorted(states):
         update = counter.update(states[hour], hour + READING_OFFSET)
         if update.event in unexpected:
             issues.append(CounterIssue(hour, signal, update.event))
-        if update.event is not CounterEvent.FIRST:
+        if update.event in lost:
+            rejected.add(hour)
+        elif update.event is not CounterEvent.FIRST:
             booked[hour] = update.delta
         if previous is not None and hour - previous > HOUR:
             gaps.add(hour)
         previous = hour
-    return booked, gaps
+    return booked, gaps, rejected
 
 
 def build(
@@ -92,14 +106,19 @@ def build(
 
     `day_tz` marks counters that start anew each day in that time zone.
     The first reading of a counter only sets its baseline; that hour has
-    no energy for it.
+    no energy for it. An hour with a rejected reading has no energy for that
+    counter either and is marked `rejected`.
     """
     series = Series()
     max_kw = capacity_kwh * MAX_C_RATE
     charge_counter = Counter(max_kw=max_kw, day_tz=day_tz)
     discharge_counter = Counter(max_kw=max_kw, day_tz=day_tz)
-    into, into_gaps = _booked(charged, charge_counter, "charged", series.issues)
-    out, out_gaps = _booked(discharged, discharge_counter, "discharged", series.issues)
+    into, into_gaps, into_rejected = _booked(
+        charged, charge_counter, "charged", series.issues
+    )
+    out, out_gaps, out_rejected = _booked(
+        discharged, discharge_counter, "discharged", series.issues
+    )
     for hour in sorted(set(charged) | set(discharged) | set(soc)):
         row = soc.get(hour)
         series.hours.append(
@@ -112,8 +131,21 @@ def build(
                 soc_max=row.high if row else None,
                 gap=hour in into_gaps or hour in out_gaps,
                 read=hour in charged and hour in discharged,
+                rejected=hour in into_rejected or hour in out_rejected,
             )
         )
     if discharged:
         series.first_discharged = discharged[min(discharged)]
     return series
+
+
+def rejected_summary(
+    hours: Sequence[Hour], tz: tzinfo, limit: int = REJECTED_SHOWN
+) -> dict[str, Any]:
+    """Hours with a rejected reading: their number and the first few
+    (local time), for attributes, the report and diagnostics."""
+    rejected = [h.start for h in hours if h.rejected]
+    return {
+        "count": len(rejected),
+        "hours": [start.astimezone(tz).isoformat() for start in rejected[:limit]],
+    }

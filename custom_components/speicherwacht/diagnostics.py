@@ -10,6 +10,7 @@ from dataclasses import asdict
 from typing import TYPE_CHECKING, Any
 
 from .const import VERSION
+from .hours import rejected_summary
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -49,6 +50,8 @@ async def async_get_config_entry_diagnostics(
             "last": hours[-1].start.isoformat() if hours else None,
             "gaps": sum(1 for h in hours if h.gap),
         },
+        # Hours left out because a counter reading was rejected.
+        "hours_implausible": rejected_summary(hours, runtime.tz),
         "rejected_readings": [
             {"hour": i.hour.isoformat(), "signal": i.signal, "event": i.event.value}
             for i in (series.issues[-ISSUE_LIMIT:] if series else [])
