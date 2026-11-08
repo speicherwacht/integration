@@ -96,6 +96,20 @@ The first step lists the storages Speicherwacht detected plus "Map entities myse
 
 After the setup Speicherwacht calculates after about a minute and then every hour (shortly after :12, once Home Assistant has written the hourly statistics).
 
+### Maxxisun: sum the single batteries
+
+The Maxxisun integration's (MaxxiChargeConnect) total values for charging and discharging the battery are calculated (PV minus CCU) and were off by 15–30 % in a checked case. The sum of the powers of the single batteries, by contrast, matched the change of the stored energy within 2–3 %. So map them like this:
+
+1. Two template sensors (*Settings → Devices & services → Helpers → Template → Template sensor*, unit W, device class power, state class measurement): the charging powers of all batteries added up, and the same for the discharging powers, e.g. `{{ states('sensor.<battery_1_charge>') | float(0) + states('sensor.<battery_2_charge>') | float(0) }}`.
+2. On each of the two an *Integral* helper (method "Left", metric prefix k, time unit hours, i.e. kWh). These are the counters for charging and discharging.
+3. The state of charge as a template sensor from the stored energy (unit %, state class measurement):
+   ```jinja
+   {{ (states('sensor.maxxisun1_batterie_kapazitat') | float(0) / <usable capacity in Wh> * 100) | round(1) }}
+   ```
+   The usable capacity is the sum of the batteries; enter the same number in Speicherwacht.
+
+Then choose "Map entities myself" in Speicherwacht and take these three entities (entity ids depend on the device name). The look-back starts when the helpers were created.
+
 ## Entities
 
 | Entity | Meaning |

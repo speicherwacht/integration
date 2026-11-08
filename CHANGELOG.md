@@ -2,6 +2,7 @@
 
 ## Unveröffentlicht
 
+- **README: Maxxisun-Einzelakkus summieren.** Die Gesamtwerte der Maxxisun-Integration für Laden und Entladen sind gerechnet (PV minus CCU) und lagen in einem geprüften Fall 15–30 % daneben. Der neue Abschnitt zeigt den genaueren Weg: Template-Sensoren mit der Summe der Lade- und Entladeleistungen der einzelnen Akkus, darauf zwei Integral-Helfer als Zähler, den Ladezustand aus der gespeicherten Energie.
 - **Zähler aus Tarifwacht:** Hast du in der Schwester [Tarifwacht](https://github.com/tarifwacht/integration) unter „PV und Speicher“ Lade- und Entladezähler eingetragen, schlägt die eigene Zuordnung sie vor, wenn das Energie-Dashboard keine liefert. Ein Satz unter der Beschreibung sagt, aus welchem Eintrag sie stammen; ohne Tarifwacht-Speicher steht dort ein kurzer Tipp. Nur ein Vorschlag beim Einrichten, Speicherwacht hängt danach nicht von Tarifwacht ab. Erkannte Speicher (Vorlagen) und Neu konfigurieren bleiben, wie sie sind.
 - **Bericht für Fehlermeldung lesbarer:** Einstellungen ohne Python-Schreibweise – `yes`/`no` statt `True`/`False`, `none` statt `None`, Listen ohne Klammern, Zeitpunkte als `2026-11-07 12:39 UTC`. Auch „beta template“ und „day values“.
 

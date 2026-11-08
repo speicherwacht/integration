@@ -96,6 +96,20 @@ Im ersten Schritt zeigt Speicherwacht die Speicher, die es erkannt hat, und „E
 
 Nach der Einrichtung rechnet Speicherwacht nach etwa einer Minute zum ersten Mal und dann jede Stunde (kurz nach :12, wenn Home Assistant die Stundenstatistik geschrieben hat).
 
+### Maxxisun: Einzelakkus summieren
+
+Die Gesamtwerte der Maxxisun-Integration (MaxxiChargeConnect) für Laden und Entladen der Batterie sind gerechnet (PV minus CCU) und lagen in einem geprüften Fall 15–30 % daneben. Die Summe der Leistungen der einzelnen Akkus passte dagegen auf 2–3 % zur Änderung der gespeicherten Energie. Deshalb so zuordnen:
+
+1. Zwei Template-Sensoren (*Einstellungen → Geräte & Dienste → Helfer → Template → Sensor*, Einheit W, Geräteklasse Leistung, Zustandsklasse Messung): die Ladeleistungen aller Akkus addiert und ebenso die Entladeleistungen, z. B. `{{ states('sensor.<akku_1_laden>') | float(0) + states('sensor.<akku_2_laden>') | float(0) }}`.
+2. Auf jeden der beiden einen Helfer *Integral* (Methode „Links“, Präfix k, Zeiteinheit Stunden, also kWh). Das sind die Zähler für Laden und Entladen.
+3. Den Ladezustand als Template-Sensor aus der gespeicherten Energie (Einheit %, Zustandsklasse Messung):
+   ```jinja
+   {{ (states('sensor.maxxisun1_batterie_kapazitat') | float(0) / <nutzbare Kapazität in Wh> * 100) | round(1) }}
+   ```
+   Die nutzbare Kapazität ist die Summe der Akkus; dieselbe Zahl in Speicherwacht eintragen.
+
+Dann in Speicherwacht „Eigene Zuordnung“ wählen und diese drei Entitäten nehmen (Entity-IDs je nach Gerätename). Die Rückschau beginnt mit dem Anlegen der Helfer.
+
 ## Entitäten
 
 | Entität | Bedeutung |
