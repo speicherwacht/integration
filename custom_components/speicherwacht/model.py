@@ -35,12 +35,14 @@ class Hour:
     `charged`/`discharged` are the increments booked by the counter module
     for this hour (kWh); None when the counter had no usable reading. `soc`
     is the mean state of charge (%), `soc_min`/`soc_max` its range; None
-    without statistics. `gap` marks the first hour after missing readings:
-    its energy may belong to earlier hours. `rejected` marks an hour in which
-    the counter module rejected a reading of a counter (implausible jump,
-    restart of a lifetime counter): that counter's energy of the hour is
-    unknown (None) and missing from its day, so the day is left out of the
-    efficiency and the hour of all other figures.
+    without statistics. `gap` marks the first hour after missing readings
+    and the hours of a glitch that fell back (the energy of the glitch is
+    booked in the hour of the fall back): its energy may belong to other
+    hours. `rejected` marks an hour in which the counter module rejected a
+    reading of a counter (implausible jump without a fall back, restart of a
+    lifetime counter): that counter's energy of the hour is unknown (None)
+    and missing from its day, so the day is left out of the efficiency and
+    the hour of all other figures.
     """
 
     start: datetime

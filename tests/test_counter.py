@@ -153,6 +153,48 @@ def test_implausible_jump_is_not_booked() -> None:
     assert counter.update(150.1, at(2)).delta == pytest.approx(0.1)
 
 
+def test_glitch_falling_back_books_the_real_increase() -> None:
+    """107 -> 109851.5 -> 110.131 (Wh as kWh for one reading): the 3.131 kWh
+    across the glitch are booked when the counter falls back."""
+    counter = Counter(max_kw=20.0)
+    counter.update(107.0, at(0))
+    assert counter.update(109851.5, at(60)).event is CounterEvent.JUMP
+    update = counter.update(110.131, at(120))
+    assert update.event is CounterEvent.RECOVERED
+    assert update.delta == pytest.approx(3.131)
+    assert counter.update(111.0, at(180)).delta == pytest.approx(0.869)
+
+
+def test_glitch_rises_count_towards_the_real_increase() -> None:
+    counter = Counter(max_kw=20.0)
+    counter.update(107.0, at(0))
+    counter.update(109851.5, at(60))
+    assert counter.update(109852.0, at(120)).delta == pytest.approx(0.5)
+    update = counter.update(110.131, at(180))
+    assert update.event is CounterEvent.RECOVERED
+    assert update.delta == pytest.approx(2.631)
+
+
+def test_fall_back_below_the_jump_or_after_a_day_is_a_reset() -> None:
+    counter = Counter(max_kw=20.0)
+    counter.update(107.0, at(0))
+    counter.update(109851.5, at(60))
+    assert counter.update(5.0, at(120)).event is CounterEvent.RESET
+    late = Counter(max_kw=20.0)
+    late.update(107.0, at(0))
+    late.update(109851.5, at(60))
+    restored = Counter(max_kw=20.0)
+    restored.restore(late.as_dict())
+    assert restored.update(110.131, at(60 * 26)).event is CounterEvent.RESET
+
+
+def test_dip_after_a_real_jump_is_no_fall_back() -> None:
+    counter = Counter(max_kw=20.0)
+    counter.update(100.0, at(0))
+    assert counter.update(150.0, at(1)).event is CounterEvent.JUMP
+    assert counter.update(149.7, at(180)).event is CounterEvent.DIP
+
+
 def test_whole_kwh_step_is_not_a_jump() -> None:
     counter = Counter(max_kw=20.0)
     counter.update(2104.0, at(0))

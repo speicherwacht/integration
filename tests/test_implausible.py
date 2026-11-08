@@ -4,8 +4,12 @@ Pattern of a real meter (a source briefly reported Wh as kWh): hourly states
 107 -> 109851.5 -> 110.131, Home Assistant's `change` then shows +109,744 kWh
 and books the fall back as a new meter cycle (+110 kWh); on another channel
 +661,683 kWh. Speicherwacht reads the states: the counter module rejects the
-jump and takes the fall back for a restart. Their energy is unknown, so the
-hours are left out of all figures and their day out of the efficiency.
+jump, and when the counter falls back to at least the value before it, books
+the real increase across the glitch in the hour of the fall back. Those hours
+are not complete (the energy of each hour is unknown), but their day keeps
+all its energy and counts. Without such a fall back (a restart of the
+counter) the energy is unknown: the hours are left out of all figures and
+their day out of the efficiency.
 """
 
 from __future__ import annotations
@@ -34,7 +38,7 @@ def h(n: int) -> datetime:
 
 
 @pytest.mark.parametrize("signal", ["charged", "discharged"])
-def test_wh_reported_as_kwh_is_rejected(signal: str) -> None:
+def test_wh_reported_as_kwh_is_booked_at_the_fall_back(signal: str) -> None:
     glitchy = {h(0): 105.0, h(1): 107.0, h(2): 109851.5, h(3): 110.131, h(4): 111.0}
     steady = {h(n): 50.0 + n for n in range(5)}
     charged, discharged = (
@@ -42,7 +46,70 @@ def test_wh_reported_as_kwh_is_rejected(signal: str) -> None:
     )
     series = build(charged, discharged, {}, CAPACITY)
     values = [getattr(hour, signal) for hour in series.hours]
-    assert values == [None, pytest.approx(2.0), None, None, pytest.approx(0.869)]
+    assert values == [
+        None,
+        pytest.approx(2.0),
+        0.0,
+        pytest.approx(3.131),
+        pytest.approx(0.869),
+    ]
+    assert not any(hour.rejected for hour in series.hours)
+    # The energy of the glitch hours is in the hour of the fall back.
+    assert [hour.gap for hour in series.hours] == [False, False, True, True, False]
+    assert [(i.hour, i.signal, i.event) for i in series.issues] == [
+        (h(2), signal, CounterEvent.JUMP),
+    ]
+    other = "discharged" if signal == "charged" else "charged"
+    assert getattr(series.hours[2], other) == pytest.approx(1.0)
+    assert not series.hours[2].complete
+
+
+def test_a_huge_jump_on_another_channel_falls_back() -> None:
+    discharged = {h(0): 80.0, h(1): 81.0, h(2): 81.0 + 661683.0, h(3): 82.5}
+    series = build(dict.fromkeys(discharged, 10.0), discharged, {}, CAPACITY)
+    assert [hour.discharged for hour in series.hours] == [
+        None,
+        pytest.approx(1.0),
+        0.0,
+        pytest.approx(1.5),
+    ]
+    assert sum(hour.discharged or 0.0 for hour in series.hours) == pytest.approx(2.5)
+
+
+def test_glitch_over_several_hours() -> None:
+    """The wrong value stays for two hours: all three hours carry no energy
+    of their own, the fall back brings all of it."""
+    charged = {
+        h(0): 100.0,
+        h(1): 100000.0,
+        h(2): 100000.0,
+        h(3): 103.0,
+        h(4): 104.0,
+    }
+    series = build(charged, dict.fromkeys(charged, 50.0), {}, CAPACITY)
+    assert [hour.charged for hour in series.hours] == [
+        None,
+        0.0,
+        0.0,
+        pytest.approx(3.0),
+        pytest.approx(1.0),
+    ]
+    assert [hour.gap for hour in series.hours] == [False, True, True, True, False]
+    assert not any(hour.rejected for hour in series.hours)
+
+
+def test_restart_after_a_jump_is_rejected() -> None:
+    """Falling below the value before the jump: a real restart, the energy
+    of both hours is unknown."""
+    charged = {h(0): 105.0, h(1): 107.0, h(2): 109851.5, h(3): 2.0, h(4): 3.0}
+    series = build(charged, dict.fromkeys(charged, 50.0), {}, CAPACITY)
+    assert [hour.charged for hour in series.hours] == [
+        None,
+        pytest.approx(2.0),
+        None,
+        None,
+        pytest.approx(1.0),
+    ]
     assert [hour.rejected for hour in series.hours] == [
         False,
         False,
@@ -50,26 +117,7 @@ def test_wh_reported_as_kwh_is_rejected(signal: str) -> None:
         True,
         False,
     ]
-    assert [(i.hour, i.signal, i.event) for i in series.issues] == [
-        (h(2), signal, CounterEvent.JUMP),
-        (h(3), signal, CounterEvent.RESET),
-    ]
-    # The other counter of the rejected hours keeps its energy.
-    other = "discharged" if signal == "charged" else "charged"
-    assert getattr(series.hours[2], other) == pytest.approx(1.0)
-    assert not series.hours[2].complete
-
-
-def test_a_huge_jump_on_another_channel_is_rejected() -> None:
-    discharged = {h(0): 80.0, h(1): 81.0, h(2): 81.0 + 661683.0, h(3): 82.5}
-    series = build(dict.fromkeys(discharged, 10.0), discharged, {}, CAPACITY)
-    assert [hour.discharged for hour in series.hours] == [
-        None,
-        pytest.approx(1.0),
-        None,
-        None,
-    ]
-    assert sum(hour.discharged or 0.0 for hour in series.hours) < 2
+    assert [i.event for i in series.issues] == [CounterEvent.JUMP, CounterEvent.RESET]
 
 
 def test_a_large_but_plausible_hour_stays() -> None:
@@ -93,25 +141,48 @@ def _states(hours: list[Hour], signal: str, start: float) -> dict[datetime, floa
     return states
 
 
-def _series(glitch_signal: str | None) -> tuple[list[Hour], datetime]:
-    """A simulated month as hourly counter states; one reading in Wh."""
+def _series(
+    glitch_signal: str | None, *, restart: bool = False
+) -> tuple[list[Hour], datetime]:
+    """A simulated month as hourly counter states; one reading in Wh. With
+    `restart` the counter starts anew at 0 after it instead of falling back."""
     simulated = simulate(JUNE, 30, rest_watts=0.0)
     charged = _states(simulated, "charged", 107.0)
     discharged = _states(simulated, "discharged", 90.0)
     soc = {x.start: SocRow(x.soc, x.soc_min, x.soc_max) for x in simulated}
     local_hour = 10 if glitch_signal == "charged" else 20
     glitch = at(date(2026, 6, 15), local_hour)
-    if glitch_signal == "charged":
-        charged[glitch] *= 1000
-    elif glitch_signal == "discharged":
-        discharged[glitch] *= 1000
+    if glitch_signal is not None:
+        states = charged if glitch_signal == "charged" else discharged
+        base = states[glitch - timedelta(hours=1)]
+        states[glitch] *= 1000
+        if restart:
+            for hour in states:
+                if hour > glitch:
+                    states[hour] -= base
     return build(charged, discharged, soc, CAPACITY).hours, glitch
 
 
 @pytest.mark.parametrize("signal", ["charged", "discharged"])
-def test_efficiency_leaves_the_day_out(signal: str) -> None:
+def test_efficiency_counts_the_day_of_a_glitch(signal: str) -> None:
+    """The glitch falls back within the day: the day keeps all its energy
+    and counts as before."""
     clean = analyse(_series(None)[0], CAPACITY, BERLIN, END)
-    hours, glitch = _series(signal)
+    hours, _ = _series(signal)
+    result = analyse(hours, CAPACITY, BERLIN, END)
+    month, before = result.efficiency[Period.MONTH], clean.efficiency[Period.MONTH]
+    assert month.implausible_days == 0
+    assert month.operating_days == before.operating_days
+    assert month.ratio == pytest.approx(before.ratio, rel=1e-9)
+    assert result.discharged_total == pytest.approx(clean.discharged_total)
+    assert result.cycles_total == pytest.approx(clean.cycles_total)
+    assert rejected_summary(hours, BERLIN) == {"count": 0, "hours": []}
+
+
+@pytest.mark.parametrize("signal", ["charged", "discharged"])
+def test_efficiency_leaves_out_the_day_of_a_restart(signal: str) -> None:
+    clean = analyse(_series(None)[0], CAPACITY, BERLIN, END)
+    hours, glitch = _series(signal, restart=True)
     result = analyse(hours, CAPACITY, BERLIN, END)
     month, before = result.efficiency[Period.MONTH], clean.efficiency[Period.MONTH]
     assert month.implausible_days == 1
@@ -134,7 +205,7 @@ def test_efficiency_leaves_the_day_out(signal: str) -> None:
 
 
 def test_report_names_the_hours() -> None:
-    hours, glitch = _series("charged")
+    hours, glitch = _series("charged", restart=True)
     start = at(JUNE, 0)
     figures = report(hours, CAPACITY, BERLIN, start, END, END)
     assert figures["hours_implausible"]["count"] == 2
@@ -145,6 +216,8 @@ def test_report_names_the_hours() -> None:
     assert figures["efficiency"]["implausible_days"] == 1
     clean = report(_series(None)[0], CAPACITY, BERLIN, start, END, END)
     assert clean["hours_implausible"] == {"count": 0, "hours": []}
+    fallen_back = report(_series("charged")[0], CAPACITY, BERLIN, start, END, END)
+    assert fallen_back["hours_implausible"] == {"count": 0, "hours": []}
 
 
 def test_summary_lists_the_first_five() -> None:

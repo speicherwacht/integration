@@ -64,13 +64,19 @@ def _booked(
     signal: str,
     issues: list[CounterIssue],
 ) -> tuple[dict[datetime, float], set[datetime], set[datetime]]:
-    """Increments per hour, the hours that follow missing rows and the
-    hours whose reading was rejected (no increment: the energy is unknown).
+    """Increments per hour, the hours whose energy may belong to other
+    hours (after missing rows, or around a glitch) and the hours whose
+    reading was rejected (no increment: the energy is unknown).
 
-    A jump (e.g. a reading in Wh reported as kWh: 107 -> 109851.5) moves a
-    lifetime counter's baseline, and the fall back after it (-> 110.131) is a
-    restart: the energy of both hours is lost. A small step back (DIP) holds
-    the baseline and loses nothing.
+    A jump (e.g. a reading in Wh reported as kWh: 107 -> 109851.5) is
+    rejected. When the counter falls back to at least the value before it
+    (-> 110.131), the counter module books the real increase across the
+    glitch in the hour of the fall back (RECOVERED): the hours since the jump
+    get 0, none of them is complete (the energy of an hour is not known), but
+    their day keeps all its energy. Without such a fall back (a real restart
+    of a lifetime counter, a value that stays) the energy is lost and the
+    hours stay rejected. A small step back (DIP) holds the baseline and loses
+    nothing.
     """
     booked: dict[datetime, float] = {}
     gaps: set[datetime] = set()
@@ -81,14 +87,27 @@ def _booked(
     if counter.day_tz is None:
         unexpected.add(CounterEvent.RESET)
     lost = unexpected - {CounterEvent.DIP}
+    # Hours since a jump that may still fall back.
+    glitch: list[datetime] = []
     for hour in sorted(states):
         update = counter.update(states[hour], hour + READING_OFFSET)
         if update.event in unexpected:
             issues.append(CounterIssue(hour, signal, update.event))
-        if update.event in lost:
+        if update.event is CounterEvent.RECOVERED:
+            for moved in glitch:
+                rejected.discard(moved)
+                booked.setdefault(moved, 0.0)
+                gaps.add(moved)
+            booked[hour] = update.delta
+            gaps.add(hour)
+        elif update.event in lost:
             rejected.add(hour)
         elif update.event is not CounterEvent.FIRST:
             booked[hour] = update.delta
+        if counter.jump is not None:
+            glitch.append(hour)
+        else:
+            glitch.clear()
         if previous is not None and hour - previous > HOUR:
             gaps.add(hour)
         previous = hour
