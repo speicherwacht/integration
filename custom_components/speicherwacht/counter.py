@@ -1,8 +1,14 @@
 """Turn readings of an energy counter into increments.
 
-Pure Python, no Home Assistant imports. Copied from Wärmewacht without
-changes to the rules (a fix there may apply here, and the other way round).
-Speicherwacht feeds it the hourly counter states of the long-term statistics.
+Pure Python, no Home Assistant imports. Speicherwacht feeds it the hourly
+counter states of the long-term statistics.
+
+Derived from waermewacht/custom_components/waermewacht/counter.py (as of
+6470312), adapted: an older state without the catch-up after a stalled source
+(CATCH_UP_HOURS, rose_time; no effect on hourly states) and without
+looks_like_lifetime_counter (no templates with day values). A bug there may be
+here too; tools/check_shared.py in the parent folder reports changes to the
+original.
 """
 
 from __future__ import annotations

@@ -2,6 +2,11 @@
 
 Used by the config flow (a warning, a second submit keeps the counters); the
 runtime applies the same rule to the statistics it reads anyway.
+
+Derived from waermewacht/custom_components/waermewacht/day_counters.py (as of
+40b2995), adapted: only the day counter check (no templates, no lifetime
+counter check, no daily repair issue). A bug there may be here too;
+tools/check_shared.py in the parent folder reports changes to the original.
 """
 
 from __future__ import annotations
