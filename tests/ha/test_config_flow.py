@@ -59,6 +59,9 @@ async def test_own_mapping(hass: HomeAssistant) -> None:
     result = await start_manual(hass)
     # Without Tarifwacht: the tip, nothing suggested.
     assert result["step_id"] == "entities_tarifwacht_tip"
+    assert result["description_placeholders"] == {
+        "tarifwacht_url": "https://github.com/tarifwacht/integration"
+    }
     assert not suggested(result).get("charged")
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"], {**MANUAL, CONF_WARRANTY_MWH: 30.82}

@@ -14,6 +14,8 @@ from typing import Any
 from .model import Signal
 
 TARIFWACHT = "tarifwacht"
+# Link of the tip (hassfest refuses URLs in translations).
+TARIFWACHT_URL = "https://github.com/tarifwacht/integration"
 # Tarifwacht's subentry "PV and battery" and its optional battery meters
 # (tarifwacht/const.py: SUBENTRY_SOLAR, CONF_CHARGED_ENTITY,
 # CONF_DISCHARGED_ENTITY).

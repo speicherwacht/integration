@@ -124,8 +124,8 @@ SISTER_HINTS = {
         "Zähler vorbelegt aus Tarifwacht „{tarifwacht}“ – bitte prüfen.",
     ),
     "tarifwacht_tip": (
-        "Tip: if you also use [Tarifwacht](https://github.com/tarifwacht/integration), it shows what the battery saves in euros – and the counters here are filled in already.",
-        "Tipp: Nutzt du auch [Tarifwacht](https://github.com/tarifwacht/integration), siehst du dort, was der Speicher in Euro spart – und die Zähler sind hier schon ausgefüllt.",
+        "Tip: if you also use [Tarifwacht]({tarifwacht_url}), it shows what the battery saves in euros – and the counters here are filled in already.",
+        "Tipp: Nutzt du auch [Tarifwacht]({tarifwacht_url}), siehst du dort, was der Speicher in Euro spart – und die Zähler sind hier schon ausgefüllt.",
     ),
 }
 ENTITIES = {

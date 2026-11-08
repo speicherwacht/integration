@@ -35,7 +35,7 @@ from .day_counters import async_day_counters
 from .entity import own_entities
 from .model import REQUIRED, Boundary, Signal
 from .profiles import TEMPLATES, RegistryEntry
-from .sisters import TARIFWACHT, tarifwacht_battery
+from .sisters import TARIFWACHT, TARIFWACHT_URL, tarifwacht_battery
 
 CONF_SOURCE = "source"
 DEFAULT_NAME = "Speicher"
@@ -310,6 +310,8 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id = f"entities_{self._hint}"
             if self._hint == HINT_TARIFWACHT:
                 placeholders["tarifwacht"] = self._tarifwacht_title
+            else:
+                placeholders["tarifwacht_url"] = TARIFWACHT_URL
         else:
             step_id = "entities"
         return self.async_show_form(
