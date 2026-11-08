@@ -115,7 +115,7 @@
       },
       "entities_tarifwacht_tip": {
         "title": "Entitäten und Kapazität",
-        "description": "Zähler brauchen eine Zustandsklasse (total oder total_increasing), der Ladezustand die Zustandsklasse measurement: Speicherwacht rechnet aus deren Langzeitstatistik, auch für die Zeit vor der Einrichtung.\n\nTipp: Nutzt du auch [Tarifwacht]({tarifwacht_url}), siehst du dort, was der Speicher in Euro spart – und die Zähler sind hier schon ausgefüllt.",
+        "description": "Zähler brauchen eine Zustandsklasse (total oder total_increasing), der Ladezustand die Zustandsklasse measurement: Speicherwacht rechnet aus deren Langzeitstatistik, auch für die Zeit vor der Einrichtung.\n\nTipp: In [Tarifwacht]({tarifwacht_url}) siehst du, was der Speicher in Euro spart. Ist es eingerichtet, übernimmt Speicherwacht die Zähler von dort.",
         "data": {
           "charged": "Energie geladen (Lebenszeit)",
           "discharged": "Energie entladen (Lebenszeit)",
