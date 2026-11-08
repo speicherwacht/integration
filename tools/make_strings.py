@@ -120,7 +120,7 @@ NOTES = {
 # Own mapping: counters suggested from Tarifwacht, or a tip when it has none.
 SISTER_HINTS = {
     "tarifwacht": (
-        "Counters prefilled from Tarifwacht '{tarifwacht}' – please check.",
+        'Counters prefilled from Tarifwacht "{tarifwacht}" – please check.',
         "Zähler vorbelegt aus Tarifwacht „{tarifwacht}“ – bitte prüfen.",
     ),
     "tarifwacht_tip": (

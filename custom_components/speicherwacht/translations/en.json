@@ -95,7 +95,7 @@
       },
       "entities_tarifwacht": {
         "title": "Entities and capacity",
-        "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.\n\nCounters prefilled from Tarifwacht '{tarifwacht}' – please check.",
+        "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.\n\nCounters prefilled from Tarifwacht \"{tarifwacht}\" – please check.",
         "data": {
           "charged": "Energy charged (lifetime)",
           "discharged": "Energy discharged (lifetime)",
