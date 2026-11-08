@@ -93,6 +93,46 @@
           "warranty_mwh": "Energie, die die Garantie abdeckt, in MWh entladen (Datenblatt oder Garantiebedingungen). Ergibt den Sensor „Garantie-Durchsatz genutzt“."
         }
       },
+      "entities_tarifwacht": {
+        "title": "Entitäten und Kapazität",
+        "description": "Zähler brauchen eine Zustandsklasse (total oder total_increasing), der Ladezustand die Zustandsklasse measurement: Speicherwacht rechnet aus deren Langzeitstatistik, auch für die Zeit vor der Einrichtung.\n\nZähler vorbelegt aus Tarifwacht „{tarifwacht}“ – bitte prüfen.",
+        "data": {
+          "charged": "Energie geladen (Lebenszeit)",
+          "discharged": "Energie entladen (Lebenszeit)",
+          "soc": "Ladezustand",
+          "capacity": "Nutzbare Kapazität",
+          "boundary": "Die Zähler messen",
+          "warranty_mwh": "Garantie-Durchsatz (optional)"
+        },
+        "data_description": {
+          "charged": "Energie, die in den Akku fließt – nicht die PV-Erzeugung. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
+          "discharged": "Energie, die aus dem Akku kommt – nicht die Abgabe der ganzen Anlage ins Haus.",
+          "soc": "In %.",
+          "capacity": "Laut Datenblatt (nutzbar, nicht brutto). Nötig für die Korrektur über den Ladezustand und die Vollzyklen; die geschätzte Kapazität ersetzt sie nie.",
+          "boundary": "Ergebnisse der beiden Grenzen sind nicht vergleichbar.",
+          "warranty_mwh": "Energie, die die Garantie abdeckt, in MWh entladen (Datenblatt oder Garantiebedingungen). Ergibt den Sensor „Garantie-Durchsatz genutzt“."
+        }
+      },
+      "entities_tarifwacht_tip": {
+        "title": "Entitäten und Kapazität",
+        "description": "Zähler brauchen eine Zustandsklasse (total oder total_increasing), der Ladezustand die Zustandsklasse measurement: Speicherwacht rechnet aus deren Langzeitstatistik, auch für die Zeit vor der Einrichtung.\n\nTipp: Nutzt du auch [Tarifwacht](https://github.com/tarifwacht/integration), siehst du dort, was der Speicher in Euro spart – und die Zähler sind hier schon ausgefüllt.",
+        "data": {
+          "charged": "Energie geladen (Lebenszeit)",
+          "discharged": "Energie entladen (Lebenszeit)",
+          "soc": "Ladezustand",
+          "capacity": "Nutzbare Kapazität",
+          "boundary": "Die Zähler messen",
+          "warranty_mwh": "Garantie-Durchsatz (optional)"
+        },
+        "data_description": {
+          "charged": "Energie, die in den Akku fließt – nicht die PV-Erzeugung. Nur Leistung in W? Lege mit dem Helfer „Integral“ (linke Riemann-Summe) einen Zähler an.",
+          "discharged": "Energie, die aus dem Akku kommt – nicht die Abgabe der ganzen Anlage ins Haus.",
+          "soc": "In %.",
+          "capacity": "Laut Datenblatt (nutzbar, nicht brutto). Nötig für die Korrektur über den Ladezustand und die Vollzyklen; die geschätzte Kapazität ersetzt sie nie.",
+          "boundary": "Ergebnisse der beiden Grenzen sind nicht vergleichbar.",
+          "warranty_mwh": "Energie, die die Garantie abdeckt, in MWh entladen (Datenblatt oder Garantiebedingungen). Ergibt den Sensor „Garantie-Durchsatz genutzt“."
+        }
+      },
       "entities_note_sungrow_modbus_yaml": {
         "title": "Entitäten und Kapazität",
         "description": "Zähler brauchen eine Zustandsklasse (total oder total_increasing), der Ladezustand die Zustandsklasse measurement: Speicherwacht rechnet aus deren Langzeitstatistik, auch für die Zeit vor der Einrichtung.\n\nSungrow (Modbus-YAML): Laut Paket läuft „Battery level“ zwischen dem im Wechselrichter eingestellten minimalen und maximalen Ladezustand von 0 bis 100 %. Die geschätzte Kapazität zeigt dann nur dieses Fenster (z. B. 5–100 %: etwa 95 %). Ist dein Fenster deutlich enger, trage seine Kapazität statt der des ganzen Akkus ein, damit „Kapazität gesunken“ nicht anschlägt.",

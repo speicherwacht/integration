@@ -1,4 +1,5 @@
-"""Config flow: own mapping, detected Fronius storage, errors, reconfigure."""
+"""Config flow: own mapping, detected Fronius storage, errors, reconfigure,
+suggestions from Tarifwacht."""
 
 from __future__ import annotations
 
@@ -56,7 +57,9 @@ def suggested(result: dict[str, Any]) -> dict[str, Any]:
 async def test_own_mapping(hass: HomeAssistant) -> None:
     set_sources(hass)
     result = await start_manual(hass)
-    assert result["step_id"] == "entities"
+    # Without Tarifwacht: the tip, nothing suggested.
+    assert result["step_id"] == "entities_tarifwacht_tip"
+    assert not suggested(result).get("charged")
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"], {**MANUAL, CONF_WARRANTY_MWH: 30.82}
     )
@@ -147,6 +150,66 @@ async def test_reconfigure_refuses_own_sensor(hass: HomeAssistant) -> None:
         result["flow_id"], {**MANUAL, "soc": own.entity_id}
     )
     assert result["errors"] == {"base": "own_entity"}
+
+
+def add_tarifwacht(hass: HomeAssistant, *subentries: dict[str, Any]) -> None:
+    """A Tarifwacht entry (not set up; only its data is read)."""
+    MockConfigEntry(
+        domain="tarifwacht",
+        title="Haus",
+        data={"name": "Haus", "meter_entity": "sensor.grid_import"},
+        version=2,
+        subentries_data=[
+            {
+                "data": data,
+                "subentry_id": f"sub{i}",
+                "subentry_type": data.pop("type"),
+                "title": "PV",
+                "unique_id": None,
+            }
+            for i, data in enumerate(subentries)
+        ],
+    ).add_to_hass(hass)
+
+
+TARIFF = {"type": "tariff", "kind": "fixed", "price": 30.0, "current": True}
+SOLAR = {
+    "type": "solar",
+    "feed_in_entity": "sensor.feed_in",
+    "pv_entity": "sensor.pv",
+    "charged_entity": CHARGED,
+    "discharged_entity": DISCHARGED,
+    "same_inverter": True,
+}
+
+
+async def test_tarifwacht_without_pv_subentry(hass: HomeAssistant) -> None:
+    set_sources(hass)
+    add_tarifwacht(hass, dict(TARIFF))
+    result = await start_manual(hass)
+    assert result["step_id"] == "entities_tarifwacht_tip"
+    assert not suggested(result).get("charged")
+
+
+async def test_counters_suggested_from_tarifwacht(hass: HomeAssistant) -> None:
+    set_sources(hass)
+    add_tarifwacht(hass, dict(TARIFF), dict(SOLAR))
+    result = await start_manual(hass)
+    assert result["step_id"] == "entities_tarifwacht"
+    assert result["description_placeholders"] == {"tarifwacht": "Haus"}
+    prefill = suggested(result)
+    assert prefill["charged"] == CHARGED
+    assert prefill["discharged"] == DISCHARGED
+    assert not prefill.get("soc")
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], MANUAL)
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert result["data"][CONF_ENTITIES]["charged"] == CHARGED
+
+    # A second storage: Tarifwacht's counters belong to the first one now,
+    # so they are not suggested again (and no tip either).
+    result = await start_manual(hass)
+    assert result["step_id"] == "entities"
+    assert not suggested(result).get("charged")
 
 
 async def test_detected_fronius_storage(hass: HomeAssistant) -> None:

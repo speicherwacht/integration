@@ -78,7 +78,7 @@ Im ersten Schritt zeigt Speicherwacht die Speicher, die es erkannt hat, und „E
 | Marstek Venus E | [marstek_modbus](https://github.com/ViperRNMC/marstek_venus_modbus) oder [Marstek Modbus Suite](https://github.com/sphings79/marstek-modbus-suite) | experimentell (beta) |
 | alle anderen | eigene Zuordnung | – |
 
-- **Eigene Zuordnung:** Hast du den Speicher im Energie-Dashboard eingetragen, übernimmt Speicherwacht Zähler, Ladezustand und Kapazität von dort als Vorschlag.
+- **Eigene Zuordnung:** Hast du den Speicher im Energie-Dashboard eingetragen, übernimmt Speicherwacht Zähler, Ladezustand und Kapazität von dort als Vorschlag. Hast du [Tarifwacht](https://github.com/tarifwacht/integration) mit Speicher eingerichtet, schlägt Speicherwacht sonst die Zähler von dort vor.
 - **Fronius:** Ohne Modbus TCP liefert die Integration keine Batteriezähler; dann bleibt die eigene Zuordnung (z. B. mit Integral-Helfern).
 - **Anker SOLIX (Cloud):** Die Lebenszeit-Zähler kommen nur per MQTT mit dem Eigentümer-Konto, und die Integration legt sie erst an, wenn du die Kategorie `solarbank_energy` in ihren Optionen nicht mehr ausschließt. Speicherwacht weist in der Einrichtung darauf hin.
 - **GoodWe:** Batteriezähler gibt es nur bei ET, EH, BT und BH; ES, EM und BP liefern nur den Ladezustand.

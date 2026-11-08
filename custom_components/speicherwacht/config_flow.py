@@ -35,12 +35,17 @@ from .day_counters import async_day_counters
 from .entity import own_entities
 from .model import REQUIRED, Boundary, Signal
 from .profiles import TEMPLATES, RegistryEntry
+from .sisters import TARIFWACHT, tarifwacht_battery
 
 CONF_SOURCE = "source"
 DEFAULT_NAME = "Speicher"
 # Counters need long-term statistics with a sum, the state of charge a mean.
 COUNTER_STATE_CLASSES = ("total", "total_increasing")
 MEASUREMENT = "measurement"
+# Hint of the entities step on the own mapping: counters taken from
+# Tarifwacht, or a tip when it has none (own step ids, own texts).
+HINT_TARIFWACHT = "tarifwacht"
+HINT_TARIFWACHT_TIP = "tarifwacht_tip"
 
 
 def _entries(hass: HomeAssistant) -> list[RegistryEntry]:
@@ -208,6 +213,8 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
         self._template = TEMPLATE_MANUAL
         self._storage: str | None = None
         self._prefill: dict[str, Any] = {}
+        self._hint: str | None = None
+        self._tarifwacht_title = ""
         # Counters that drew the day counter warning: sent again unchanged,
         # they are kept (a lifetime counter can restart at 0 now and then).
         self._day_counter_warned: tuple[Any, Any] | None = None
@@ -241,6 +248,7 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
                     self._prefill[CONF_CAPACITY] = kwh
             else:
                 self._prefill = await async_energy_prefill(self.hass)
+                self._suggest_from_tarifwacht()
             return await self.async_step_entities()
         # The state of charge entity tells two storages of one template apart.
         options = [
@@ -295,14 +303,56 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
             errors["base"] = error
         # A source with a known limit: say so next to its entities.
         template = TEMPLATES.get(self._template)
-        step_id = (
-            f"entities_note_{template.key}"
-            if template and template.note
-            else "entities"
-        )
+        placeholders: dict[str, str] = {}
+        if template and template.note:
+            step_id = f"entities_note_{template.key}"
+        elif self._hint is not None:
+            step_id = f"entities_{self._hint}"
+            if self._hint == HINT_TARIFWACHT:
+                placeholders["tarifwacht"] = self._tarifwacht_title
+        else:
+            step_id = "entities"
         return self.async_show_form(
-            step_id=step_id, data_schema=entities_schema(values), errors=errors
+            step_id=step_id,
+            data_schema=entities_schema(values),
+            errors=errors,
+            description_placeholders=placeholders,
         )
+
+    async def async_step_entities_tarifwacht(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """The entities step, with the counters taken from Tarifwacht."""
+        return await self.async_step_entities(user_input)
+
+    async def async_step_entities_tarifwacht_tip(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """The entities step, with the tip on Tarifwacht."""
+        return await self.async_step_entities(user_input)
+
+    def _suggest_from_tarifwacht(self) -> None:
+        """Own mapping: the battery counters of Tarifwacht's "PV and battery"
+        as suggestions, where the energy settings left both counters empty.
+
+        Copied once, no dependency at runtime. A pair from one source only,
+        so that charge and discharge counter never come from two places;
+        counters that already belong to a storage entry are not suggested.
+        """
+        found = tarifwacht_battery(
+            self.hass.config_entries.async_entries(TARIFWACHT, include_ignore=False)
+        )
+        if found is None:
+            self._hint = HINT_TARIFWACHT_TIP
+            return
+        title, counters = found
+        if any(self._prefill.get(signal) for signal in counters):
+            return
+        if self._counter_in_use(counters):
+            return
+        self._prefill.update(counters)
+        self._hint = HINT_TARIFWACHT
+        self._tarifwacht_title = title
 
     async def async_step_reconfigure(
         self, user_input: dict[str, Any] | None = None

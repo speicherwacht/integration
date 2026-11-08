@@ -93,6 +93,46 @@
           "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
         }
       },
+      "entities_tarifwacht": {
+        "title": "Entities and capacity",
+        "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.\n\nCounters prefilled from Tarifwacht '{tarifwacht}' – please check.",
+        "data": {
+          "charged": "Energy charged (lifetime)",
+          "discharged": "Energy discharged (lifetime)",
+          "soc": "State of charge",
+          "capacity": "Usable capacity",
+          "boundary": "The counters measure",
+          "warranty_mwh": "Warranted throughput (optional)"
+        },
+        "data_description": {
+          "charged": "Energy that flows into the battery – not the PV production. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
+          "discharged": "Energy that comes out of the battery – not what the whole system delivers to the house.",
+          "soc": "In %.",
+          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
+          "boundary": "Results of the two boundaries are not comparable.",
+          "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+        }
+      },
+      "entities_tarifwacht_tip": {
+        "title": "Entities and capacity",
+        "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.\n\nTip: if you also use [Tarifwacht](https://github.com/tarifwacht/integration), it shows what the battery saves in euros – and the counters here are filled in already.",
+        "data": {
+          "charged": "Energy charged (lifetime)",
+          "discharged": "Energy discharged (lifetime)",
+          "soc": "State of charge",
+          "capacity": "Usable capacity",
+          "boundary": "The counters measure",
+          "warranty_mwh": "Warranted throughput (optional)"
+        },
+        "data_description": {
+          "charged": "Energy that flows into the battery – not the PV production. Only power in W? Create a counter with the helper 'Integral' (left Riemann sum).",
+          "discharged": "Energy that comes out of the battery – not what the whole system delivers to the house.",
+          "soc": "In %.",
+          "capacity": "From the data sheet (usable, not gross). Needed for the state of charge correction and full cycles; the estimated capacity never replaces it.",
+          "boundary": "Results of the two boundaries are not comparable.",
+          "warranty_mwh": "Energy the warranty covers, in MWh discharged (data sheet or warranty terms). Adds the sensor 'Warranted throughput used'."
+        }
+      },
       "entities_note_sungrow_modbus_yaml": {
         "title": "Entities and capacity",
         "description": "Counters need a state class (total or total_increasing), the state of charge the state class measurement: Speicherwacht works from their long-term statistics, including the time before the setup.\n\nSungrow (Modbus YAML): according to the package, 'Battery level' runs from 0 to 100 % between the minimum and maximum SoC set in the inverter. The estimated capacity then shows only that window (e.g. 5–100 %: about 95 %). If your window is much narrower, enter its capacity instead of the whole battery, so that 'Capacity dropped' does not report it.",

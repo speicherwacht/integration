@@ -2,6 +2,7 @@
 
 ## Unveröffentlicht
 
+- **Zähler aus Tarifwacht:** Hast du in der Schwester [Tarifwacht](https://github.com/tarifwacht/integration) unter „PV und Speicher“ Lade- und Entladezähler eingetragen, schlägt die eigene Zuordnung sie vor, wenn das Energie-Dashboard keine liefert. Ein Satz unter der Beschreibung sagt, aus welchem Eintrag sie stammen; ohne Tarifwacht-Speicher steht dort ein kurzer Tipp. Nur ein Vorschlag beim Einrichten, Speicherwacht hängt danach nicht von Tarifwacht ab. Erkannte Speicher (Vorlagen) und Neu konfigurieren bleiben, wie sie sind.
 - **Bericht für Fehlermeldung lesbarer:** Einstellungen ohne Python-Schreibweise – `yes`/`no` statt `True`/`False`, `none` statt `None`, Listen ohne Klammern, Zeitpunkte als `2026-11-07 12:39 UTC`. Auch „beta template“ und „day values“.
 
 ## 0.1.5 – 2026-11-07

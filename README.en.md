@@ -78,7 +78,7 @@ The first step lists the storages Speicherwacht detected plus "Map entities myse
 | Marstek Venus E | [marstek_modbus](https://github.com/ViperRNMC/marstek_venus_modbus) or [Marstek Modbus Suite](https://github.com/sphings79/marstek-modbus-suite) | experimental (beta) |
 | all others | map entities yourself | – |
 
-- **Own mapping:** if your battery is set up in the energy dashboard, Speicherwacht proposes its counters, state of charge and capacity from there.
+- **Own mapping:** if your battery is set up in the energy dashboard, Speicherwacht proposes its counters, state of charge and capacity from there. Otherwise, if you have set up [Tarifwacht](https://github.com/tarifwacht/integration) with a battery, Speicherwacht proposes the counters from there.
 - **Fronius:** without Modbus TCP the integration has no battery counters; then map them yourself (e.g. with Integral helpers).
 - **Anker SOLIX (cloud):** the lifetime counters come only by MQTT with the owner account, and the integration creates them only once you no longer exclude the category `solarbank_energy` in its options. The setup points this out.
 - **GoodWe:** only ET, EH, BT and BH have battery counters; ES, EM and BP report the state of charge only.

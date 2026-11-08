@@ -117,6 +117,17 @@ NOTES = {
         "Zendure: Die Integration rechnet ihre Zähler in Home Assistant aus der gemeldeten Akkuleistung hoch; das Gerät selbst hat keine. Speicherwacht kann sie deshalb nur auf Stimmigkeit prüfen, nicht das Gerät messen. Benennst du das Gerät in der Zendure-App um, ändern sich seine Entitäts-IDs: Wähle sie dann unter Neu konfigurieren neu.",
     ),
 }
+# Own mapping: counters suggested from Tarifwacht, or a tip when it has none.
+SISTER_HINTS = {
+    "tarifwacht": (
+        "Counters prefilled from Tarifwacht '{tarifwacht}' – please check.",
+        "Zähler vorbelegt aus Tarifwacht „{tarifwacht}“ – bitte prüfen.",
+    ),
+    "tarifwacht_tip": (
+        "Tip: if you also use [Tarifwacht](https://github.com/tarifwacht/integration), it shows what the battery saves in euros – and the counters here are filled in already.",
+        "Tipp: Nutzt du auch [Tarifwacht](https://github.com/tarifwacht/integration), siehst du dort, was der Speicher in Euro spart – und die Zähler sind hier schon ausgefüllt.",
+    ),
+}
 ENTITIES = {
     "title": ("Entities and capacity", "Entitäten und Kapazität"),
     "description": (
@@ -326,6 +337,11 @@ def build(lang: int) -> dict:
         "data": _pick(ENTITIES["data"], lang),
         "data_description": _pick(ENTITIES["data_description"], lang),
     }
+    for key, text in SISTER_HINTS.items():
+        steps[f"entities_{key}"] = {
+            **steps["entities"],
+            "description": steps["entities"]["description"] + "\n\n" + text[lang],
+        }
     for key, text in NOTES.items():
         steps[f"entities_note_{key}"] = {
             **steps["entities"],
