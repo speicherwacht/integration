@@ -21,13 +21,14 @@ from .test_report import setup_entry
 async def test_months_and_issues_for_the_card(
     hass: HomeAssistant, hass_ws_client, freezer: FrozenDateTimeFactory
 ) -> None:
-    # Late June 2026: the simulated months are the latest two of twelve.
-    freezer.move_to("2026-06-30 20:00:00+00:00")
     await hass.config.async_set_time_zone("Europe/Berlin")
     assert await async_setup_component(hass, "websocket_api", {})
     entry = await setup_entry(hass)
     (device,) = dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
     client = await hass_ws_client(hass)
+    # Late June 2026: the simulated months are the latest two of twelve.
+    # Only now: an access token issued later than the frozen time is invalid.
+    freezer.move_to("2026-06-30 20:00:00+00:00")
 
     # Before the first analysis: no months yet, no issues.
     await client.send_json(
