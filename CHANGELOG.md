@@ -1,5 +1,9 @@
 # Changelog
 
+## Unveröffentlicht
+
+- **Karte: Monatsdiagramm auf dem Handy lesbar.** Das Diagramm wurde immer 560 Punkte breit gezeichnet und auf die Kartenbreite verkleinert; auf einem Handy schrumpfte die Schrift so auf etwa 6 px. Jetzt zeichnet die Karte es in ihrer eigenen Breite (höchstens wie bisher) und neu, wenn sich die Breite ändert, etwa beim Drehen des Handys. Auf breiten Bildschirmen bleibt alles, wie es war. Anlass: Ansicht in der eigenen Anlage.
+
 ## 0.2.0 – 2026-11-09
 
 - **Neu: eigene Dashboard-Karte** (`custom:speicherwacht-card`), ohne Zusatzkarten aus HACS: *Dashboard bearbeiten → Karte hinzufügen* → „Speicherwacht“. Speicherwacht trägt die Dashboard-Ressource selbst ein. Die Karte zeigt

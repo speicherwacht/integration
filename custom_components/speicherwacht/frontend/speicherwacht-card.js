@@ -173,6 +173,10 @@ const TEXT = {
 };
 
 const ICON = "mdi:home-battery";
+// Month chart: drawing width in SVG units on wide cards, and the least on
+// narrow ones (card width in between: drawn at that width, see _chartWidth).
+const CHART_WIDTH = 560;
+const CHART_MIN_WIDTH = 280;
 const COLORS = { charged: "#007D7F", discharged: "#F5A623" };
 
 const STYLE = `
@@ -297,10 +301,29 @@ function cardData(hass, deviceId, stamp) {
 class SpeicherwachtCard extends HTMLElement {
   connectedCallback() {
     CARDS.add(this);
+    // The month chart is drawn in the card's width: redraw when it changes
+    // (phone turned, sidebar opened, section resized).
+    this._resize ||= new ResizeObserver(() => {
+      if (this._drawnWidth !== undefined && this._chartWidth() !== this._drawnWidth) {
+        this._states = null;
+        this._render();
+      }
+    });
+    this._resize.observe(this);
   }
 
   disconnectedCallback() {
     CARDS.delete(this);
+    this._resize?.disconnect();
+  }
+
+  /** Width of the month chart in SVG units: the card's inner width, at most
+   * CHART_WIDTH. Drawn in about real pixels, its 10 px text stays readable
+   * on a phone instead of shrinking with a scaled-down drawing. */
+  _chartWidth() {
+    const inner = this.clientWidth - 32; // ha-card padding
+    if (!(inner > 0)) return CHART_WIDTH;
+    return Math.max(CHART_MIN_WIDTH, Math.min(CHART_WIDTH, Math.round(inner / 10) * 10));
   }
 
   setConfig(config) {
@@ -641,7 +664,8 @@ class SpeicherwachtCard extends HTMLElement {
    * Months of the calendar year (as the figures above) in full colour, the
    * months before paler, a thin line at 1 January. */
   _monthChart(t, months) {
-    const W = 560;
+    const W = this._chartWidth();
+    this._drawnWidth = W;
     const H = 200;
     const L = 34;
     const B = 22;
