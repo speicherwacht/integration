@@ -77,7 +77,7 @@ def _const(value: float) -> Callable[[date], float]:
 @dataclass(frozen=True)
 class Battery:
     key: str
-    name: str  # device name in Home Assistant
+    name: dict[str, str]  # device name in Home Assistant, per language
     area: dict[str, str]
     capacity: float  # usable capacity from the data sheet (configured), kWh
     boundary: str  # "battery" (DC) or "system" (AC)
@@ -112,7 +112,7 @@ def balcony_load(_hour: float) -> float:
 BATTERIES = [
     Battery(
         key="healthy",
-        name="Heimspeicher",
+        name={"de": "Heimspeicher", "en": "Home battery"},
         area={"de": "Keller", "en": "Basement"},
         capacity=10.0,
         boundary="battery",
@@ -131,7 +131,7 @@ BATTERIES = [
     ),
     Battery(
         key="ageing",
-        name="Hausspeicher",
+        name={"de": "Hausspeicher", "en": "House battery"},
         area={"de": "Hauswirtschaftsraum", "en": "Utility room"},
         capacity=8.0,
         boundary="battery",
@@ -150,7 +150,7 @@ BATTERIES = [
     ),
     Battery(
         key="balcony",
-        name="Balkonspeicher",
+        name={"de": "Balkonspeicher", "en": "Balcony battery"},
         area={"de": "Balkon", "en": "Balcony"},
         capacity=2.0,
         boundary="system",
@@ -168,7 +168,7 @@ BATTERIES = [
     ),
     Battery(
         key="new",
-        name="Neuer Speicher",
+        name={"de": "Neuer Speicher", "en": "New battery"},
         area={"de": "Garage", "en": "Garage"},
         capacity=12.0,
         boundary="battery",
@@ -440,7 +440,7 @@ def build_battery(battery: Battery, names: dict[str, Any]) -> dict[str, Any]:
     year_start = local_midnight(date(NOW.year, 1, 1), BERLIN)
     first_day = local_midnight(battery.first.date(), BERLIN)
     history = report(series.hours, battery.capacity, BERLIN, first_day, now, now)
-    device = slug(battery.name)
+    device = slug(battery.name["de"])  # entity IDs as in a German setup
     entity_ids = {
         f"{platform}.{key}": f"{platform}.{device}_{slug(name)}"
         for platform, entities in names["de"].items()
@@ -492,7 +492,7 @@ def main() -> None:
             for m in data["report"]["months"]
         )
         print(
-            f"{battery.key} ({battery.name}, {battery.capacity} kWh): "
+            f"{battery.key} ({battery.name['de']}, {battery.capacity} kWh): "
             f"Monat {s['efficiency_month']['state']} %, Jahr {s['efficiency_year']['state']} %, "
             f"gesamt {s['efficiency_total']['state']} %, Ruheverlust {s['rest_loss']['state']} W, "
             f"Kapazität {s['capacity_estimate']['state']} kWh "

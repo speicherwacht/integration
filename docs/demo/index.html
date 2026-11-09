@@ -258,7 +258,7 @@
           banner: (time) =>
             `Alle Speicher, Zählerstände und Werte sind erfunden – nur zur Vorführung. Demo-Zeit: ${time} Uhr.`,
           intro: (d) =>
-            `${d.name}: ${kwh(d.capacity_kwh, 1)} nutzbar laut Datenblatt, die Zähler messen ${d.boundary === "system" ? "den ganzen Speicher (AC, Zwischenstecker)" : "den Akku (DC)"}, Statistik seit ${dateFmt(d.statistics_since, { day: "numeric", month: "long", year: "numeric" })}. `,
+            `${d.name.de}: ${kwh(d.capacity_kwh, 1)} nutzbar laut Datenblatt, die Zähler messen ${d.boundary === "system" ? "den ganzen Speicher (AC, Zwischenstecker)" : "den Akku (DC)"}, Statistik seit ${dateFmt(d.statistics_since, { day: "numeric", month: "long", year: "numeric" })}. `,
           story: {
             healthy: "Alle Prüfungen sind unauffällig; im Winter sinkt der Wirkungsgrad, weil der Speicher wenig arbeitet und das Batteriemanagement weiter Strom braucht.",
             ageing: "Ein älterer Speicher mit über 1.500 Vollzyklen: Die geschätzte Kapazität liegt unter 80 % des Datenblatts, der Wirkungsgrad der letzten 30 Tage deutlich unter dem Vorjahr.",
@@ -350,7 +350,7 @@
           auto: "Auto", light: "Light", dark: "Dark",
           banner: (time) => `All batteries, meter readings and figures are made up – for demonstration only. Demo time: ${time}.`,
           intro: (d) =>
-            `${d.name}: ${kwh(d.capacity_kwh, 1)} usable per data sheet, the counters measure ${d.boundary === "system" ? "the whole storage (AC, plug meter)" : "the battery (DC)"}, statistics since ${dateFmt(d.statistics_since, { day: "numeric", month: "long", year: "numeric" })}. `,
+            `${d.name.en}: ${kwh(d.capacity_kwh, 1)} usable per data sheet, the counters measure ${d.boundary === "system" ? "the whole storage (AC, plug meter)" : "the battery (DC)"}, statistics since ${dateFmt(d.statistics_since, { day: "numeric", month: "long", year: "numeric" })}. `,
           story: {
             healthy: "All checks are fine; in winter the efficiency drops because the battery works little while its management keeps drawing power.",
             ageing: "An older battery with more than 1,500 full cycles: the estimated capacity is below 80 % of the data sheet, the efficiency of the last 30 days clearly below last year.",
@@ -581,7 +581,7 @@
           .join("");
         return `
           <section class="section">
-            <div class="heading">${icon("devices")}<span>${escapeHtml(tx.device(data.name))}</span></div>
+            <div class="heading">${icon("devices")}<span>${escapeHtml(tx.device(data.name[state.lang]))}</span></div>
             <div class="area"><span>${escapeHtml(tx.inArea(data.area[state.lang]))}</span><span><img src="../../custom_components/speicherwacht/brand/icon.png" alt="" />Speicherwacht</span></div>
             <div class="card">
               <div class="card-title">${tx.serviceInfo}</div>
@@ -673,12 +673,12 @@
             <td>${num(m.charged_kwh, 1)}</td><td>${num(m.discharged_kwh, 1)}</td><td>${num(m.full_cycles, 1)}</td>${eff(m.efficiency_percent, m.efficiency_reason)}</tr>`)
           .join("");
         const sum = `<tr class="sum"><td>${tx.year}</td><td>${num(r.charged_kwh, 1)}</td><td>${num(r.discharged_kwh, 1)}</td><td>${num(r.full_cycles, 1)}</td>${eff(r.efficiency.percent, r.efficiency.reason)}</tr>`;
-        const call = `action: speicherwacht.report\ndata:\n  config_entry: <${data.name}>\n\n# ${tx.answer}`;
+        const call = `action: speicherwacht.report\ndata:\n  config_entry: <${data.name[state.lang]}>\n\n# ${tx.answer}`;
         return `
           <section class="section double">
             <div class="heading">${icon("file-chart-outline")}<span>${tx.report}</span></div>
             <div class="card">
-              <div class="card-title small">${escapeHtml(names[state.lang].report)} – ${escapeHtml(data.name)}</div>
+              <div class="card-title small">${escapeHtml(names[state.lang].report)} – ${escapeHtml(data.name[state.lang])}</div>
               <div class="call">${tx.call}</div>
               <div class="table-wrap"><table class="months">
                 <tr><th>${tx.month}</th><th>${tx.charged} (kWh)</th><th>${tx.discharged} (kWh)</th><th>${tx.cycles}</th><th>${tx.efficiency}</th></tr>
