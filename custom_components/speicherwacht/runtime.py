@@ -9,10 +9,11 @@ the current states every few minutes.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.recorder import get_instance
 from homeassistant.components.recorder.statistics import statistics_during_period
@@ -47,6 +48,7 @@ from .health import Health, check
 from .hours import Series, SocRow, build
 from .model import Boundary, Signal
 from .profiles import TEMPLATES
+from .report import last_months
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -77,6 +79,14 @@ ISSUE_UNIT = "source_unit"
 ISSUE_RESETS = "counter_resets"
 ISSUE_MISMATCH = "counter_soc_mismatch"
 ISSUE_OWN = "own_entity"
+ISSUES = (
+    ISSUE_MISSING,
+    ISSUE_UNAVAILABLE,
+    ISSUE_UNIT,
+    ISSUE_RESETS,
+    ISSUE_MISMATCH,
+    ISSUE_OWN,
+)
 
 
 class StorageRuntime:
@@ -120,6 +130,9 @@ class StorageRuntime:
         self._unavailable_since: dict[str, datetime] = {}
         self._listeners: list[CALLBACK_TYPE] = []
         self._unsubscribe: list[CALLBACK_TYPE] = []
+        # The card's months, computed for this series (once per analysis).
+        self._months: tuple[Series, list[dict[str, Any]]] | None = None
+        self._months_lock = asyncio.Lock()
 
     # Lifecycle.
 
@@ -217,6 +230,42 @@ class StorageRuntime:
             analyse(series.hours, self.capacity, self.tz, now),
             check(series.hours, self.capacity, self.tz, now),
         )
+
+    async def async_months(self) -> list[dict[str, Any]] | None:
+        """The last twelve months for the card (report.last_months); None
+        before the first analysis. Computed on request, once per analysis
+        (the hours change hourly), off the event loop: no extra recorder
+        query, nothing while no card asks."""
+        async with self._months_lock:
+            series = self.series
+            if series is None:
+                return None
+            if self._months is None or self._months[0] is not series:
+                months = await self.hass.async_add_executor_job(
+                    last_months,
+                    series.hours,
+                    self.capacity,
+                    self.tz,
+                    dt_util.utcnow(),
+                )
+                self._months = (series, months)
+            return self._months[1]
+
+    def active_issues(self) -> list[str]:
+        """Keys of the entry's repair issues the user has not ignored."""
+        registry = ir.async_get(self.hass)
+        return [
+            key
+            for key in ISSUES
+            if (
+                issue := registry.async_get_issue(
+                    DOMAIN, f"{self.entry.entry_id}_{key}"
+                )
+            )
+            is not None
+            and issue.active
+            and issue.dismissed_version is None
+        ]
 
     @property
     def lifetime_discharged(self) -> float | None:

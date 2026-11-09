@@ -96,23 +96,10 @@
       .card-title svg.mdi { font-size: 22px; color: var(--secondary-text-color); }
       .card-title.small { font-size: 16px; font-weight: 500; padding-top: 12px; }
 
-      /* Tile card */
-      .tiles { display: grid; gap: 8px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      @media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-      .tile { display: flex; gap: 10px; align-items: center; padding: 10px 12px; min-height: 56px; }
-      .tile svg.mdi { font-size: 24px; color: var(--state-icon-color); }
-      .tile b { display: block; font-size: 14px; font-weight: 500; line-height: 1.3; }
-      .tile small { display: block; font-size: 12px; color: var(--secondary-text-color); line-height: 1.3; }
-
-      /* Statistics graph */
-      svg.chart { display: block; width: 100%; height: auto; }
-      svg.chart text { fill: var(--secondary-text-color); font-size: 11px; }
-      svg.chart text.year { fill: var(--primary-text-color); font-weight: 600; }
-      svg.chart .grid { stroke: var(--divider-color); }
-      .legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; padding: 2px 12px 12px;
-        font-size: 12px; }
-      .legend i { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 5px;
-        border: 2px solid; vertical-align: -1px; }
+      /* The integration's card */
+      .cardtype { padding: 0 4px; font-size: 12px; color: var(--secondary-text-color); }
+      .cardtype code { font: 12px ui-monospace, Consolas, monospace; }
+      details.ent.flash > summary { background: color-mix(in srgb, var(--brand) 18%, transparent); }
 
       /* Device page */
       .area { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 0 4px;
@@ -217,6 +204,8 @@
 
     <script type="module">
       import { PATHS } from "./icons.js";
+      // The integration's own card, unchanged (frontend/speicherwacht-card.js).
+      import "../../custom_components/speicherwacht/frontend/speicherwacht-card.js";
 
       const BATTERIES = ["healthy", "ageing", "balcony", "new"];
       const ICONS = {
@@ -265,14 +254,6 @@
             balcony: "Die Verluste des Wechselrichters zählen mit, deshalb liegt der Wirkungsgrad niedriger als bei einem DC-Zähler. Noch kein Jahr Statistik: Der Vergleich mit dem Vorjahr bleibt unbekannt.",
             new: "Vor drei Wochen eingerichtet: Wirkungsgrad und Ruheverlust gibt es schon. Für die geschätzte Kapazität fehlen Entladungen von voll bis leer, für den Vergleich mit dem Vorjahr ein Jahr Statistik.",
           },
-          dashboard: "Batteriespeicher",
-          efficiencyLoss: "Wirkungsgrad und Verlust",
-          akku: "Akku",
-          tiles: {
-            efficiency_month: "Monat", efficiency_year: "Jahr", efficiency_total: "Gesamt", rest_loss: "Ruheverlust",
-            capacity_estimate: "Kapazität", soc: "Ladezustand", full_cycles_total: "Vollzyklen gesamt", full_cycles_year: "Vollzyklen Jahr",
-          },
-          chartTitle: "Geladen und entladen je Monat",
           charged: "Geladen",
           discharged: "Entladen",
           device: (n) => `Gerät „${n}“`,
@@ -336,9 +317,9 @@
           ],
           build: "Selbst bauen",
           cards:
-            "Der Abschnitt „Batteriespeicher“ besteht aus normalen Dashboard-Karten (Überschrift, Kachel, Statistik-Diagramm der Lade- und Entladezähler mit Zeitraum Monat).",
-          readme: "Sensoren und Dashboard in der README →",
-          readmeUrl: "https://github.com/speicherwacht/integration#entit%C3%A4ten",
+            "Die Karte oben bringt Speicherwacht mit, unverändert wie in Home Assistant: im Dashboard „Karte hinzufügen“ → „Speicherwacht“. Ein Tipp auf einen Wert öffnet hier den Sensor in der Geräteliste.",
+          readme: "Karte und Sensoren in der README →",
+          readmeUrl: "https://github.com/speicherwacht/integration#karte",
         },
         en: {
           demo: "demo",
@@ -357,14 +338,6 @@
             balcony: "The inverter's losses count too, so the efficiency is lower than with a DC counter. Less than a year of statistics: the comparison with last year stays unknown.",
             new: "Set up three weeks ago: efficiency and rest loss are there already. The estimated capacity lacks discharges from full to empty, the comparison with last year a year of statistics.",
           },
-          dashboard: "Home battery",
-          efficiencyLoss: "Efficiency and loss",
-          akku: "Battery",
-          tiles: {
-            efficiency_month: "Month", efficiency_year: "Year", efficiency_total: "Total", rest_loss: "Rest loss",
-            capacity_estimate: "Capacity", soc: "State of charge", full_cycles_total: "Full cycles total", full_cycles_year: "Full cycles year",
-          },
-          chartTitle: "Charged and discharged per month",
           charged: "Charged",
           discharged: "Discharged",
           device: (n) => `Device “${n}”`,
@@ -428,9 +401,9 @@
           ],
           build: "Build it yourself",
           cards:
-            "The “Home battery” section is made of standard dashboard cards (heading, tile, statistics graph of the charge and discharge counters with period month).",
-          readme: "Sensors and dashboard in the README →",
-          readmeUrl: "https://github.com/speicherwacht/integration/blob/main/README.en.md#entities",
+            "Speicherwacht brings the card above, unchanged as in Home Assistant: in the dashboard “Add card” → “Speicherwacht”. Tapping a value opens the sensor in the device list here.",
+          readme: "Card and sensors in the README →",
+          readmeUrl: "https://github.com/speicherwacht/integration/blob/main/README.en.md#card",
         },
       };
 
@@ -445,7 +418,6 @@
       const t = () => TEXT[state.lang];
       const saveState = () => history.replaceState(null, "", `?${new URLSearchParams(state)}`);
       const systemDark = matchMedia("(prefers-color-scheme: dark)");
-      const narrow = matchMedia("(max-width: 640px)");
       const isDark = () => (state.dark === "auto" ? systemDark.matches : state.dark === "1");
 
       const escapeHtml = (value) =>
@@ -476,81 +448,90 @@
       function problemValue(entity) {
         return entity.state === null ? t().unknown : t().problem[entity.state];
       }
-      function batteryIcon(level) {
-        if (level <= 5) return "battery-alert-variant-outline";
-        const step = Math.min(100, Math.round(level / 10) * 10);
-        return step >= 100 ? "battery" : `battery-${Math.max(10, step)}`;
-      }
-      const batteryColor = (level) =>
-        level >= 70 ? "var(--success-color)" : level >= 30 ? "var(--warning-color)" : "var(--error-color)";
+      // ---- The real card on a made-up Home Assistant --------------------------------
+      // What the card uses of Home Assistant: the entity registry, devices,
+      // states, formatEntityState, the websocket command, ha-card and ha-icon.
 
-      // ---- Dashboard -----------------------------------------------------------------
-
-      const tile = (mdi, name, value, style = "") =>
-        `<div class="card tile">${icon(mdi).replace("<svg", `<svg style="${style}"`)}<div><b>${escapeHtml(name)}</b><small>${escapeHtml(value)}</small></div></div>`;
-
-      function niceStep(max) {
-        const raw = max / 5;
-        const p = 10 ** Math.floor(Math.log10(raw));
-        return [1, 2, 2.5, 5, 10].map((m) => m * p).find((s) => s >= raw);
-      }
-
-      function monthChart(months) {
-        const tx = t();
-        // Narrower drawing on phones, so the text keeps a readable size.
-        const W = narrow.matches ? 460 : 760, H = narrow.matches ? 260 : 300, L = 42, R = 10, T = 22, B = 30;
-        const max = Math.max(1, ...months.flatMap((m) => [m.charged_kwh, m.discharged_kwh]));
-        const step = niceStep(max);
-        const top = Math.ceil(max / step) * step;
-        const y = (v) => T + (1 - v / top) * (H - T - B);
-        const slot = (W - L - R) / months.length;
-        const bar = Math.min(26, (slot * 0.72) / 2);
-        const every = months.length > (narrow.matches ? 6 : 10) ? 2 : 1;
-        let svg = `<text x="${L - 4}" y="${T - 8}">kWh</text>`;
-        for (let v = 0; v <= top + 1e-9; v += step) {
-          svg += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" />
-            <text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${num(v, 0)}</text>`;
-        }
-        months.forEach((m, i) => {
-          const centre = L + (i + 0.5) * slot;
-          const date = `${m.month}-15T12:00:00+01:00`;
-          const title = dateFmt(date, { month: "long", year: "numeric" });
-          [["charged", m.charged_kwh, -1], ["discharged", m.discharged_kwh, 0]].forEach(([key, v, side]) => {
-            const x = side ? centre - bar - 1 : centre + 1;
-            const h = Math.max(0, y(0) - y(v));
-            svg += `<rect x="${x}" y="${y(v)}" width="${bar}" height="${h}" rx="3" fill="var(--${key})" fill-opacity="0.5" stroke="var(--${key})" stroke-width="1.5"><title>${escapeHtml(title)}: ${escapeHtml(tx[key])} ${kwh(v, 1)}</title></rect>`;
-          });
-          // Every second month counted from January, so January keeps its year label.
-          if ((Number(m.month.slice(5)) - 1) % every === 0) {
-            const january = m.month.endsWith("-01");
-            const label = january
-              ? dateFmt(date, narrow.matches ? { month: "short", year: "2-digit" } : { month: "long", year: "numeric" })
-              : dateFmt(date, { month: every > 1 || narrow.matches ? "short" : "long" });
-            svg += `<text x="${centre}" y="${H - 10}" text-anchor="middle" class="${january ? "year" : ""}">${escapeHtml(label)}</text>`;
+      if (!customElements.get("ha-card")) {
+        customElements.define("ha-card", class extends HTMLElement {
+          constructor() {
+            super();
+            this.attachShadow({ mode: "open" }).innerHTML =
+              "<style>:host{display:block;background:var(--card-background-color);border:1px solid var(--divider-color);" +
+              "border-radius:12px;color:var(--primary-text-color)}</style><slot></slot>";
           }
         });
-        return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${escapeHtml(tx.chartTitle)}">${svg}</svg>`;
+      }
+      if (!customElements.get("ha-icon")) {
+        customElements.define("ha-icon", class extends HTMLElement {
+          connectedCallback() {
+            const path = PATHS[(this.getAttribute("icon") || "").replace("mdi:", "")] ?? "";
+            this.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true" style="display:block;width:var(--mdc-icon-size,24px);` +
+              `height:var(--mdc-icon-size,24px);fill:currentColor"><path d="${path}"/></svg>`;
+          }
+        });
       }
 
-      function dashboardSection(data) {
-        const tx = t();
-        const s = data.sensors;
-        const tiles = (keys) => keys.map((k) => tile(ICONS[k], tx.tiles[k], sensorValue(k, s[k]))).join("");
-        const soc = tile(batteryIcon(data.soc), tx.tiles.soc, `${num(data.soc, 1)} %`, `color:${batteryColor(data.soc)}`);
-        return `
-          <section class="section double">
-            <div class="heading">${icon("home-battery")}<span>${tx.dashboard}</span></div>
-            <div class="subheading">${tx.efficiencyLoss}</div>
-            <div class="tiles">${tiles(["efficiency_month", "efficiency_year", "efficiency_total", "rest_loss"])}</div>
-            <div class="subheading">${tx.akku}</div>
-            <div class="tiles">${tiles(["capacity_estimate"])}${soc}${tiles(["full_cycles_total", "full_cycles_year"])}</div>
-            <div class="card">
-              <div class="card-title"><span>${tx.chartTitle}</span>${icon("chevron-right")}</div>
-              ${monthChart(data.months)}
-              <div class="legend"><span><i style="border-color:var(--charged);background:color-mix(in srgb, var(--charged) 50%, transparent)"></i>${tx.charged}</span><span><i style="border-color:var(--discharged);background:color-mix(in srgb, var(--discharged) 50%, transparent)"></i>${tx.discharged}</span></div>
-            </div>
-          </section>`;
+      function demoHass(data, names) {
+        const n = names[state.lang];
+        // One device per battery: the card keeps months per device.
+        const DEVICE_ID = `demo_${data.key}`;
+        const entities = {};
+        const states = {};
+        const add = (platform, key, entity) => {
+          const id = data.entity_ids[`${platform}.${key}`];
+          entities[id] = { entity_id: id, platform: "speicherwacht", device_id: DEVICE_ID, translation_key: key };
+          states[id] = {
+            entity_id: id,
+            state: entity.state === null ? "unknown" : String(entity.state),
+            attributes: { ...entity.attributes, friendly_name: n[platform][key] },
+            last_changed: data.now,
+            last_updated: data.now,
+          };
+        };
+        for (const [key, entity] of Object.entries(data.sensors)) if (!entity.disabled) add("sensor", key, entity);
+        for (const [key, entity] of Object.entries(data.binary_sensors)) add("binary_sensor", key, entity);
+        return {
+          entities,
+          states,
+          devices: { [DEVICE_ID]: { id: DEVICE_ID, name: data.name[state.lang] } },
+          language: state.lang,
+          locale: { language: state.lang, number_format: "language", time_format: "24", time_zone: "server" },
+          config: { time_zone: "Europe/Berlin" },
+          formatEntityState: (s) => formatState(s, entities),
+          callWS: async (message) => {
+            if (message.type === "speicherwacht/card") return data.card;
+            throw new Error(`not in the demo: ${message.type}`);
+          },
+        };
       }
+
+      /** A state as Home Assistant formats it: language, decimals, unit. */
+      function formatState(s, entities) {
+        if (s.entity_id.startsWith("binary_sensor.")) return problemValue({ state: s.state === "unknown" ? null : s.state });
+        return sensorValue(entities[s.entity_id]?.translation_key, { state: s.state === "unknown" ? null : Number(s.state) });
+      }
+
+      function cardSection(data, names) {
+        const card = document.createElement("speicherwacht-card");
+        card.setConfig({});
+        card.hass = demoHass(data, names);
+        const section = document.createElement("section");
+        section.className = "section double";
+        section.append(card);
+        section.insertAdjacentHTML("beforeend", `<div class="cardtype"><code>type: custom:speicherwacht-card</code></div>`);
+        return section;
+      }
+
+      // A tap on a value of the card opens that sensor in the device list.
+      document.addEventListener("hass-more-info", (event) => {
+        const row = document.querySelector(`details.ent[data-entity="${CSS.escape(event.detail.entityId)}"]`);
+        if (!row) return;
+        row.open = true;
+        row.classList.add("flash");
+        setTimeout(() => row.classList.remove("flash"), 1500);
+        row.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
 
       // ---- Device page ---------------------------------------------------------------
 
@@ -577,7 +558,7 @@
         }
         rows.sort((a, b) => a.name.localeCompare(b.name, state.lang));
         const list = rows
-          .map((r) => `<details class="ent"><summary class="row">${icon(r.icon, r.on ? "on" : "")}<span>${escapeHtml(r.name)}</span><span class="value">${escapeHtml(r.value)}</span></summary>${attributes(r.id, r.attrs)}</details>`)
+          .map((r) => `<details class="ent" data-entity="${escapeHtml(r.id)}"><summary class="row">${icon(r.icon, r.on ? "on" : "")}<span>${escapeHtml(r.name)}</span><span class="value">${escapeHtml(r.value)}</span></summary>${attributes(r.id, r.attrs)}</details>`)
           .join("");
         return `
           <section class="section">
@@ -705,8 +686,9 @@
         });
         document.getElementById("banner").innerHTML = `${icon("information-outline")}<span>${tx.banner(clock)}</span>`;
         document.getElementById("intro").textContent = tx.intro(data) + tx.story[state.battery];
-        document.getElementById("dashboard").innerHTML =
-          dashboardSection(data) + deviceSection(data, names) + healthSection(data, names) + reportSection(data, names);
+        const dashboard = document.getElementById("dashboard");
+        dashboard.innerHTML = deviceSection(data, names) + healthSection(data, names) + reportSection(data, names);
+        dashboard.prepend(cardSection(data, names));
       }
 
       function applyTheme() {
@@ -745,7 +727,6 @@
       }
 
       systemDark.addEventListener("change", () => state.dark === "auto" && applyTheme());
-      narrow.addEventListener("change", () => render());
       applyText();
       applyTheme();
       saveState();

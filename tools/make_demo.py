@@ -9,8 +9,9 @@ installation), their weather, household loads, losses and ageing. A small
 simulator turns them into what Home Assistant's long-term statistics would
 hold (hourly counter states, mean/min/max of the state of charge); the
 integration's own code takes it from there, as in Home Assistant:
-`hours.build` → `analysis.analyse` → `health.check`, and `report.report` for
-the action "Bericht".
+`hours.build` → `analysis.analyse` → `health.check`, `report.report` for
+the action "Bericht" and `report.last_months` for the card's websocket
+command (cards.py; no repair issues in the demo).
 
 What lives in Home Assistant-dependent modules is rebuilt below with the same
 rules: sensor values and attributes (sensor.py: rounding, lifetime discharge
@@ -41,7 +42,7 @@ from custom_components.speicherwacht.const import VERSION  # noqa: E402
 from custom_components.speicherwacht.days import Period, local_midnight  # noqa: E402
 from custom_components.speicherwacht.health import Check, check  # noqa: E402
 from custom_components.speicherwacht.hours import Series, SocRow, build  # noqa: E402
-from custom_components.speicherwacht.report import report  # noqa: E402
+from custom_components.speicherwacht.report import last_months, report  # noqa: E402
 
 OUT = ROOT / "docs" / "demo" / "data"
 TRANSLATIONS = ROOT / "custom_components" / "speicherwacht" / "translations"
@@ -438,8 +439,6 @@ def build_battery(battery: Battery, names: dict[str, Any]) -> dict[str, Any]:
     analysis = analyse(series.hours, battery.capacity, BERLIN, now)
     health = check(series.hours, battery.capacity, BERLIN, now)
     year_start = local_midnight(date(NOW.year, 1, 1), BERLIN)
-    first_day = local_midnight(battery.first.date(), BERLIN)
-    history = report(series.hours, battery.capacity, BERLIN, first_day, now, now)
     device = slug(battery.name["de"])  # entity IDs as in a German setup
     entity_ids = {
         f"{platform}.{key}": f"{platform}.{device}_{slug(name)}"
@@ -467,10 +466,11 @@ def build_battery(battery: Battery, names: dict[str, Any]) -> dict[str, Any]:
             "rest_loss_high": problem(health.rest_loss_high),
         },
         "mismatch": problem(health.mismatch),
-        "months": [
-            {k: m[k] for k in ("month", "charged_kwh", "discharged_kwh")}
-            for m in history["months"]
-        ],
+        # The answer of the websocket command "speicherwacht/card" (cards.py).
+        "card": {
+            "months": last_months(series.hours, battery.capacity, BERLIN, now),
+            "issues": [],
+        },
         "report": action_response(battery, series.hours, year_start, now),
     }
 

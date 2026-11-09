@@ -13,14 +13,14 @@
 
 **How well does my battery storage really work?** Speicherwacht is a Home Assistant integration that turns the existing counters of your home or balcony battery into its efficiency per month and year, full cycles, rest loss and the capacity you can actually take out – vendor-neutral, read-only, no cloud.
 
-**Try it without installing:** the [demo](https://speicherwacht.github.io/integration/?lang=en) shows the dashboard, device page, health check and report for four batteries – healthy, ageing, balcony storage, freshly set up – with made-up values, but computed by the integration's own code.
+**Try it without installing:** the [demo](https://speicherwacht.github.io/integration/?lang=en) shows the card, device page, health check and report for four batteries – healthy, ageing, balcony storage, freshly set up – with made-up values, but computed by the integration's own code.
 
 > **Templates:** The Fronius template is tested on a real installation, the others were built from the source code of the respective integration.
 
 ## Contents
 
 - [What Speicherwacht does](#what-speicherwacht-does) · [Requirements](#requirements) · [Installation](#installation) · [Setup](#setup)
-- [Entities](#entities) · [Action "Report"](#action-report) · [Health check](#health-check) · [How it calculates](#how-it-calculates) · [Limits](#limits)
+- [Entities](#entities) · [Card](#card) · [Action "Report"](#action-report) · [Health check](#health-check) · [How it calculates](#how-it-calculates) · [Limits](#limits)
 - [Troubleshooting](#troubleshooting) · [Privacy](#privacy) · [Removal](#removal) · [Related projects](#related-projects)
 
 ## What Speicherwacht does
@@ -31,6 +31,7 @@
 - **Rest loss:** mean power the resting battery loses (mostly the battery management's own consumption).
 - **Capacity (estimated):** energy taken out in discharges from full to empty, compared with the data sheet.
 - **Look-back from day one:** Speicherwacht works from Home Assistant's long-term statistics, so the time before the setup counts too.
+- **Own dashboard card** with findings, figures and the last twelve months, no extra cards from HACS.
 - **Report for any period** by action, per month.
 - **Repair issues** when a source is missing, unavailable for long or has a wrong unit.
 - No storage file of its own, no extra write load on SD cards.
@@ -136,9 +137,28 @@ Attributes show what a value is made of: charged, discharged, change of stored e
 | `soc_rose_at_rest` | state of charge rose while resting – charging past the counters or a drifting state of charge; the computed value is in the attribute `raw_watts` |
 | `too_few_discharges` | fewer than three discharges from full to empty in 90 days |
 
-The sensors can go on a dashboard like any other, for example as tiles with a statistics graph of the charge and discharge counters:
+## Card
 
-<img src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/screenshots/dashboard_energie.png" alt="Dashboard section with efficiency per month, year and overall, rest loss, capacity, state of charge, full cycles and a bar chart of the energy charged and discharged per month (German UI)" width="720">
+Speicherwacht brings its own card, no extra cards from HACS needed: *Edit dashboard → Add card* and search for "Speicherwacht". Speicherwacht adds the dashboard resource itself (*Settings → Dashboards → ⋮ → Resources*, removed again with the last entry; with resources in YAML mode Home Assistant loads the card directly instead).
+
+<img src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/screenshots/card.png" alt="Card of a battery: three green findings, the year's efficiency large with month and total, tiles for estimated capacity with a bar, rest loss, full cycles and warranted throughput, below bars of the energy charged and discharged in the last twelve months with the efficiency per month" width="600">
+
+- **Findings:** the three checks of the [health check](#health-check) with a dot (green, red, grey) and the deciding figure. If a check cannot judge yet, it says what is missing, e.g. "only 1 of 3 discharges from full to empty in 90 days" or "comparison with last year from Nov 2027 at the earliest". Open repair issues of the battery are shown in orange above; a click leads to *Repairs*.
+- **Figures:** the calendar year's efficiency large, month and total beside it, below where the counters measure; estimated capacity with a bar against the data sheet (mark at 80 %), rest loss, full cycles and warranted throughput (if set). An unknown value comes with its reason.
+- **Months:** energy charged and discharged in the last twelve months, the efficiency per month above, computed like the [action "Report"](#action-report). Months of the current year are strong, those before paler. Speicherwacht computes the figures from the hourly values it reads anyway: the card queries no statistics, and the counters' unit does not matter.
+
+A click on a value opens the sensor. The card finds its entities itself (independent of language and entity IDs); you only pick a battery if there are several. The heading is the battery's name.
+
+```yaml
+type: custom:speicherwacht-card
+# device_id: …                 # only with several batteries
+# sections: [health, figures]  # only these sections (health, figures, months)
+# title: Battery               # own heading; a single space hides it
+```
+
+**The card does not show up in the search?** Home Assistant loads it with the integration, so only after the restart with an entry set up. Then reload the page once (Ctrl+F5); in the Companion app reset the frontend cache. Whether the file is there shows `http://<HA address>:8123/speicherwacht/speicherwacht-card.js`.
+
+The sensors can of course go on a dashboard like any other, e.g. as tiles.
 
 ## Action "Report"
 

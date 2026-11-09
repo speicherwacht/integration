@@ -1,5 +1,15 @@
 # Changelog
 
+## Unveröffentlicht
+
+- **Neu: eigene Dashboard-Karte** (`custom:speicherwacht-card`), ohne Zusatzkarten aus HACS: *Dashboard bearbeiten → Karte hinzufügen* → „Speicherwacht“. Speicherwacht trägt die Dashboard-Ressource selbst ein. Die Karte zeigt
+  - **Befund:** die drei Prüfungen des Gesundheits-Checks mit Punkt und der entscheidenden Zahl; kann eine Prüfung noch nicht urteilen, was fehlt („erst 1 von 3 Entladungen von voll bis leer in 90 Tagen“, „Vergleich mit dem Vorjahr frühestens ab Nov. 2027“). Offene Reparaturhinweise stehen darüber, ein Klick führt zu *Reparaturen*.
+  - **Kennzahlen:** Wirkungsgrad im Jahr groß, Monat und gesamt daneben, geschätzte Kapazität mit Balken gegen das Datenblatt, Ruheverlust, Vollzyklen, Garantie-Durchsatz.
+  - **Monate:** geladen und entladen in den letzten zwölf Monaten mit dem Wirkungsgrad je Monat, gerechnet wie die Aktion „Bericht“. Speicherwacht rechnet sie aus den Stundenwerten, die es ohnehin liest, erst wenn eine Karte fragt und höchstens einmal je Stunde – keine zusätzliche Abfrage der Statistik, nichts wird geschrieben.
+
+  Die Karte findet ihre Entitäten selbst (unabhängig von Sprache und Entity-IDs); bei mehreren Speichern wählst du einen im Editor, mit `sections` zeigt sie nur einzelne Abschnitte. Die Demo zeigt jetzt diese Karte. Anlass: eigene Prüfung, welche Wachten eine Karte brauchen.
+- Bericht für Fehlermeldung: neue Zeile `card`, wie die Karte ins Frontend kommt.
+
 ## 0.1.7 – 2026-11-08
 
 - **Neu: Zusammenfassung oben in *Neu konfigurieren*.** Das Formular zeigt zuerst in ein paar Zeilen, was der Eintrag liest und auswertet: Vorlage oder eigene Zuordnung (mit „Zähler wie im Energie-Dashboard“ bzw. „wie in Tarifwacht …“, wenn sie dort gleich sind), Gesamtzähler und Einheit, was die Zähler messen, Ladezustand jetzt, Kapazität laut Datenblatt und geschätzt (oder was der Schätzung noch fehlt), was ausgewertet wird und seit wann Daten da sind. Darunter steht unter „Was fehlt“ nur, was eine Folge hat, etwa „Als Ladezustand ist ein Sensor von Speicherwacht selbst gewählt, er wird nicht gelesen: kein Wirkungsgrad, kein Ruheverlust, keine geschätzte Kapazität“, ein fehlender Zähler, ein Zähler, der jeden Tag neu beginnt, oder ein fehlender Garantie-Durchsatz. Die Zusammenfassung ist deutsch oder englisch nach der Sprache von Home Assistant; keine neuen Felder, nichts wird dafür aus der Statistik gelesen. Anlass: eigene Prüfung.

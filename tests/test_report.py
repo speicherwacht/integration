@@ -13,7 +13,7 @@ from custom_components.speicherwacht.analysis import (
     analyse,
 )
 from custom_components.speicherwacht.days import Period, local_midnight
-from custom_components.speicherwacht.report import period_days, report
+from custom_components.speicherwacht.report import last_months, period_days, report
 
 from .sim import BERLIN, SUMMER_DAY, at, simulate
 
@@ -108,3 +108,38 @@ def test_a_period_without_data() -> None:
     assert result["efficiency"]["reason"] == NO_DATA
     assert result["months"] == []
     assert result["full_cycles"] == 0.0
+
+
+def test_last_twelve_months_for_the_card() -> None:
+    """Exactly twelve months up to the current one, oldest first; months
+    without data are there with zero energy, as the card draws them."""
+    hours = simulate(date(2026, 5, 20), 42, rest_watts=0.0)
+    months = last_months(hours, 10.0, BERLIN, END)
+    assert [m["month"] for m in months] == [
+        "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12",
+        "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06",
+    ]  # fmt: skip
+    # The same figures per month as the action "report".
+    reported = {
+        m["month"]: m for m in report(hours, 10.0, BERLIN, NEW_YEAR, END, END)["months"]
+    }
+    for month in months[-2:]:
+        expected = {**reported[month["month"]]}
+        assert {k: v for k, v in month.items() if k != "days"} == expected
+    assert months[-1]["days"] == 30
+    empty = months[0]
+    assert empty["days"] == 0
+    assert empty["charged_kwh"] == empty["discharged_kwh"] == 0.0
+    assert empty["efficiency_percent"] is None
+    assert empty["efficiency_reason"] == NO_DATA
+
+
+def test_last_months_across_new_year() -> None:
+    hours = simulate(date(2026, 1, 1), 10, rest_watts=0.0)
+    now = at(date(2026, 1, 10), 12)
+    hours = [h for h in hours if h.start < now]
+    months = last_months(hours, 10.0, BERLIN, now)
+    assert months[0]["month"] == "2025-02"
+    assert months[-1]["month"] == "2026-01"
+    # The current month up to the latest hour, as the sensors.
+    assert months[-1]["days"] == 10

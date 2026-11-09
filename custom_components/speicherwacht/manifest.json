@@ -3,7 +3,11 @@
   "name": "Speicherwacht",
   "after_dependencies": [
     "energy",
-    "recorder"
+    "frontend",
+    "http",
+    "lovelace",
+    "recorder",
+    "websocket_api"
   ],
   "categories": [
     "energy.solar_batteries",

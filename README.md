@@ -13,14 +13,14 @@
 
 **Wie gut arbeitet mein Batteriespeicher wirklich?** Speicherwacht ist eine Home-Assistant-Integration, die aus den vorhandenen Zählern deines Heim- oder Balkonspeichers den Wirkungsgrad je Monat und Jahr, die Vollzyklen, den Ruheverlust und die tatsächlich entnehmbare Kapazität berechnet – herstellerneutral, nur lesend, ohne Cloud.
 
-**Ausprobieren ohne Installation:** Die [Demo](https://speicherwacht.github.io/integration/?lang=de) zeigt Dashboard, Geräteseite, Gesundheits-Check und Bericht für vier Speicher – gesund, gealtert, Balkonspeicher, frisch eingerichtet – mit erfundenen Werten, aber gerechnet vom Code der Integration.
+**Ausprobieren ohne Installation:** Die [Demo](https://speicherwacht.github.io/integration/?lang=de) zeigt die Karte, Geräteseite, Gesundheits-Check und Bericht für vier Speicher – gesund, gealtert, Balkonspeicher, frisch eingerichtet – mit erfundenen Werten, aber gerechnet vom Code der Integration.
 
 > **Vorlagen:** Die Vorlage für Fronius ist an einer echten Anlage erprobt, die übrigen stammen aus dem Quellcode der jeweiligen Integration.
 
 ## Inhalt
 
 - [Was Speicherwacht kann](#was-speicherwacht-kann) · [Voraussetzungen](#voraussetzungen) · [Installation](#installation) · [Einrichtung](#einrichtung)
-- [Entitäten](#entitäten) · [Aktion „Bericht“](#aktion-bericht) · [Gesundheits-Check](#gesundheits-check) · [Wie gerechnet wird](#wie-gerechnet-wird) · [Grenzen der Aussage](#grenzen-der-aussage)
+- [Entitäten](#entitäten) · [Karte](#karte) · [Aktion „Bericht“](#aktion-bericht) · [Gesundheits-Check](#gesundheits-check) · [Wie gerechnet wird](#wie-gerechnet-wird) · [Grenzen der Aussage](#grenzen-der-aussage)
 - [Fehlerbehebung](#fehlerbehebung) · [Datenschutz](#datenschutz) · [Entfernen](#entfernen) · [Verwandte Projekte](#verwandte-projekte)
 
 ## Was Speicherwacht kann
@@ -31,6 +31,7 @@
 - **Ruheverlust:** mittlere Leistung, die der ruhende Speicher verliert (meist der Eigenverbrauch des Batteriemanagements).
 - **Kapazität (geschätzt):** entnehmbare Energie aus Entladungen von voll bis leer, im Vergleich zum Datenblatt.
 - **Rückblick ab dem ersten Tag:** Speicherwacht rechnet aus der Langzeitstatistik von Home Assistant, also auch für die Zeit vor der Einrichtung.
+- **Eigene Dashboard-Karte** mit Befund, Kennzahlen und den letzten zwölf Monaten, ohne Zusatzkarten aus HACS.
 - **Bericht für einen beliebigen Zeitraum** per Aktion, je Monat aufgeschlüsselt.
 - **Reparaturhinweise**, wenn eine Quelle fehlt, lange nicht verfügbar ist oder eine falsche Einheit hat.
 - Keine eigene Speicherdatei, keine zusätzliche Schreiblast auf SD-Karten.
@@ -136,9 +137,28 @@ Attribute zeigen, woraus ein Wert entsteht: geladen, entladen, Änderung der ges
 | `soc_rose_at_rest` | Ladezustand stieg in Ruhephasen – Laden außerhalb der Zähler oder Drift des Ladezustands; der errechnete Wert steht im Attribut `raw_watts` |
 | `too_few_discharges` | weniger als drei Entladungen von voll bis leer in 90 Tagen |
 
-Die Sensoren lassen sich wie alle anderen ins Dashboard holen, etwa als Kacheln und mit einem Statistik-Diagramm der Lade- und Entladezähler:
+## Karte
 
-<img src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/screenshots/dashboard_energie.png" alt="Dashboard-Abschnitt mit Wirkungsgrad je Monat, Jahr und gesamt, Ruheverlust, Kapazität, Ladezustand, Vollzyklen und einem Balkendiagramm der monatlich geladenen und entladenen Energie" width="720">
+Speicherwacht bringt eine eigene Karte mit, ganz ohne Zusatzkarten aus HACS: *Dashboard bearbeiten → Karte hinzufügen* und nach „Speicherwacht“ suchen. Die Dashboard-Ressource trägt Speicherwacht selbst ein (*Einstellungen → Dashboards → ⋮ → Ressourcen*, beim Entfernen des letzten Eintrags wieder ausgetragen; bei Ressourcen im YAML-Modus lädt Home Assistant die Karte stattdessen direkt).
+
+<img src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/screenshots/karte.png" alt="Karte eines Speichers: drei grüne Befunde, Wirkungsgrad im Jahr groß mit Monat und gesamt, Kacheln für geschätzte Kapazität mit Balken, Ruheverlust, Vollzyklen und Garantie-Durchsatz, darunter Säulen für geladene und entladene Energie der letzten zwölf Monate mit dem Wirkungsgrad je Monat" width="600">
+
+- **Befund:** die drei Prüfungen des [Gesundheits-Checks](#gesundheits-check) mit Punkt (grün, rot, grau) und der entscheidenden Zahl. Kann eine Prüfung noch nicht urteilen, steht da, was fehlt, etwa „erst 1 von 3 Entladungen von voll bis leer in 90 Tagen“ oder „Vergleich mit dem Vorjahr frühestens ab Nov. 2027“. Offene Reparaturhinweise des Speichers stehen orange darüber; ein Klick führt zu *Reparaturen*.
+- **Kennzahlen:** Wirkungsgrad im Kalenderjahr groß, Monat und gesamt daneben, darunter, was die Zähler messen; geschätzte Kapazität mit Balken gegen das Datenblatt (Strich bei 80 %), Ruheverlust, Vollzyklen und Garantie-Durchsatz (wenn eingetragen). Ist ein Wert unbekannt, steht der Grund dabei.
+- **Monate:** geladene und entladene Energie der letzten zwölf Monate, darüber der Wirkungsgrad je Monat, gerechnet wie die [Aktion „Bericht“](#aktion-bericht). Die Monate des laufenden Jahres sind kräftig, die davor blasser. Die Zahlen rechnet Speicherwacht aus den Stundenwerten, die es ohnehin liest: Die Karte fragt keine Statistik ab, und die Einheit der Zähler spielt keine Rolle.
+
+Ein Klick auf einen Wert öffnet den Sensor. Die Karte findet ihre Entitäten selbst (unabhängig von Sprache und Entity-IDs); einen Speicher wählst du nur, wenn es mehrere gibt. Überschrift ist der Name des Speichers.
+
+```yaml
+type: custom:speicherwacht-card
+# device_id: …                 # nur bei mehreren Speichern
+# sections: [health, figures]  # nur diese Abschnitte (health, figures, months)
+# title: Akku                  # eigene Überschrift; ein Leerzeichen blendet sie aus
+```
+
+**Die Karte taucht in der Suche nicht auf?** Home Assistant lädt sie mit der Integration, also erst nach dem Neustart mit einem eingerichteten Eintrag. Danach die Seite einmal neu laden (Strg+F5), in der Companion-App den Frontend-Cache zurücksetzen. Ob die Datei da ist, zeigt `http://<HA-Adresse>:8123/speicherwacht/speicherwacht-card.js`.
+
+Die Sensoren lassen sich natürlich auch wie alle anderen ins Dashboard holen, etwa als Kacheln.
 
 ## Aktion „Bericht“
 

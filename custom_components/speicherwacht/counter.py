@@ -4,12 +4,15 @@ Pure Python, no Home Assistant imports. Speicherwacht feeds it the hourly
 counter states of the long-term statistics.
 
 Derived from waermewacht/custom_components/waermewacht/counter.py (as of
-e986dd6), adapted: without the catch-up after a stalled source
+0579511), adapted: without the catch-up after a stalled source
 (CATCH_UP_HOURS, rose_time; no effect on hourly states, so the bound of a fall
 back after a jump counts from the reading before the jump only) and without
-looks_like_lifetime_counter (no templates with day values). A bug there may be
-here too; tools/check_shared.py in the parent folder reports changes to the
-original.
+looks_like_lifetime_counter (no templates with day values). The day counter
+path stays as of e986dd6: no template has day values and there is no stuck
+check, so the rest of the previous day after midnight (a7cea32, LATE_DAY_GAP)
+and the last reading for the stuck check (0579511) are left out. A bug there
+may be here too; tools/check_shared.py in the parent folder reports changes
+to the original.
 """
 
 from __future__ import annotations

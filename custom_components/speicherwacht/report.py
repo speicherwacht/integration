@@ -12,12 +12,15 @@ long-term statistics, only over another span:
   thresholds of the sensors (capacity: the latest discharges of the period).
 - Hours of [start, end) with a rejected counter reading (`hours_implausible`):
   left out of all figures, their days out of the efficiency.
+
+The card's month chart (cards.py) uses the monthly figures of the last
+twelve months (`last_months`).
 """
 
 from __future__ import annotations
 
 from collections.abc import Sequence
-from datetime import datetime, timedelta, tzinfo
+from datetime import date, datetime, timedelta, tzinfo
 from typing import Any
 
 from .analysis import (
@@ -86,7 +89,6 @@ def report(
 ) -> dict[str, Any]:
     """All figures of [start, end) at `now` (all UTC)."""
     chosen = period_days(hours, tz, start, end, now)
-    minimum = DEFAULT_MIN_CHARGE_CAPACITIES
     charged = sum(d.charged for d in chosen)
     discharged = sum(d.discharged for d in chosen)
     months: dict[str, list[Day]] = {}
@@ -107,7 +109,9 @@ def report(
         "charged_kwh": _kwh(charged),
         "discharged_kwh": _kwh(discharged),
         "full_cycles": round(discharged / capacity, 1),
-        "efficiency": efficiency_figures(efficiency(chosen, capacity, minimum)),
+        "efficiency": efficiency_figures(
+            efficiency(chosen, capacity, DEFAULT_MIN_CHARGE_CAPACITIES)
+        ),
         "rest_loss": {
             "watts": None if rest.watts is None else round(rest.watts),
             "rest_hours": round(rest.hours),
@@ -124,21 +128,45 @@ def report(
         },
         "hours_implausible": rejected_summary(within, tz),
         "months": [
-            {
-                "month": month,
-                "charged_kwh": _kwh(sum(d.charged for d in month_days)),
-                "discharged_kwh": _kwh(sum(d.discharged for d in month_days)),
-                "full_cycles": round(
-                    sum(d.discharged for d in month_days) / capacity, 1
-                ),
-                **{
-                    f"efficiency_{key}": value
-                    for key, value in efficiency_figures(
-                        efficiency(month_days, capacity, minimum)
-                    ).items()
-                    if key in ("percent", "operating_days", "rest_days", "reason")
-                },
-            }
+            month_figures(month, month_days, capacity)
             for month, month_days in months.items()
         ],
     }
+
+
+def month_figures(month: str, days: Sequence[Day], capacity: float) -> dict[str, Any]:
+    """Energy, full cycles and efficiency of one month ("2026-06")."""
+    return {
+        "month": month,
+        "charged_kwh": _kwh(sum(d.charged for d in days)),
+        "discharged_kwh": _kwh(sum(d.discharged for d in days)),
+        "full_cycles": round(sum(d.discharged for d in days) / capacity, 1),
+        **{
+            f"efficiency_{key}": value
+            for key, value in efficiency_figures(
+                efficiency(days, capacity, DEFAULT_MIN_CHARGE_CAPACITIES)
+            ).items()
+            if key in ("percent", "operating_days", "rest_days", "reason")
+        },
+    }
+
+
+def last_months(
+    hours: Sequence[Hour], capacity: float, tz: tzinfo, now: datetime, count: int = 12
+) -> list[dict[str, Any]]:
+    """The `count` local months up to the current one, oldest first, for the
+    card's chart: the figures of the action "report" per month, the current
+    month up to the latest hour. A month without data has no days and zero
+    energy (efficiency unknown, reason no_data)."""
+    today = now.astimezone(tz).date()
+    index = today.year * 12 + today.month - 1 - (count - 1)
+    first = date(index // 12, index % 12 + 1, 1)
+    by_month: dict[str, list[Day]] = {}
+    for day in period_days(hours, tz, local_midnight(first, tz), now, now):
+        by_month.setdefault(day.day.strftime("%Y-%m"), []).append(day)
+    result = []
+    for i in range(count):
+        key = f"{(index + i) // 12:04d}-{(index + i) % 12 + 1:02d}"
+        days = by_month.get(key, [])
+        result.append({**month_figures(key, days, capacity), "days": len(days)})
+    return result

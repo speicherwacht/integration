@@ -20,6 +20,7 @@ from .const import (
 )
 from .days import Period
 from .entity import StorageEntity
+from .frontend_resource import card_status
 from .issue_report import build, settings, show, text
 from .profiles import TEMPLATES
 
@@ -85,6 +86,7 @@ def _lines(
         ("day values", text(runtime.day_values)),
         ("problem", str(runtime.problem or "none")),
         ("own entities as source", str(len(runtime.own))),
+        ("card", card_status(runtime.hass)),
     ]
     if (series := runtime.series) is not None:
         hours = series.hours
