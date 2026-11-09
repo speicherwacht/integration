@@ -1,6 +1,6 @@
 # Changelog
 
-## Unveröffentlicht
+## 0.2.0 – 2026-11-09
 
 - **Neu: eigene Dashboard-Karte** (`custom:speicherwacht-card`), ohne Zusatzkarten aus HACS: *Dashboard bearbeiten → Karte hinzufügen* → „Speicherwacht“. Speicherwacht trägt die Dashboard-Ressource selbst ein. Die Karte zeigt
   - **Befund:** die drei Prüfungen des Gesundheits-Checks mit Punkt und der entscheidenden Zahl; kann eine Prüfung noch nicht urteilen, was fehlt („erst 1 von 3 Entladungen von voll bis leer in 90 Tagen“, „Vergleich mit dem Vorjahr frühestens ab Nov. 2027“). Offene Reparaturhinweise stehen darüber, ein Klick führt zu *Reparaturen*.
