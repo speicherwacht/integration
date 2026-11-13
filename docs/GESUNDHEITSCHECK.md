@@ -37,5 +37,5 @@ Erster Entwurf für den Ruheverlust: +50 % und +10 W gegenüber den 30 Tagen dav
 
 ## Offen
 
-- Hysterese: Die Prüfungen sind zustandslos und können an einer Schwelle hin und her springen. Bisher nicht beobachtet; sonst Rückstellung erst unter einer zweiten Schwelle.
+- Hysterese: Die Prüfungen sind zustandslos und können an einer Schwelle hin und her springen. Bisher nicht beobachtet; sonst Rückstellung erst unter einer zweiten Schwelle. Der Blueprint „Befund melden“ (`blueprints/automation/speicherwacht/befund_melden.yaml`, seit 2026-11-13) fängt das für das Handy ab: Er sendet nur, wenn die Prüfung vorher mindestens einen Tag aus war (`last_changed` des alten Zustands, **eigene Annahme**); die Glocke zeigt jeden Wechsel.
 - Schwellen nach dem ersten Winter an der Testanlage prüfen.

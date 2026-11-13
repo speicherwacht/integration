@@ -20,7 +20,7 @@
 ## Inhalt
 
 - [Was Speicherwacht kann](#was-speicherwacht-kann) · [Voraussetzungen](#voraussetzungen) · [Installation](#installation) · [Einrichtung](#einrichtung)
-- [Entitäten](#entitäten) · [Karte](#karte) · [Aktion „Bericht“](#aktion-bericht) · [Gesundheits-Check](#gesundheits-check) · [Wie gerechnet wird](#wie-gerechnet-wird) · [Grenzen der Aussage](#grenzen-der-aussage)
+- [Entitäten](#entitäten) · [Karte](#karte) · [Aktion „Bericht“](#aktion-bericht) · [Gesundheits-Check](#gesundheits-check) · [Benachrichtigen](#benachrichtigen) · [Wie gerechnet wird](#wie-gerechnet-wird) · [Grenzen der Aussage](#grenzen-der-aussage)
 - [Fehlerbehebung](#fehlerbehebung) · [Datenschutz](#datenschutz) · [Entfernen](#entfernen) · [Verwandte Projekte](#verwandte-projekte)
 
 ## Was Speicherwacht kann
@@ -33,6 +33,7 @@
 - **Rückblick ab dem ersten Tag:** Speicherwacht rechnet aus der Langzeitstatistik von Home Assistant, also auch für die Zeit vor der Einrichtung.
 - **Eigene Dashboard-Karte** mit Befund, Kennzahlen und den letzten zwölf Monaten, ohne Zusatzkarten aus HACS.
 - **Bericht für einen beliebigen Zeitraum** per Aktion, je Monat aufgeschlüsselt.
+- **Benachrichtigung** per Blueprint, wenn eine Prüfung des Gesundheits-Checks auffällig wird – in der Glocke und auf Wunsch aufs Handy.
 - **Reparaturhinweise**, wenn eine Quelle fehlt, lange nicht verfügbar ist oder eine falsche Einheit hat.
 - Keine eigene Speicherdatei, keine zusätzliche Schreiblast auf SD-Karten.
 
@@ -241,6 +242,18 @@ Drei Problem-Sensoren (an = auffällig, unbekannt = noch zu wenig Daten, Grund i
 **Reparaturhinweis „Zähler und Ladezustand passen nicht zusammen“:** Im letzten Tag hat sich der Ladezustand stark bewegt und die Zähler nicht – oder umgekehrt. Meist hängt ein Zähler, der Ladezustand ist eingefroren oder eine Entität ist falsch zugeordnet.
 
 Die Vergleiche mit dem Vorjahr brauchen ein Jahr Langzeitstatistik; vorher sind diese Prüfungen unbekannt. Regeln, Quellen und Schwellen: [docs/GESUNDHEITSCHECK.md](docs/GESUNDHEITSCHECK.md).
+
+## Benachrichtigen
+
+Ein Blueprint meldet, wenn eine Prüfung des Gesundheits-Checks auffällig wird: in der Glocke von Home Assistant und auf Wunsch zusätzlich aufs Handy (oder an einen anderen Benachrichtigungsdienst), mit dem Befund in Worten, etwa „Heimspeicher Wirkungsgrad unter Vorjahr: letzte 30 Tage 88,4 % statt 92,0 % im Vorjahr (3,6 Punkte weniger)“, „Heimspeicher Kapazität gesunken: geschätzt 7,6 kWh, 76 % des Datenblatts (Grenze 80 %)“ oder „Heimspeicher Ruheverlust hoch: 31 W statt 12 W in denselben 30 Tagen des Vorjahres“.
+
+[![Blueprint importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fspeicherwacht%2Fintegration%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fspeicherwacht%2Fbefund_melden.yaml)
+
+- **Prüfungen:** die Problem-Binärsensoren eines oder mehrerer Speicher (Wirkungsgrad unter Vorjahr, Kapazität gesunken, Ruheverlust hoch). Datenfehler wie fehlende Quellen meldet Speicherwacht ohnehin als Reparaturhinweis.
+- **Zusätzlich senden an:** leer lassen für nur die Glocke, sonst eine Aktion wie `notify.mobile_app_mein_handy` (*Entwicklerwerkzeuge → Aktionen*, nach „mobile_app“ suchen).
+- **Sprache** der Meldung: Deutsch oder Englisch.
+
+Aufs Handy geht nur ein Wechsel von „in Ordnung“ auf „auffällig“, und nur, wenn die Prüfung vorher mindestens einen Tag in Ordnung war. Speicherwacht rechnet stündlich neu; liegt ein Wert genau an einer Schwelle, kann eine Prüfung hin und her wechseln, und das soll keine Meldung je Stunde geben. Die Glocke zeigt jeden Wechsel, auch „wieder in Ordnung“. Nach einem Neustart sind die Prüfungen erst unbekannt und kurz darauf neu bewertet: Ein fortbestehender Befund steht dann wieder in der Glocke, aufs Handy geht er nicht noch einmal.
 
 ## Wie gerechnet wird
 

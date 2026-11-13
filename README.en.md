@@ -20,7 +20,7 @@
 ## Contents
 
 - [What Speicherwacht does](#what-speicherwacht-does) · [Requirements](#requirements) · [Installation](#installation) · [Setup](#setup)
-- [Entities](#entities) · [Card](#card) · [Action "Report"](#action-report) · [Health check](#health-check) · [How it calculates](#how-it-calculates) · [Limits](#limits)
+- [Entities](#entities) · [Card](#card) · [Action "Report"](#action-report) · [Health check](#health-check) · [Notifications](#notifications) · [How it calculates](#how-it-calculates) · [Limits](#limits)
 - [Troubleshooting](#troubleshooting) · [Privacy](#privacy) · [Removal](#removal) · [Related projects](#related-projects)
 
 ## What Speicherwacht does
@@ -33,6 +33,7 @@
 - **Look-back from day one:** Speicherwacht works from Home Assistant's long-term statistics, so the time before the setup counts too.
 - **Own dashboard card** with findings, figures and the last twelve months, no extra cards from HACS.
 - **Report for any period** by action, per month.
+- **Notification** by blueprint when a check of the health check turns conspicuous – in the bell and, optionally, on the phone.
 - **Repair issues** when a source is missing, unavailable for long or has a wrong unit.
 - No storage file of its own, no extra write load on SD cards.
 
@@ -241,6 +242,18 @@ Three problem sensors (on = conspicuous, unknown = not enough data yet, reason i
 **Repair issue "Counters and state of charge disagree":** over the last day the state of charge moved a lot and the counters did not – or the other way round. Usually a counter is stuck, the state of charge is frozen or an entity is mapped wrongly.
 
 The comparisons with last year need a year of long-term statistics; until then these checks are unknown. Rules, sources and thresholds: [docs/GESUNDHEITSCHECK.md](docs/GESUNDHEITSCHECK.md) (German).
+
+## Notifications
+
+A blueprint reports when a check of the health check turns conspicuous: in the Home Assistant bell and, optionally, also on the phone (or through another notify service), with the finding in words, such as "Home battery Efficiency below last year: last 30 days 88.4 % instead of 92.0 % last year (3.6 points less)", "Home battery Capacity low: estimated 7.6 kWh, 76 % of the data sheet (limit 80 %)" or "Home battery Rest loss high: 31 W instead of 12 W in the same 30 days last year".
+
+[![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fspeicherwacht%2Fintegration%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fspeicherwacht%2Fbefund_melden.yaml)
+
+- **Checks:** the problem binary sensors of one or more batteries (Efficiency below last year, Capacity low, Rest loss high). Data errors such as missing sources are reported by Speicherwacht as repair issues anyway.
+- **Also send to:** leave empty for the bell only, else an action such as `notify.mobile_app_my_phone` (*Developer tools → Actions*, search for "mobile_app").
+- **Language** of the message: German or English.
+
+The phone only gets a change from fine to conspicuous, and only if the check was fine for at least a day before. Speicherwacht recalculates every hour; a value right at a limit can make a check switch back and forth, and that should not send a message every hour. The bell shows every change, including "fine again". After a restart the checks are unknown at first and judged again shortly after: a finding that persists is back in the bell, but not sent to the phone again.
 
 ## How it calculates
 

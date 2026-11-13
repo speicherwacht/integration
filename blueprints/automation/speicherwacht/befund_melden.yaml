@@ -1,0 +1,148 @@
+# Derived from waermewacht blueprints/automation/waermewacht/befund_melden.yaml
+# (as of 9c05703), adapted: texts and attributes of Speicherwacht's three
+# problem sensors; the phone only gets a change from fine (off for at least a
+# day) to conspicuous, because the checks have no hysteresis; "fine again" only
+# in the bell; no inputs "notify_fine" and "after_restart".
+blueprint:
+  name: Speicherwacht – Befund melden (Glocke, optional Handy)
+  description: >-
+    Meldet, wenn eine Prüfung von Speicherwacht auffällig wird (Wirkungsgrad
+    unter Vorjahr, Kapazität gesunken, Ruheverlust hoch): als Benachrichtigung
+    in der Glocke und auf Wunsch zusätzlich an einen Benachrichtigungsdienst,
+    etwa das Handy mit der Home-Assistant-App. Aufs Handy geht nur ein Wechsel
+    von „in Ordnung“ auf „auffällig“, und nur, wenn die Prüfung vorher
+    mindestens einen Tag in Ordnung war: Pendelt ein Wert um eine Schwelle,
+    kommt keine Meldung je Stunde. Ist alles wieder in Ordnung, sagt es die
+    Glocke.
+    ---
+    Reports when a Speicherwacht check turns conspicuous (efficiency below last
+    year, capacity low, rest loss high): as a notification in the bell and,
+    optionally, through a notify action such as the phone with the Home
+    Assistant app. The phone only gets a change from fine to conspicuous, and
+    only if the check was fine for at least a day before: a value swinging
+    around a limit does not send a message every hour. When it is fine again,
+    the bell says so.
+  domain: automation
+  author: Speicherwacht
+  homeassistant:
+    min_version: "2026.4.0"
+  source_url: https://github.com/speicherwacht/integration/blob/main/blueprints/automation/speicherwacht/befund_melden.yaml
+  input:
+    checks:
+      name: Prüfungen / Checks
+      description: >-
+        Die Binärsensoren der Prüfungen eines oder mehrerer Speicher
+        („Wirkungsgrad unter Vorjahr“, „Kapazität gesunken“, „Ruheverlust
+        hoch“). / The problem binary sensors of one or more batteries.
+      selector:
+        entity:
+          multiple: true
+          filter:
+            integration: speicherwacht
+            domain: binary_sensor
+            device_class: problem
+    notify_action:
+      name: Zusätzlich senden an / Also send to (optional)
+      description: >-
+        Leer lassen für nur die Glocke. Sonst eine Benachrichtigungs-Aktion,
+        z. B. notify.mobile_app_mein_handy (Entwicklerwerkzeuge → Aktionen). /
+        Leave empty for the bell only, else a notify action such as
+        notify.mobile_app_my_phone.
+      default: ""
+      selector:
+        text: {}
+    language:
+      name: Sprache der Meldung / Language of the message
+      default: de
+      selector:
+        select:
+          options:
+            - label: Deutsch
+              value: de
+            - label: English
+              value: en
+
+mode: queued
+max: 10
+
+triggers:
+  - trigger: state
+    entity_id: !input checks
+    to: "on"
+    id: problem
+  - trigger: state
+    entity_id: !input checks
+    from: "on"
+    to: "off"
+    id: fine
+
+variables:
+  notify_action: !input notify_action
+  lang: !input language
+  notification_id: "speicherwacht_{{ trigger.entity_id }}"
+  name: >-
+    {{ trigger.to_state.name if trigger.to_state else trigger.entity_id }}
+  # To the phone: a real change from fine, after at least a day in order. The
+  # checks are recomputed every hour without hysteresis; unknown -> on after a
+  # restart or the setup is already in the bell again.
+  to_phone: >-
+    {{ notify_action | trim != '' and trigger.from_state is not none
+       and trigger.from_state.state == 'off'
+       and now() - trigger.from_state.last_changed >= timedelta(days=1) }}
+  # The finding in words, from the attributes of the binary sensor.
+  detail: >-
+    {%- set a = trigger.to_state.attributes if trigger.to_state else {} -%}
+    {%- set de = lang == 'de' -%}
+    {%- macro n(x, d) -%}
+    {{- ('%.' ~ d ~ 'f') | format(x | float(0)) | replace('.', ',' if lang == 'de' else '.') -}}
+    {%- endmacro -%}
+    {%- if a.current_percent is defined -%}
+      {{ ('letzte 30 Tage ' ~ n(a.current_percent, 1) ~ ' % statt ' ~ n(a.previous_year_percent, 1) ~ ' % im Vorjahr (' ~ n(a.drop_points, 1) ~ ' Punkte weniger)') if de else ('last 30 days ' ~ n(a.current_percent, 1) ~ ' % instead of ' ~ n(a.previous_year_percent, 1) ~ ' % last year (' ~ n(a.drop_points, 1) ~ ' points less)') }}
+    {%- elif a.estimate_kwh is defined -%}
+      {%- if a.drop_points is defined and (a.share_percent | float(0)) >= (a.end_of_life_percent | float(0)) -%}
+        {{ ('geschätzt ' ~ n(a.estimate_kwh, 1) ~ ' kWh, ' ~ n(a.drop_points, 0) ~ ' Punkte weniger als vor einem Jahr (' ~ n(a.year_ago_kwh, 1) ~ ' kWh)') if de else ('estimated ' ~ n(a.estimate_kwh, 1) ~ ' kWh, ' ~ n(a.drop_points, 0) ~ ' points less than a year ago (' ~ n(a.year_ago_kwh, 1) ~ ' kWh)') }}
+      {%- else -%}
+        {{ ('geschätzt ' ~ n(a.estimate_kwh, 1) ~ ' kWh, ' ~ n(a.share_percent, 0) ~ ' % des Datenblatts (Grenze ' ~ n(a.end_of_life_percent, 0) ~ ' %)') if de else ('estimated ' ~ n(a.estimate_kwh, 1) ~ ' kWh, ' ~ n(a.share_percent, 0) ~ ' % of the data sheet (limit ' ~ n(a.end_of_life_percent, 0) ~ ' %)') }}
+      {%- endif -%}
+    {%- elif a.max_watts is defined -%}
+      {%- if (a.watts | float(0)) > (a.max_watts | float(0)) or a.previous_year_watts is none -%}
+        {{ (n(a.watts, 0) ~ ' W (Grenze ' ~ n(a.max_watts, 0) ~ ' W)') if de else (n(a.watts, 0) ~ ' W (limit ' ~ n(a.max_watts, 0) ~ ' W)') }}
+      {%- else -%}
+        {{ (n(a.watts, 0) ~ ' W statt ' ~ n(a.previous_year_watts, 0) ~ ' W in denselben 30 Tagen des Vorjahres') if de else (n(a.watts, 0) ~ ' W instead of ' ~ n(a.previous_year_watts, 0) ~ ' W in the same 30 days last year') }}
+      {%- endif -%}
+    {%- endif -%}
+  title: "{{ 'Speicherwacht: auffällig' if lang == 'de' else 'Speicherwacht: conspicuous' }}"
+  message: >-
+    {{ name }}{{ ': ' ~ detail if detail else '' }}
+  fine_title: "{{ 'Speicherwacht: wieder in Ordnung' if lang == 'de' else 'Speicherwacht: fine again' }}"
+  fine_message: >-
+    {{ name }}{{ ': wieder in Ordnung' if lang == 'de' else ': fine again' }}
+
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: problem
+        sequence:
+          - action: persistent_notification.create
+            data:
+              notification_id: "{{ notification_id }}"
+              title: "{{ title }}"
+              message: "{{ message }}"
+          - if:
+              - condition: template
+                value_template: "{{ to_phone }}"
+            then:
+              - action: "{{ notify_action | trim }}"
+                data:
+                  title: "{{ title }}"
+                  message: "{{ message }}"
+      - conditions:
+          - condition: trigger
+            id: fine
+        sequence:
+          - action: persistent_notification.create
+            data:
+              notification_id: "{{ notification_id }}"
+              title: "{{ fine_title }}"
+              message: "{{ fine_message }}"

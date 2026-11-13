@@ -1,5 +1,11 @@
 # Changelog
 
+## Unveröffentlicht
+
+### Neu
+
+- **Blueprint „Befund melden“.** Meldet, wenn eine Prüfung des Gesundheits-Checks auffällig wird – in der Glocke und auf Wunsch aufs Handy (oder an einen anderen Benachrichtigungsdienst), mit dem Befund in Worten, etwa „Kapazität gesunken: geschätzt 7,6 kWh, 76 % des Datenblatts (Grenze 80 %)“, auf Deutsch oder Englisch. Aufs Handy geht nur ein Wechsel von „in Ordnung“ auf „auffällig“ nach mindestens einem Tag in Ordnung, damit ein Wert an der Schwelle keine Meldung je Stunde auslöst. Import über den Knopf im README unter [Benachrichtigen](README.md#benachrichtigen).
+
 ## 0.2.1 – 2026-11-10
 
 ### Geändert
