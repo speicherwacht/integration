@@ -1,8 +1,9 @@
-# Derived from waermewacht blueprints/automation/waermewacht/befund_melden.yaml
+# Derived from waermewacht/blueprints/automation/waermewacht/befund_melden.yaml
 # (as of 9c05703), adapted: texts and attributes of Speicherwacht's three
 # problem sensors; the phone only gets a change from fine (off for at least a
 # day) to conspicuous, because the checks have no hysteresis; "fine again" only
 # in the bell; no inputs "notify_fine" and "after_restart".
+
 blueprint:
   name: Speicherwacht – Befund melden (Glocke, optional Handy)
   description: >-
