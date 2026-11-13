@@ -2812,7 +2812,7 @@ wheels = [
 
 [[package]]
 name = "speicherwacht"
-version = "0.2.1"
+version = "0.3.0"
 source = { virtual = "." }
 
 [package.dev-dependencies]
