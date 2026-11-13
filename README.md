@@ -31,7 +31,7 @@
 - **Ruheverlust:** mittlere Leistung, die der ruhende Speicher verliert (meist der Eigenverbrauch des Batteriemanagements).
 - **Kapazität (geschätzt):** entnehmbare Energie aus Entladungen von voll bis leer, im Vergleich zum Datenblatt.
 - **Rückblick ab dem ersten Tag:** Speicherwacht rechnet aus der Langzeitstatistik von Home Assistant, also auch für die Zeit vor der Einrichtung.
-- **Eigene Dashboard-Karte** mit Befund, Kennzahlen und den letzten zwölf Monaten, ohne Zusatzkarten aus HACS.
+- **Eigene Dashboard-Karte** mit Befund, Kennzahlen und den letzten zwölf Monaten, ohne Zusatzkarten aus dem Marketplace.
 - **Bericht für einen beliebigen Zeitraum** per Aktion, je Monat aufgeschlüsselt.
 - **Benachrichtigung** per Blueprint, wenn eine Prüfung des Gesundheits-Checks auffällig wird – in der Glocke und auf Wunsch aufs Handy.
 - **Reparaturhinweise**, wenn eine Quelle fehlt, lange nicht verfügbar ist oder eine falsche Einheit hat.
@@ -86,7 +86,7 @@ Im ersten Schritt zeigt Speicherwacht die Speicher, die es erkannt hat, und „E
 - **GoodWe:** Batteriezähler gibt es nur bei ET, EH, BT und BH; ES, EM und BP liefern nur den Ladezustand.
 - **Victron:** Die Zähler kommen vom Batteriewächter (BMV, SmartShunt, Lynx). Ein Akku, der nur per CAN-BMS angebunden ist, hat keine. Die Werte „DC-Batterie Lade-/Entladeenergie“ des Systems beginnen bei jedem Neustart bei 0 und taugen nicht.
 - **SolarEdge (`solaredge_modbus_multi`):** Batterie-Entitäten gibt es erst mit der Option „Auto-Detect Batteries“. Bei LG- und BYD-Akkus springen die Zähler manchmal auf 0; die Integration hält dann den alten Wert fest, und Speicherwacht meldet „Zähler und Ladezustand passen nicht zusammen“.
-- **SolarEdge (Core `solaredge_modbus`):** ein Speicher je Batterie („Battery 1“ bis „Battery 3“). „Energy imported“ ist geladen, „Energy exported“ entladen. Die Kapazität („Usable capacity“) ist ausgeschaltet; eingeschaltet schlägt Speicherwacht sie vor. Fällt ein Zähler zurück, hält die Integration den höchsten Wert fest; dann meldet Speicherwacht „Zähler und Ladezustand passen nicht zusammen“. Wechselrichter, die ihren Akku nicht über Modbus zeigen, haben nur „Storage state of charge“ ohne Zähler. Die gleichnamige HACS-Integration von binsentsu ersetzt die Core-Integration und hat andere Entitäten; dafür die eigene Zuordnung nehmen.
+- **SolarEdge (Core `solaredge_modbus`):** ein Speicher je Batterie („Battery 1“ bis „Battery 3“). „Energy imported“ ist geladen, „Energy exported“ entladen. Die Kapazität („Usable capacity“) ist ausgeschaltet; eingeschaltet schlägt Speicherwacht sie vor. Fällt ein Zähler zurück, hält die Integration den höchsten Wert fest; dann meldet Speicherwacht „Zähler und Ladezustand passen nicht zusammen“. Wechselrichter, die ihren Akku nicht über Modbus zeigen, haben nur „Storage state of charge“ ohne Zähler. Die gleichnamige Marketplace-Integration von binsentsu ersetzt die Core-Integration und hat andere Entitäten; dafür die eigene Zuordnung nehmen.
 - **SolaX:** „Battery Input Energy Total“ und „Battery Output Energy Total“ sind ausgeschaltet; einschalten und die Integration neu laden. Speicherwacht weist in der Einrichtung darauf hin.
 - **Sungrow:** Laut Paket läuft „Battery level“ nur zwischen dem minimalen und maximalen Ladezustand des Wechselrichters von 0 bis 100 %. Die geschätzte Kapazität zeigt dann nur dieses Fenster; ist es deutlich enger als der ganze Akku, trag seine Kapazität ein.
 - **Sigenergy:** Speicherwacht nimmt die Zähler der Anlage (ab Modbus-Protokoll v2.7). Ältere Firmware hat sie nicht; dann die Zähler des Wechselrichters selbst zuordnen.
@@ -140,7 +140,7 @@ Attribute zeigen, woraus ein Wert entsteht: geladen, entladen, Änderung der ges
 
 ## Karte
 
-Speicherwacht bringt eine eigene Karte mit, ganz ohne Zusatzkarten aus HACS: *Dashboard bearbeiten → Karte hinzufügen* und nach „Speicherwacht“ suchen. Die Dashboard-Ressource trägt Speicherwacht selbst ein (*Einstellungen → Dashboards → ⋮ → Ressourcen*, beim Entfernen des letzten Eintrags wieder ausgetragen; bei Ressourcen im YAML-Modus lädt Home Assistant die Karte stattdessen direkt).
+Speicherwacht bringt eine eigene Karte mit, ganz ohne Zusatzkarten aus dem Marketplace: *Dashboard bearbeiten → Karte hinzufügen* und nach „Speicherwacht“ suchen. Die Dashboard-Ressource trägt Speicherwacht selbst ein (*Einstellungen → Dashboards → ⋮ → Ressourcen*, beim Entfernen des letzten Eintrags wieder ausgetragen; bei Ressourcen im YAML-Modus lädt Home Assistant die Karte stattdessen direkt).
 
 <img src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/screenshots/karte.png" alt="Karte eines Speichers: drei grüne Befunde, Wirkungsgrad im Jahr groß mit Monat und gesamt, Kacheln für geschätzte Kapazität mit Balken, Ruheverlust, Vollzyklen und Garantie-Durchsatz, darunter Säulen für geladene und entladene Energie der letzten zwölf Monate mit dem Wirkungsgrad je Monat" width="600">
 

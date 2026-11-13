@@ -31,7 +31,7 @@
 - **Rest loss:** mean power the resting battery loses (mostly the battery management's own consumption).
 - **Capacity (estimated):** energy taken out in discharges from full to empty, compared with the data sheet.
 - **Look-back from day one:** Speicherwacht works from Home Assistant's long-term statistics, so the time before the setup counts too.
-- **Own dashboard card** with findings, figures and the last twelve months, no extra cards from HACS.
+- **Own dashboard card** with findings, figures and the last twelve months, no extra cards from the Marketplace.
 - **Report for any period** by action, per month.
 - **Notification** by blueprint when a check of the health check turns conspicuous – in the bell and, optionally, on the phone.
 - **Repair issues** when a source is missing, unavailable for long or has a wrong unit.
@@ -86,7 +86,7 @@ The first step lists the storages Speicherwacht detected plus "Map entities myse
 - **GoodWe:** only ET, EH, BT and BH have battery counters; ES, EM and BP report the state of charge only.
 - **Victron:** the counters come from the battery monitor (BMV, SmartShunt, Lynx). A battery connected by CAN-BMS only has none. The system's "DC battery charge/discharge energy" start at 0 after every restart and are not usable.
 - **SolarEdge (`solaredge_modbus_multi`):** battery entities exist only with the option "Auto-Detect Batteries". With LG and BYD batteries the counters sometimes drop to 0; the integration then holds the old value and Speicherwacht reports "counters and state of charge disagree".
-- **SolarEdge (core `solaredge_modbus`):** one storage per battery ("Battery 1" to "Battery 3"). "Energy imported" is charged, "Energy exported" discharged. The capacity ("Usable capacity") is disabled; once enabled, Speicherwacht suggests it. If a counter falls back, the integration holds the highest value; Speicherwacht then reports "counters and state of charge disagree". Inverters that do not expose their battery over Modbus only have "Storage state of charge" without counters. The HACS integration of the same name by binsentsu replaces the core integration and has other entities; map those yourself.
+- **SolarEdge (core `solaredge_modbus`):** one storage per battery ("Battery 1" to "Battery 3"). "Energy imported" is charged, "Energy exported" discharged. The capacity ("Usable capacity") is disabled; once enabled, Speicherwacht suggests it. If a counter falls back, the integration holds the highest value; Speicherwacht then reports "counters and state of charge disagree". Inverters that do not expose their battery over Modbus only have "Storage state of charge" without counters. The Marketplace integration of the same name by binsentsu replaces the core integration and has other entities; map those yourself.
 - **SolaX:** "Battery Input Energy Total" and "Battery Output Energy Total" are disabled; enable them and reload the integration. The setup points this out.
 - **Sungrow:** according to the package, "Battery level" runs from 0 to 100 % between the inverter's minimum and maximum state of charge. The estimated capacity then shows only that window; if it is much narrower than the whole battery, enter its capacity.
 - **Sigenergy:** Speicherwacht takes the plant's counters (Modbus protocol v2.7 and later). Older firmware lacks them; then map the inverter's counters yourself.
@@ -140,7 +140,7 @@ Attributes show what a value is made of: charged, discharged, change of stored e
 
 ## Card
 
-Speicherwacht brings its own card, no extra cards from HACS needed: *Edit dashboard → Add card* and search for "Speicherwacht". Speicherwacht adds the dashboard resource itself (*Settings → Dashboards → ⋮ → Resources*, removed again with the last entry; with resources in YAML mode Home Assistant loads the card directly instead).
+Speicherwacht brings its own card, no extra cards from the Marketplace needed: *Edit dashboard → Add card* and search for "Speicherwacht". Speicherwacht adds the dashboard resource itself (*Settings → Dashboards → ⋮ → Resources*, removed again with the last entry; with resources in YAML mode Home Assistant loads the card directly instead).
 
 <img src="https://raw.githubusercontent.com/speicherwacht/integration/main/assets/screenshots/card.png" alt="Card of a battery: three green findings, the year's efficiency large with month and total, tiles for estimated capacity with a bar, rest loss, full cycles and warranted throughput, below bars of the energy charged and discharged in the last twelve months with the efficiency per month" width="600">
 
