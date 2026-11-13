@@ -279,12 +279,28 @@ def test_texts_are_german_and_english() -> None:
 PHONES = {"phone1": {"name": "Pixel von Max"}}
 DEVICE_OF = {"binary_sensor.heimspeicher_wirkungsgrad_unter_vorjahr": "Heimspeicher"}
 SENSOR = "binary_sensor.heimspeicher_wirkungsgrad_unter_vorjahr"
+# The entities of Speicherwacht and their devices: two batteries.
+TWO_STORAGES = {
+    SENSOR: "dev_heim",
+    "binary_sensor.heimspeicher_kapazitat_gesunken": "dev_heim",
+    "sensor.heimspeicher_wirkungsgrad": "dev_heim",
+    "binary_sensor.balkonspeicher_ruheverlust_hoch": "dev_balkon",
+    "button.balkonspeicher_problem_melden": "dev_balkon",
+}
+ONE_STORAGE = {k: v for k, v in TWO_STORAGES.items() if v != "dev_balkon"}
 CLOCK = datetime(2026, 6, 30, 22, 0, tzinfo=UTC)
 
 
 def _variables(
-    *, entity: str, to: str, before: str | None, off_for: timedelta, **inputs: Any
+    *,
+    entity: str,
+    to: str,
+    before: str | None,
+    off_for: timedelta,
+    entities: dict[str, str | None] | None = None,
+    **inputs: Any,
 ) -> dict[str, Any]:
+    entities = TWO_STORAGES if entities is None else entities
     config = BlueprintInputs(
         _blueprint(),
         {
@@ -296,6 +312,11 @@ def _variables(
     ).async_substitute()
     env = jinja2.Environment()
     env.filters["slugify"] = slugify
+    env.tests["match"] = lambda value, pattern: re.match(pattern, value) is not None
+    env.globals["integration_entities"] = lambda domain: (
+        list(entities) if domain == "speicherwacht" else []
+    )
+    env.filters["device_id"] = entities.get
     env.globals["device_name"] = DEVICE_OF.get
     env.globals["device_attr"] = lambda d, a: PHONES.get(d, {}).get(a)
     env.globals["now"] = lambda: CLOCK
@@ -339,12 +360,40 @@ def test_device_name_in_the_title_in_both_languages() -> None:
     assert en["fine_title"] == "Speicherwacht · Heimspeicher: fine again"
 
 
+def test_one_storage_the_title_names_speicherwacht() -> None:
+    day = timedelta(days=2)
+    values = _variables(
+        entity=SENSOR, to="on", before="off", off_for=day, entities=ONE_STORAGE
+    )
+    assert values["title"] == "Speicherwacht: auffällig"
+    assert values["fine_title"] == "Speicherwacht: wieder in Ordnung"
+    en = _variables(
+        entity=SENSOR,
+        to="on",
+        before="off",
+        off_for=day,
+        entities=ONE_STORAGE,
+        language="en",
+    )
+    assert en["title"] == "Speicherwacht: conspicuous"
+
+
 def test_without_device_the_title_names_speicherwacht() -> None:
     values = _variables(
         entity="binary_sensor.other", to="on", before="off", off_for=timedelta(0)
     )
     assert values["title"] == "Speicherwacht: auffällig"
     assert values["fine_title"] == "Speicherwacht: wieder in Ordnung"
+    # Entities without a device do not count either.
+    alone = {"binary_sensor.a": None, "binary_sensor.b": None}
+    values = _variables(
+        entity="binary_sensor.a",
+        to="on",
+        before="off",
+        off_for=timedelta(0),
+        entities=alone,
+    )
+    assert values["title"] == "Speicherwacht: auffällig"
 
 
 def test_phone_action_from_the_device() -> None:

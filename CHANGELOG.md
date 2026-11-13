@@ -4,7 +4,7 @@
 
 ### Neu
 
-- **Blueprint „Befund melden“.** Meldet, wenn eine Prüfung des Gesundheits-Checks auffällig wird – in der Glocke und auf Wunsch aufs Handy (Auswahl des Geräts mit der Home-Assistant-App), mit dem Namen des Speichers im Titel und dem Befund in Worten, etwa „Speicherwacht · Heimspeicher: auffällig“ und „Kapazität gesunken: geschätzt 7,6 kWh, 76 % des Datenblatts (Grenze 80 %)“, auf Deutsch oder Englisch. Unter „Weitere Aktionen“ (eingeklappt) gehen auch Telegram und andere Dienste mit `{{ title }}` und `{{ message }}`, ebenso jede Benachrichtigungs-Aktion wie `notify.mobile_app_mein_handy`. Aufs Handy geht nur ein Wechsel von „in Ordnung“ auf „auffällig“ nach mindestens einem Tag in Ordnung, damit ein Wert an der Schwelle keine Meldung je Stunde auslöst. Import über den Knopf im README unter [Benachrichtigen](README.md#benachrichtigen).
+- **Blueprint „Befund melden“.** Meldet, wenn eine Prüfung des Gesundheits-Checks auffällig wird – in der Glocke und auf Wunsch aufs Handy (Auswahl des Geräts mit der Home-Assistant-App), mit dem Befund in Worten und dem Namen des Speichers im Titel, wenn du mehrere hast, etwa „Speicherwacht · Heimspeicher: auffällig“ und „Kapazität gesunken: geschätzt 7,6 kWh, 76 % des Datenblatts (Grenze 80 %)“, auf Deutsch oder Englisch. Unter „Weitere Aktionen“ (eingeklappt) gehen auch Telegram und andere Dienste mit `{{ title }}` und `{{ message }}`, ebenso jede Benachrichtigungs-Aktion wie `notify.mobile_app_mein_handy`. Aufs Handy geht nur ein Wechsel von „in Ordnung“ auf „auffällig“ nach mindestens einem Tag in Ordnung, damit ein Wert an der Schwelle keine Meldung je Stunde auslöst. Import über den Knopf im README unter [Benachrichtigen](README.md#benachrichtigen).
 
 ## 0.2.1 – 2026-11-10
 

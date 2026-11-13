@@ -1,5 +1,5 @@
 # Derived from waermewacht/blueprints/automation/waermewacht/befund_melden.yaml
-# (as of 0db1c6e), adapted: texts and attributes of Speicherwacht's three
+# (as of b928136), adapted: texts and attributes of Speicherwacht's three
 # problem sensors; the phone and the more actions only get a change from fine
 # (off for at least a day) to conspicuous, because the checks have no
 # hysteresis; "fine again" only in the bell; no inputs "notify_fine" and
@@ -15,8 +15,8 @@ blueprint:
     Dienste. Aufs Handy geht nur ein Wechsel von „in Ordnung“ auf „auffällig“,
     und nur, wenn die Prüfung vorher mindestens einen Tag in Ordnung war:
     Pendelt ein Wert um eine Schwelle, kommt keine Meldung je Stunde. Ist alles
-    wieder in Ordnung, sagt es die Glocke. Im Titel steht der Name des
-    Speichers, die Nachricht gibt es auf Deutsch oder Englisch.
+    wieder in Ordnung, sagt es die Glocke. Hast du mehrere Speicher, steht ihr
+    Name im Titel. Die Nachricht gibt es auf Deutsch oder Englisch.
 
 
     Reports when a Speicherwacht check turns conspicuous (efficiency below last
@@ -25,8 +25,8 @@ blueprint:
     other services go under "More actions". The phone only gets a change from
     fine to conspicuous, and only if the check was fine for at least a day
     before: a value swinging around a limit does not send a message every hour.
-    When it is fine again, the bell says so. The title names the battery, the
-    message comes in German or English.
+    When it is fine again, the bell says so. With more than one battery, the
+    title names it. The message comes in German or English.
   domain: automation
   author: Speicherwacht
   homeassistant:
@@ -130,8 +130,14 @@ variables:
     {{ trigger.from_state is not none
        and trigger.from_state.state == 'off'
        and now() - trigger.from_state.last_changed >= timedelta(days=1) }}
-  # The battery of the check, for the title; without a device just Speicherwacht.
-  device: "{{ device_name(trigger.entity_id) or '' }}"
+  # The battery of the check, for the title, but only with more than one:
+  # counted are the devices with checks (binary sensors), one per storage
+  # entry. Without a device just Speicherwacht.
+  device: >-
+    {%- set storages = integration_entities('speicherwacht')
+          | select('match', 'binary_sensor[.]') | map('device_id')
+          | reject('none') | unique | list -%}
+    {{ (device_name(trigger.entity_id) or '') if storages | count > 1 else '' }}
   head: "{{ 'Speicherwacht' ~ (' · ' ~ device if device else '') }}"
   # The finding in words, from the attributes of the binary sensor.
   detail: >-

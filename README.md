@@ -245,7 +245,7 @@ Die Vergleiche mit dem Vorjahr brauchen ein Jahr Langzeitstatistik; vorher sind 
 
 ## Benachrichtigen
 
-Ein Blueprint meldet, wenn eine Prüfung des Gesundheits-Checks auffällig wird: in der Glocke von Home Assistant und auf Wunsch zusätzlich aufs Handy, an Telegram oder einen anderen Dienst, mit dem Namen des Speichers im Titel („Speicherwacht · Heimspeicher: auffällig“) und dem Befund in Worten, etwa „Heimspeicher Wirkungsgrad unter Vorjahr: letzte 30 Tage 88,4 % statt 92,0 % im Vorjahr (3,6 Punkte weniger)“, „Heimspeicher Kapazität gesunken: geschätzt 7,6 kWh, 76 % des Datenblatts (Grenze 80 %)“ oder „Heimspeicher Ruheverlust hoch: 31 W statt 12 W in denselben 30 Tagen des Vorjahres“. Die Nachricht gibt es auf Deutsch oder Englisch.
+Ein Blueprint meldet, wenn eine Prüfung des Gesundheits-Checks auffällig wird: in der Glocke von Home Assistant und auf Wunsch zusätzlich aufs Handy, an Telegram oder einen anderen Dienst, mit dem Befund in Worten, etwa „Heimspeicher Wirkungsgrad unter Vorjahr: letzte 30 Tage 88,4 % statt 92,0 % im Vorjahr (3,6 Punkte weniger)“, „Heimspeicher Kapazität gesunken: geschätzt 7,6 kWh, 76 % des Datenblatts (Grenze 80 %)“ oder „Heimspeicher Ruheverlust hoch: 31 W statt 12 W in denselben 30 Tagen des Vorjahres“. Hast du mehrere Speicher, steht ihr Name im Titel („Speicherwacht · Heimspeicher: auffällig“), sonst nur „Speicherwacht: auffällig“. Die Nachricht gibt es auf Deutsch oder Englisch.
 
 [![Blueprint importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fspeicherwacht%2Fintegration%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fspeicherwacht%2Fbefund_melden.yaml)
 
