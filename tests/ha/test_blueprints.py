@@ -1,4 +1,4 @@
-"""The blueprint as a real automation: bell, optional phone, texts.
+"""The blueprint as a real automation: bell, phone, more actions, texts.
 
 All values are made up.
 """
@@ -13,9 +13,14 @@ from homeassistant.components.automation.config import AUTOMATION_BLUEPRINT_SCHE
 from homeassistant.components.blueprint.models import Blueprint, BlueprintInputs
 from homeassistant.const import STATE_UNKNOWN
 from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.setup import async_setup_component
 from homeassistant.util.yaml import load_yaml
-from pytest_homeassistant_custom_component.common import async_mock_service
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    async_mock_service,
+)
 
 BLUEPRINT = (
     Path(__file__).parent.parent.parent
@@ -143,3 +148,79 @@ async def test_bell_only_in_english(hass: HomeAssistant) -> None:
         "Heimspeicher Wirkungsgrad unter Vorjahr: fine again"
     )
     assert phone == []
+
+
+def add_device(hass: HomeAssistant, domain: str, name: str, entity: str = "") -> str:
+    """A device of `domain` named `name`, optionally with `entity` on it."""
+    entry = MockConfigEntry(domain=domain, title=name)
+    entry.add_to_hass(hass)
+    device = dr.async_get(hass).async_get_or_create(
+        config_entry_id=entry.entry_id, identifiers={(domain, name)}, name=name
+    )
+    if entity:
+        domain_, object_id = entity.split(".")
+        registered = er.async_get(hass).async_get_or_create(
+            domain_,
+            domain,
+            object_id,
+            suggested_object_id=object_id,
+            config_entry=entry,
+            device_id=device.id,
+        )
+        assert registered.entity_id == entity
+    return device.id
+
+
+async def test_device_name_in_the_title(hass: HomeAssistant) -> None:
+    add_device(hass, "speicherwacht", "Heimspeicher", EFFICIENCY)
+    created, _ = await setup(hass, 2 * DAY)
+    await change(hass, EFFICIENCY, "on", DROP)
+    assert created[0].data["title"] == "Speicherwacht · Heimspeicher: auffällig"
+    await change(hass, EFFICIENCY, "off", DROP)
+    assert created[-1].data["title"] == (
+        "Speicherwacht · Heimspeicher: wieder in Ordnung"
+    )
+
+
+async def test_phone_device_and_more_actions(hass: HomeAssistant) -> None:
+    add_device(hass, "speicherwacht", "Heimspeicher", EFFICIENCY)
+    phone_id = add_device(hass, "mobile_app", "Pixel von Max")
+    app = async_mock_service(hass, "notify", "mobile_app_pixel_von_max")
+    extra = async_mock_service(hass, "test", "extra")
+    created, phone = await setup(
+        hass,
+        2 * DAY,
+        language="en",
+        notify_device=phone_id,
+        extra_actions=[
+            {"action": "test.extra", "data": {"text": "{{ title }}: {{ message }}"}}
+        ],
+    )
+    await change(hass, EFFICIENCY, "on", DROP)
+    title = "Speicherwacht · Heimspeicher: conspicuous"
+    message = (
+        "Heimspeicher Wirkungsgrad unter Vorjahr: last 30 days 88.4 % instead of "
+        "92.0 % last year (3.6 points less)"
+    )
+    assert [(c.data["title"], c.data["message"]) for c in app] == [(title, message)]
+    assert [c.data["text"] for c in extra] == [f"{title}: {message}"]
+    assert phone == []
+
+    # Unknown after a restart -> conspicuous: same rule as the phone.
+    await change(hass, CAPACITY, "on", LOW)
+    assert len(app) == 1
+    assert len(extra) == 1
+
+    # Fine again: only in the bell.
+    await change(hass, EFFICIENCY, "off", DROP)
+    assert created[-1].data["title"] == "Speicherwacht · Heimspeicher: fine again"
+    assert len(app) == 1
+    assert len(extra) == 1
+
+
+async def test_more_actions_need_a_day_in_order(hass: HomeAssistant) -> None:
+    extra = async_mock_service(hass, "test", "extra")
+    created, _ = await setup(hass, 3600, extra_actions=[{"action": "test.extra"}])
+    await change(hass, EFFICIENCY, "on", DROP)
+    assert len(created) == 1
+    assert extra == []

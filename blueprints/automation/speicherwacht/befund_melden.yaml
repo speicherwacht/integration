@@ -1,28 +1,32 @@
 # Derived from waermewacht/blueprints/automation/waermewacht/befund_melden.yaml
-# (as of 9c05703), adapted: texts and attributes of Speicherwacht's three
-# problem sensors; the phone only gets a change from fine (off for at least a
-# day) to conspicuous, because the checks have no hysteresis; "fine again" only
-# in the bell; no inputs "notify_fine" and "after_restart".
+# (as of 0db1c6e), adapted: texts and attributes of Speicherwacht's three
+# problem sensors; the phone and the more actions only get a change from fine
+# (off for at least a day) to conspicuous, because the checks have no
+# hysteresis; "fine again" only in the bell; no inputs "notify_fine" and
+# "after_restart".
 
 blueprint:
-  name: Speicherwacht – Befund melden (Glocke, optional Handy)
+  name: Speicherwacht – Befund melden / Report a finding
   description: >-
     Meldet, wenn eine Prüfung von Speicherwacht auffällig wird (Wirkungsgrad
     unter Vorjahr, Kapazität gesunken, Ruheverlust hoch): als Benachrichtigung
-    in der Glocke und auf Wunsch zusätzlich an einen Benachrichtigungsdienst,
-    etwa das Handy mit der Home-Assistant-App. Aufs Handy geht nur ein Wechsel
-    von „in Ordnung“ auf „auffällig“, und nur, wenn die Prüfung vorher
-    mindestens einen Tag in Ordnung war: Pendelt ein Wert um eine Schwelle,
-    kommt keine Meldung je Stunde. Ist alles wieder in Ordnung, sagt es die
-    Glocke.
-    ---
+    in der Glocke und auf Wunsch zusätzlich aufs Handy mit der
+    Home-Assistant-App. Unter „Weitere Aktionen“ gehen auch Telegram und andere
+    Dienste. Aufs Handy geht nur ein Wechsel von „in Ordnung“ auf „auffällig“,
+    und nur, wenn die Prüfung vorher mindestens einen Tag in Ordnung war:
+    Pendelt ein Wert um eine Schwelle, kommt keine Meldung je Stunde. Ist alles
+    wieder in Ordnung, sagt es die Glocke. Im Titel steht der Name des
+    Speichers, die Nachricht gibt es auf Deutsch oder Englisch.
+
+
     Reports when a Speicherwacht check turns conspicuous (efficiency below last
     year, capacity low, rest loss high): as a notification in the bell and,
-    optionally, through a notify action such as the phone with the Home
-    Assistant app. The phone only gets a change from fine to conspicuous, and
-    only if the check was fine for at least a day before: a value swinging
-    around a limit does not send a message every hour. When it is fine again,
-    the bell says so.
+    optionally, also on the phone with the Home Assistant app. Telegram and
+    other services go under "More actions". The phone only gets a change from
+    fine to conspicuous, and only if the check was fine for at least a day
+    before: a value swinging around a limit does not send a message every hour.
+    When it is fine again, the bell says so. The title names the battery, the
+    message comes in German or English.
   domain: automation
   author: Speicherwacht
   homeassistant:
@@ -42,18 +46,18 @@ blueprint:
             integration: speicherwacht
             domain: binary_sensor
             device_class: problem
-    notify_action:
-      name: Zusätzlich senden an / Also send to (optional)
+    notify_device:
+      name: Handy (optional) / Phone (optional)
       description: >-
-        Leer lassen für nur die Glocke. Sonst eine Benachrichtigungs-Aktion,
-        z. B. notify.mobile_app_mein_handy (Entwicklerwerkzeuge → Aktionen). /
-        Leave empty for the bell only, else a notify action such as
-        notify.mobile_app_my_phone.
+        Ein Handy mit der Home-Assistant-App. Leer lassen für nur die Glocke. /
+        A phone with the Home Assistant app. Leave empty for the bell only.
       default: ""
       selector:
-        text: {}
+        device:
+          filter:
+            integration: mobile_app
     language:
-      name: Sprache der Meldung / Language of the message
+      name: Sprache der Nachricht / Language of the message
       default: de
       selector:
         select:
@@ -62,6 +66,37 @@ blueprint:
               value: de
             - label: English
               value: en
+    more:
+      name: Weitere Aktionen (optional) / More actions (optional)
+      icon: mdi:send
+      description: >-
+        Für Telegram, Signal, Sprachausgabe und Ähnliches. / For Telegram,
+        Signal, speech output and the like.
+      collapsed: true
+      input:
+        extra_actions:
+          name: Weitere Aktionen / More actions
+          description: >-
+            Laufen mit dem fertigen Text, nach denselben Regeln wie das Handy.
+            Nutzbar sind {{ title }} und {{ message }}. Beispiel Telegram:
+            Aktion telegram_bot.send_message mit message: "{{ title }}: {{
+            message }}". / Run with the finished text, by the same rules as the
+            phone. You can use {{ title }} and {{ message }}. Example Telegram:
+            action telegram_bot.send_message with message: "{{ title }}: {{
+            message }}".
+          default: []
+          selector:
+            action: {}
+        notify_action:
+          name: Zusätzlich senden an / Also send to (optional)
+          description: >-
+            Leer lassen, wenn nicht gebraucht. Sonst eine
+            Benachrichtigungs-Aktion, z. B. notify.mobile_app_mein_handy
+            (Entwicklerwerkzeuge → Aktionen). / Leave empty if not needed, else
+            a notify action such as notify.mobile_app_my_phone.
+          default: ""
+          selector:
+            text: {}
 
 mode: queued
 max: 10
@@ -79,17 +114,25 @@ triggers:
 
 variables:
   notify_action: !input notify_action
+  notify_device: !input notify_device
   lang: !input language
   notification_id: "speicherwacht_{{ trigger.entity_id }}"
   name: >-
     {{ trigger.to_state.name if trigger.to_state else trigger.entity_id }}
-  # To the phone: a real change from fine, after at least a day in order. The
-  # checks are recomputed every hour without hysteresis; unknown -> on after a
-  # restart or the setup is already in the bell again.
+  # The phone's notify action: mobile_app names it after the registered device.
+  phone_action: >-
+    {%- set d = device_attr(notify_device, 'name') if notify_device else none -%}
+    {{ 'notify.mobile_app_' ~ (d | slugify) if d else '' }}
+  # Sent beyond the bell: a real change from fine, after at least a day in
+  # order. The checks are recomputed every hour without hysteresis; unknown ->
+  # on after a restart or the setup is already in the bell again.
   to_phone: >-
-    {{ notify_action | trim != '' and trigger.from_state is not none
+    {{ trigger.from_state is not none
        and trigger.from_state.state == 'off'
        and now() - trigger.from_state.last_changed >= timedelta(days=1) }}
+  # The battery of the check, for the title; without a device just Speicherwacht.
+  device: "{{ device_name(trigger.entity_id) or '' }}"
+  head: "{{ 'Speicherwacht' ~ (' · ' ~ device if device else '') }}"
   # The finding in words, from the attributes of the binary sensor.
   detail: >-
     {%- set a = trigger.to_state.attributes if trigger.to_state else {} -%}
@@ -112,10 +155,10 @@ variables:
         {{ (n(a.watts, 0) ~ ' W statt ' ~ n(a.previous_year_watts, 0) ~ ' W in denselben 30 Tagen des Vorjahres') if de else (n(a.watts, 0) ~ ' W instead of ' ~ n(a.previous_year_watts, 0) ~ ' W in the same 30 days last year') }}
       {%- endif -%}
     {%- endif -%}
-  title: "{{ 'Speicherwacht: auffällig' if lang == 'de' else 'Speicherwacht: conspicuous' }}"
+  title: "{{ head ~ (': auffällig' if lang == 'de' else ': conspicuous') }}"
   message: >-
     {{ name }}{{ ': ' ~ detail if detail else '' }}
-  fine_title: "{{ 'Speicherwacht: wieder in Ordnung' if lang == 'de' else 'Speicherwacht: fine again' }}"
+  fine_title: "{{ head ~ (': wieder in Ordnung' if lang == 'de' else ': fine again') }}"
   fine_message: >-
     {{ name }}{{ ': wieder in Ordnung' if lang == 'de' else ': fine again' }}
 
@@ -134,16 +177,32 @@ actions:
               - condition: template
                 value_template: "{{ to_phone }}"
             then:
-              - action: "{{ notify_action | trim }}"
-                data:
-                  title: "{{ title }}"
-                  message: "{{ message }}"
+              - if:
+                  - condition: template
+                    value_template: "{{ notify_action | trim != '' }}"
+                then:
+                  - action: "{{ notify_action | trim }}"
+                    data:
+                      title: "{{ title }}"
+                      message: "{{ message }}"
+              - if:
+                  - condition: template
+                    value_template: "{{ phone_action != '' }}"
+                then:
+                  - action: "{{ phone_action }}"
+                    data:
+                      title: "{{ title }}"
+                      message: "{{ message }}"
+              - sequence: !input extra_actions
       - conditions:
           - condition: trigger
             id: fine
         sequence:
+          - variables:
+              title: "{{ fine_title }}"
+              message: "{{ fine_message }}"
           - action: persistent_notification.create
             data:
               notification_id: "{{ notification_id }}"
-              title: "{{ fine_title }}"
-              message: "{{ fine_message }}"
+              title: "{{ title }}"
+              message: "{{ message }}"

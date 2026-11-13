@@ -245,15 +245,24 @@ The comparisons with last year need a year of long-term statistics; until then t
 
 ## Notifications
 
-A blueprint reports when a check of the health check turns conspicuous: in the Home Assistant bell and, optionally, also on the phone (or through another notify service), with the finding in words, such as "Home battery Efficiency below last year: last 30 days 88.4 % instead of 92.0 % last year (3.6 points less)", "Home battery Capacity low: estimated 7.6 kWh, 76 % of the data sheet (limit 80 %)" or "Home battery Rest loss high: 31 W instead of 12 W in the same 30 days last year".
+A blueprint reports when a check of the health check turns conspicuous: in the Home Assistant bell and, optionally, also on the phone, to Telegram or another service, with the battery's name in the title ("Speicherwacht · Home battery: conspicuous") and the finding in words, such as "Home battery Efficiency below last year: last 30 days 88.4 % instead of 92.0 % last year (3.6 points less)", "Home battery Capacity low: estimated 7.6 kWh, 76 % of the data sheet (limit 80 %)" or "Home battery Rest loss high: 31 W instead of 12 W in the same 30 days last year". The message comes in German or English.
 
 [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fspeicherwacht%2Fintegration%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fspeicherwacht%2Fbefund_melden.yaml)
 
 - **Checks:** the problem binary sensors of one or more batteries (Efficiency below last year, Capacity low, Rest loss high). Data errors such as missing sources are reported by Speicherwacht as repair issues anyway.
-- **Also send to:** leave empty for the bell only, else an action such as `notify.mobile_app_my_phone` (*Developer tools → Actions*, search for "mobile_app").
+- **Phone:** a phone with the Home Assistant app; leave empty for the bell only.
 - **Language** of the message: German or English.
+- **More actions** (collapsed): run with the finished text, by the same rules as the phone; `{{ title }}` and `{{ message }}` are ready to use. For Telegram: *Add action*, search for "Telegram", pick "Send message", with the text `{{ title }}: {{ message }}`, in YAML:
 
-The phone only gets a change from fine to conspicuous, and only if the check was fine for at least a day before. Speicherwacht recalculates every hour; a value right at a limit can make a check switch back and forth, and that should not send a message every hour. The bell shows every change, including "fine again". After a restart the checks are unknown at first and judged again shortly after: a finding that persists is back in the bell, but not sent to the phone again.
+  ```yaml
+  - action: telegram_bot.send_message
+    data:
+      message: "{{ title }}: {{ message }}"
+  ```
+
+  The field **Also send to** for an action such as `notify.mobile_app_my_phone` is there too.
+
+The phone and the more actions only get a change from fine to conspicuous, and only if the check was fine for at least a day before. Speicherwacht recalculates every hour; a value right at a limit can make a check switch back and forth, and that should not send a message every hour. The bell shows every change, including "fine again". After a restart the checks are unknown at first and judged again shortly after: a finding that persists is back in the bell, but not sent to the phone again.
 
 ## How it calculates
 

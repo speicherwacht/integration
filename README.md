@@ -245,15 +245,24 @@ Die Vergleiche mit dem Vorjahr brauchen ein Jahr Langzeitstatistik; vorher sind 
 
 ## Benachrichtigen
 
-Ein Blueprint meldet, wenn eine Prüfung des Gesundheits-Checks auffällig wird: in der Glocke von Home Assistant und auf Wunsch zusätzlich aufs Handy (oder an einen anderen Benachrichtigungsdienst), mit dem Befund in Worten, etwa „Heimspeicher Wirkungsgrad unter Vorjahr: letzte 30 Tage 88,4 % statt 92,0 % im Vorjahr (3,6 Punkte weniger)“, „Heimspeicher Kapazität gesunken: geschätzt 7,6 kWh, 76 % des Datenblatts (Grenze 80 %)“ oder „Heimspeicher Ruheverlust hoch: 31 W statt 12 W in denselben 30 Tagen des Vorjahres“.
+Ein Blueprint meldet, wenn eine Prüfung des Gesundheits-Checks auffällig wird: in der Glocke von Home Assistant und auf Wunsch zusätzlich aufs Handy, an Telegram oder einen anderen Dienst, mit dem Namen des Speichers im Titel („Speicherwacht · Heimspeicher: auffällig“) und dem Befund in Worten, etwa „Heimspeicher Wirkungsgrad unter Vorjahr: letzte 30 Tage 88,4 % statt 92,0 % im Vorjahr (3,6 Punkte weniger)“, „Heimspeicher Kapazität gesunken: geschätzt 7,6 kWh, 76 % des Datenblatts (Grenze 80 %)“ oder „Heimspeicher Ruheverlust hoch: 31 W statt 12 W in denselben 30 Tagen des Vorjahres“. Die Nachricht gibt es auf Deutsch oder Englisch.
 
 [![Blueprint importieren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fspeicherwacht%2Fintegration%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fspeicherwacht%2Fbefund_melden.yaml)
 
 - **Prüfungen:** die Problem-Binärsensoren eines oder mehrerer Speicher (Wirkungsgrad unter Vorjahr, Kapazität gesunken, Ruheverlust hoch). Datenfehler wie fehlende Quellen meldet Speicherwacht ohnehin als Reparaturhinweis.
-- **Zusätzlich senden an:** leer lassen für nur die Glocke, sonst eine Aktion wie `notify.mobile_app_mein_handy` (*Entwicklerwerkzeuge → Aktionen*, nach „mobile_app“ suchen).
-- **Sprache** der Meldung: Deutsch oder Englisch.
+- **Handy:** ein Handy mit der Home-Assistant-App; leer lassen für nur die Glocke.
+- **Sprache** der Nachricht: Deutsch oder Englisch.
+- **Weitere Aktionen** (eingeklappt): laufen mit dem fertigen Text nach denselben Regeln wie das Handy; `{{ title }}` und `{{ message }}` stehen bereit. Für Telegram: *Aktion hinzufügen*, nach „Telegram“ suchen, „Nachricht senden“ wählen, als Text `{{ title }}: {{ message }}`, in YAML:
 
-Aufs Handy geht nur ein Wechsel von „in Ordnung“ auf „auffällig“, und nur, wenn die Prüfung vorher mindestens einen Tag in Ordnung war. Speicherwacht rechnet stündlich neu; liegt ein Wert genau an einer Schwelle, kann eine Prüfung hin und her wechseln, und das soll keine Meldung je Stunde geben. Die Glocke zeigt jeden Wechsel, auch „wieder in Ordnung“. Nach einem Neustart sind die Prüfungen erst unbekannt und kurz darauf neu bewertet: Ein fortbestehender Befund steht dann wieder in der Glocke, aufs Handy geht er nicht noch einmal.
+  ```yaml
+  - action: telegram_bot.send_message
+    data:
+      message: "{{ title }}: {{ message }}"
+  ```
+
+  Dort steht auch das Feld **Zusätzlich senden an** für eine Aktion wie `notify.mobile_app_mein_handy`.
+
+Aufs Handy und an die weiteren Aktionen geht nur ein Wechsel von „in Ordnung“ auf „auffällig“, und nur, wenn die Prüfung vorher mindestens einen Tag in Ordnung war. Speicherwacht rechnet stündlich neu; liegt ein Wert genau an einer Schwelle, kann eine Prüfung hin und her wechseln, und das soll keine Meldung je Stunde geben. Die Glocke zeigt jeden Wechsel, auch „wieder in Ordnung“. Nach einem Neustart sind die Prüfungen erst unbekannt und kurz darauf neu bewertet: Ein fortbestehender Befund steht dann wieder in der Glocke, aufs Handy geht er nicht noch einmal.
 
 ## Wie gerechnet wird
 

@@ -7,14 +7,15 @@ the blueprint as a real automation in CI. All values are made up.
 from __future__ import annotations
 
 import re
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 import jinja2
 import pytest
 from homeassistant.components.automation.config import AUTOMATION_BLUEPRINT_SCHEMA
-from homeassistant.components.blueprint.models import Blueprint
+from homeassistant.components.blueprint.models import Blueprint, BlueprintInputs
+from homeassistant.util import slugify
 from homeassistant.util.yaml import load_yaml
 
 from custom_components.speicherwacht import health
@@ -56,7 +57,12 @@ def test_blueprint_is_valid(path: Path) -> None:
 
 def test_blueprint_offers_only_problem_sensors_of_speicherwacht() -> None:
     data = load_yaml(BEFUND)
-    assert set(data["blueprint"]["input"]) == {"checks", "notify_action", "language"}
+    assert set(data["blueprint"]["input"]) == {
+        "checks",
+        "notify_device",
+        "language",
+        "more",
+    }
     selector = data["blueprint"]["input"]["checks"]["selector"]["entity"]
     assert selector["multiple"] is True
     assert selector["filter"] == {
@@ -213,3 +219,160 @@ def test_simulated_findings_have_words(check: str) -> None:
         text = _detail(attributes, "de")
         assert text, check
         assert "None" not in text, text
+
+
+def _blueprint() -> Blueprint:
+    return Blueprint(
+        load_yaml(BEFUND),
+        expected_domain="automation",
+        schema=AUTOMATION_BLUEPRINT_SCHEMA,
+    )
+
+
+def test_inputs_keep_their_keys_and_only_checks_is_required() -> None:
+    """Automations made before the section and the phone keep working."""
+    inputs = _blueprint().inputs
+    assert set(inputs) == {
+        "checks",
+        "notify_device",
+        "language",
+        "extra_actions",
+        "notify_action",
+    }
+    assert [k for k, v in inputs.items() if "default" not in v] == ["checks"]
+    assert inputs["notify_action"]["default"] == ""
+    assert inputs["language"]["default"] == "de"
+    assert inputs["notify_device"]["default"] == ""
+    raw = load_yaml(BEFUND)["blueprint"]["input"]["notify_device"]
+    assert raw["selector"] == {"device": {"filter": {"integration": "mobile_app"}}}
+    assert inputs["extra_actions"]["default"] == []
+    assert inputs["extra_actions"]["selector"] == {"action": {}}
+
+
+def test_more_actions_section_is_collapsed() -> None:
+    section = load_yaml(BEFUND)["blueprint"]["input"]["more"]
+    assert section["name"] == "Weitere Aktionen (optional) / More actions (optional)"
+    assert section["collapsed"] is True
+    assert list(section["input"]) == ["extra_actions", "notify_action"]
+    description = section["input"]["extra_actions"]["description"]
+    assert "{{ title }}" in description
+    assert "{{ message }}" in description
+    assert "telegram_bot.send_message" in description
+
+
+def test_texts_are_german_and_english() -> None:
+    data = load_yaml(BEFUND)["blueprint"]
+    assert data["name"] == "Speicherwacht – Befund melden / Report a finding"
+    # A German paragraph, then an English one.
+    assert "Englisch.\n\nReports" in data["description"]
+    for key, value in _blueprint().inputs.items():
+        assert " / " in value["name"], key
+        if "description" in value:
+            assert " / " in value["description"], key
+    assert data["input"]["language"]["name"] == (
+        "Sprache der Nachricht / Language of the message"
+    )
+
+
+# The variables of the blueprint, rendered in order with plain Jinja and small
+# stand-ins for HA's functions. Names and values are made up.
+PHONES = {"phone1": {"name": "Pixel von Max"}}
+DEVICE_OF = {"binary_sensor.heimspeicher_wirkungsgrad_unter_vorjahr": "Heimspeicher"}
+SENSOR = "binary_sensor.heimspeicher_wirkungsgrad_unter_vorjahr"
+CLOCK = datetime(2026, 6, 30, 22, 0, tzinfo=UTC)
+
+
+def _variables(
+    *, entity: str, to: str, before: str | None, off_for: timedelta, **inputs: Any
+) -> dict[str, Any]:
+    config = BlueprintInputs(
+        _blueprint(),
+        {
+            "use_blueprint": {
+                "path": BEFUND.name,
+                "input": {"checks": [entity], **inputs},
+            }
+        },
+    ).async_substitute()
+    env = jinja2.Environment()
+    env.filters["slugify"] = slugify
+    env.globals["device_name"] = DEVICE_OF.get
+    env.globals["device_attr"] = lambda d, a: PHONES.get(d, {}).get(a)
+    env.globals["now"] = lambda: CLOCK
+    env.globals["timedelta"] = timedelta
+    attributes = {"friendly_name": "Heimspeicher Wirkungsgrad unter Vorjahr"}
+    attributes |= EFFICIENCY
+    state = {"name": attributes["friendly_name"], "attributes": attributes}
+    values: dict[str, Any] = {
+        "trigger": {
+            "id": "problem" if to == "on" else "fine",
+            "entity_id": entity,
+            "to_state": {**state, "state": to},
+            "from_state": None
+            if before is None
+            else {"state": before, "last_changed": CLOCK - off_for},
+        }
+    }
+    for key, value in config["variables"].items():
+        if isinstance(value, str):
+            value = env.from_string(value).render(values).strip()
+            value = {"True": True, "False": False}.get(value, value)
+        values[key] = value
+    return values
+
+
+def test_device_name_in_the_title_in_both_languages() -> None:
+    day = timedelta(days=2)
+    de = _variables(entity=SENSOR, to="on", before="off", off_for=day)
+    assert de["title"] == "Speicherwacht · Heimspeicher: auffällig"
+    assert de["message"] == (
+        "Heimspeicher Wirkungsgrad unter Vorjahr: letzte 30 Tage 88,4 % statt "
+        "92,0 % im Vorjahr (3,6 Punkte weniger)"
+    )
+    assert de["fine_title"] == "Speicherwacht · Heimspeicher: wieder in Ordnung"
+    en = _variables(entity=SENSOR, to="on", before="off", off_for=day, language="en")
+    assert en["title"] == "Speicherwacht · Heimspeicher: conspicuous"
+    assert en["message"] == (
+        "Heimspeicher Wirkungsgrad unter Vorjahr: last 30 days 88.4 % instead of "
+        "92.0 % last year (3.6 points less)"
+    )
+    assert en["fine_title"] == "Speicherwacht · Heimspeicher: fine again"
+
+
+def test_without_device_the_title_names_speicherwacht() -> None:
+    values = _variables(
+        entity="binary_sensor.other", to="on", before="off", off_for=timedelta(0)
+    )
+    assert values["title"] == "Speicherwacht: auffällig"
+    assert values["fine_title"] == "Speicherwacht: wieder in Ordnung"
+
+
+def test_phone_action_from_the_device() -> None:
+    day = timedelta(days=2)
+    values = _variables(entity=SENSOR, to="on", before="off", off_for=day)
+    assert values["phone_action"] == ""
+    values = _variables(
+        entity=SENSOR, to="on", before="off", off_for=day, notify_device="phone1"
+    )
+    assert values["phone_action"] == "notify.mobile_app_pixel_von_max"
+    # A device that is gone sends nothing instead of failing.
+    gone = _variables(
+        entity=SENSOR, to="on", before="off", off_for=day, notify_device="gone"
+    )
+    assert gone["phone_action"] == ""
+
+
+@pytest.mark.parametrize(
+    ("before", "off_for", "sent"),
+    [
+        ("off", timedelta(days=1), True),
+        ("off", timedelta(hours=23), False),
+        ("unknown", timedelta(days=2), False),
+        (None, timedelta(days=2), False),
+    ],
+)
+def test_phone_rule_unchanged(
+    before: str | None, off_for: timedelta, sent: bool
+) -> None:
+    values = _variables(entity=SENSOR, to="on", before=before, off_for=off_for)
+    assert values["to_phone"] is sent
