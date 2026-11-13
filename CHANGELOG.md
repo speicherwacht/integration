@@ -1,5 +1,11 @@
 # Changelog
 
+## Unveröffentlicht
+
+### Behoben
+
+- **Kein verlorener Akkustrom mehr nach kurzen Aussetzern eines Zählers.** Fällt ein Lade- oder Entladezähler über einen Stundenwechsel hinweg kurz ab (etwa eine Vorlage, die zwei Zähler addiert und bei einer Neuverbindung auf 0 oder einen der beiden fällt) und springt danach auf den alten Wert zurück, bucht Speicherwacht die Energie dieser Stunden einmal, statt sie zu verwerfen, und nie den Wert eines der beiden Zähler als Ladung. Gleiche Regel wie in Wärmewacht 0.9.0.
+
 ## 0.3.0 – 2026-11-13
 
 ### Neu

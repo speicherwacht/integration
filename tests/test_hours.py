@@ -39,21 +39,29 @@ def test_first_reading_is_only_the_baseline() -> None:
 
 
 def test_glitch_to_zero_and_back_books_nothing() -> None:
-    """total_increasing: Home Assistant would count the meter reading again."""
+    """total_increasing: Home Assistant would count the meter reading again.
+    The climb back to the old value was a dropout: the energy across it is
+    booked once, in the hour of the climb back; neither hour is complete."""
     charged = {h(0): 2800.0, h(1): 2801.0, h(2): 0.0, h(3): 2802.0, h(4): 2803.5}
     series = build(charged, dict.fromkeys(charged, 50.0), {}, CAPACITY)
     booked = [hour.charged for hour in series.hours]
-    # The energy of the glitch hours is unknown: none booked, hours rejected.
-    assert booked == [None, pytest.approx(1.0), None, None, pytest.approx(1.5)]
-    assert [hour.rejected for hour in series.hours] == [
-        False,
-        False,
-        True,
-        True,
-        False,
-    ]
+    assert booked == [None, pytest.approx(1.0), 0.0, pytest.approx(1.0), 1.5]
+    assert not any(hour.rejected for hour in series.hours)
+    assert [hour.complete for hour in series.hours][2:4] == [False, False]
     events = [(i.hour, i.event) for i in series.issues if i.signal == "charged"]
-    assert events == [(h(2), CounterEvent.RESET), (h(3), CounterEvent.JUMP)]
+    assert events == [(h(2), CounterEvent.RESET)]
+
+
+def test_repeated_dropouts_of_a_sum_template_book_nothing() -> None:
+    """Observed in Wärmewacht (waermewacht#6): a template adding two values
+    falls to 0 or to one of them while its source reconnects. In hourly
+    states only when that spans the end of an hour; twice must not book
+    the value of one half."""
+    values = [93.44, 0.0, 93.5, 93.6, 39.96, 93.7, 93.8]
+    charged = {h(i): v for i, v in enumerate(values)}
+    series = build(charged, dict.fromkeys(charged, 50.0), {}, CAPACITY)
+    total = sum(hour.charged or 0.0 for hour in series.hours)
+    assert total == pytest.approx(93.8 - 93.44)
 
 
 def test_step_back_without_reset_is_held() -> None:

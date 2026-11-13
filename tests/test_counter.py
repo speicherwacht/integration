@@ -195,6 +195,56 @@ def test_dip_after_a_real_jump_is_no_fall_back() -> None:
     assert counter.update(149.7, at(180)).event is CounterEvent.DIP
 
 
+def seconds(minutes: float, secs: float) -> datetime:
+    return at(minutes) + timedelta(seconds=secs)
+
+
+DROPOUTS = {
+    "to zero": [0.0, 53.48, 93.44],
+    "to one half, then zero": [39.96, 0.0, 53.48, 93.44],
+    "to one half": [53.48, 93.44],
+}
+
+
+@pytest.mark.parametrize("steps", DROPOUTS.values(), ids=DROPOUTS.keys())
+def test_dropout_and_climb_back_books_nothing(steps: list[float]) -> None:
+    """Observed in Wärmewacht (waermewacht#6): a sum template falls to 0 or
+    one half and climbs back in steps; once a day."""
+    counter = Counter(max_kw=50.0)
+    counter.update(93.44, at(0))
+    booked = 0.0
+    for day in range(3):
+        minutes = 60 * 12 * (day + 1)
+        for i, value in enumerate(steps):
+            booked += counter.update(value, seconds(minutes, 0.1 * i)).delta
+        assert counter.jump is None
+        assert counter.drop is None
+    assert booked == 0
+    assert counter.update(93.45, at(60 * 40)).delta == pytest.approx(0.01)
+
+
+def test_climb_back_survives_a_restart() -> None:
+    counter = Counter(max_kw=50.0)
+    counter.update(93.44, at(0))
+    counter.update(0.0, at(10))
+    restored = Counter(max_kw=50.0)
+    restored.restore(counter.as_dict())
+    update = restored.update(93.64, at(11))
+    assert update.event is CounterEvent.RETURNED
+    assert update.delta == pytest.approx(0.2)
+
+
+def test_new_meter_rises_from_zero_as_before() -> None:
+    counter = Counter(max_kw=20.0)
+    counter.update(30.0, at(0))
+    assert counter.update(0.0, at(1)).event is CounterEvent.RESET
+    assert counter.update(10.0, at(60 * 12)).delta == pytest.approx(10.0)
+    update = counter.update(31.0, at(60 * 20))
+    assert update.event is None
+    assert update.delta == pytest.approx(21.0)
+    assert counter.drop is None
+
+
 def test_whole_kwh_step_is_not_a_jump() -> None:
     counter = Counter(max_kw=20.0)
     counter.update(2104.0, at(0))

@@ -76,7 +76,9 @@ def _booked(
     their day keeps all its energy. Without such a fall back (a real restart
     of a lifetime counter, a value that stays) the energy is lost and the
     hours stay rejected. A small step back (DIP) holds the baseline and loses
-    nothing.
+    nothing. A reset that jumps back to at least the value before it was a
+    dropout (RETURNED, e.g. a sum template at 0 across the end of an hour):
+    the hours since the reset are handled like those of a glitch.
     """
     booked: dict[datetime, float] = {}
     gaps: set[datetime] = set()
@@ -87,13 +89,14 @@ def _booked(
     if counter.day_tz is None:
         unexpected.add(CounterEvent.RESET)
     lost = unexpected - {CounterEvent.DIP}
-    # Hours since a jump that may still fall back.
+    # Hours since a jump that may still fall back, or a reset that may
+    # still climb back.
     glitch: list[datetime] = []
     for hour in sorted(states):
         update = counter.update(states[hour], hour + READING_OFFSET)
         if update.event in unexpected:
             issues.append(CounterIssue(hour, signal, update.event))
-        if update.event is CounterEvent.RECOVERED:
+        if update.event in (CounterEvent.RECOVERED, CounterEvent.RETURNED):
             for moved in glitch:
                 rejected.discard(moved)
                 booked.setdefault(moved, 0.0)
@@ -104,7 +107,7 @@ def _booked(
             rejected.add(hour)
         elif update.event is not CounterEvent.FIRST:
             booked[hour] = update.delta
-        if counter.jump is not None:
+        if counter.jump is not None or counter.drop is not None:
             glitch.append(hour)
         else:
             glitch.clear()
