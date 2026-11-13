@@ -1,5 +1,5 @@
 # Derived from waermewacht/blueprints/automation/waermewacht/befund_melden.yaml
-# (as of b928136), adapted: texts and attributes of Speicherwacht's three
+# (as of cdaf31c), adapted: texts and attributes of Speicherwacht's three
 # problem sensors; the phone and the more actions only get a change from fine
 # (off for at least a day) to conspicuous, because the checks have no
 # hysteresis; "fine again" only in the bell; no inputs "notify_fine" and
