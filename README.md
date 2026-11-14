@@ -282,6 +282,7 @@ Quellen und Begründungen: [docs/ENTWICKLUNG.md](docs/ENTWICKLUNG.md), Abschnitt
 - Der Ladezustand ist bei LFP-Akkus ein berechneter Wert und kann springen (z. B. bei einer Kalibrierladung). Ein Sprung an einer Monatsgrenze verschiebt den Wirkungsgrad dieses Monats etwas.
 - Ein Labor-Batteriewirkungsgrad (DC) liegt bei aktuellen Heimspeichern um 95–97 %. Im Alltag liegen Werte darunter: Teillast, Eigenverbrauch des Batteriemanagements und Ruhephasen kosten Energie. AC-Werte (Bilanzgrenze „ganzer Speicher“) enthalten zusätzlich die Wandlerverluste.
 - Die geschätzte Kapazität streut. Für LFP-Akkus nennt eine Feldstudie der RWTH Aachen (Figgener et al. 2024) rund ±8 Prozentpunkte für ein ausgefeilteres Verfahren. Achte auf den Verlauf über Monate, nicht auf einen Einzelwert.
+- **Kein Geld:** Speicherwacht rechnet nur mit Energie. Was der Speicher in Euro spart und wann er sich bezahlt macht, rechnet [Tarifwacht](https://github.com/tarifwacht/integration) unter *PV und Speicher* mit deinen Tarifpreisen je Viertelstunde.
 
 ## Fehlerbehebung
 

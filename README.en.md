@@ -282,6 +282,7 @@ Sources and reasons: [docs/ENTWICKLUNG.md](docs/ENTWICKLUNG.md) (German), sectio
 - The state of charge of LFP batteries is a calculated value and may jump (e.g. during a calibration charge). A jump at a month boundary shifts that month's efficiency a little.
 - A lab battery efficiency (DC) of current home batteries is around 95–97 %. In daily use values are lower: partial load, the battery management's own consumption and rest phases cost energy. AC values ("whole storage") also include the conversion losses.
 - The estimated capacity scatters. For LFP batteries a field study of RWTH Aachen (Figgener et al. 2024) reports about ±8 percentage points for a more refined method. Watch the trend over months, not a single value.
+- **No money:** Speicherwacht works with energy only. What the battery saves in euros and when it pays for itself is calculated by [Tarifwacht](https://github.com/tarifwacht/integration) under *PV and battery*, with your tariff prices per quarter hour.
 
 ## Troubleshooting
 
