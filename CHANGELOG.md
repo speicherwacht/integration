@@ -1,5 +1,11 @@
 # Changelog
 
+## Unveröffentlicht
+
+### Geändert
+
+- **Hinweis zum Melden in der Einrichtung.** Der erste Schritt sagt jetzt, wohin man sich wenden kann, wenn der eigene Speicher nicht erkannt wird oder etwas fehlt: Daraus wird eine Vorlage.
+
 ## 0.3.1 – 2026-11-14
 
 ### Behoben

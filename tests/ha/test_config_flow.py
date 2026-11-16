@@ -46,6 +46,10 @@ async def start_manual(hass: HomeAssistant) -> dict[str, Any]:
     )
     assert result["type"] is FlowResultType.FORM
     assert result["step_id"] == "user"
+    # Where to report a storage not found.
+    assert result["description_placeholders"] == {
+        "issues_url": "https://github.com/speicherwacht/integration/issues"
+    }
     return await hass.config_entries.flow.async_configure(
         result["flow_id"], {"name": "Akku", "source": "manual"}
     )

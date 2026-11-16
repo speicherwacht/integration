@@ -58,10 +58,16 @@ USER = {
     "description": (
         "Speicherwacht reads the counters of your battery (energy charged and "
         "discharged, lifetime) and its state of charge from their long-term "
-        "statistics. Pick a detected storage or map the entities yourself.",
+        "statistics. Pick a detected storage or map the entities yourself.\n\n"
+        "Your storage is not listed or something is missing? Map it yourself and "
+        "feel free to let us know ([issue]({issues_url}) with the “Report for a "
+        "bug report”): that is how a template comes about.",
         "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, "
         "Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle "
-        "einen erkannten Speicher oder ordne die Entitäten selbst zu.",
+        "einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\n"
+        "Dein Speicher ist nicht dabei oder etwas fehlt? Ordne ihn selbst zu und "
+        "gib gern Bescheid ([Issue]({issues_url}) mit dem „Bericht für "
+        "Fehlermeldung“): Daraus wird eine Vorlage.",
     ),
     "data": {
         "name": ("Name", "Name"),

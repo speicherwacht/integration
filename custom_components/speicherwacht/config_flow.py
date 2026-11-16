@@ -50,6 +50,9 @@ COUNTER_STATE_CLASSES = ("total", "total_increasing")
 MEASUREMENT = "measurement"
 # Hint of the entities step on the own mapping: counters taken from
 # Tarifwacht, or a tip when it has none (own step ids, own texts).
+# Where to report a storage not found (as a placeholder: translations may
+# hold no URLs).
+ISSUES_URL = "https://github.com/speicherwacht/integration/issues"
 HINT_TARIFWACHT = "tarifwacht"
 HINT_TARIFWACHT_TIP = "tarifwacht_tip"
 # Rarely changed fields of the entities form, in a section that starts
@@ -320,7 +323,12 @@ class SpeicherwachtConfigFlow(ConfigFlow, domain=DOMAIN):
         )
         # A source whose counters are switched off: say how to get them.
         step_id = f"user_hint_{hints[0]}" if hints else "user"
-        return self.async_show_form(step_id=step_id, data_schema=schema)
+        return self.async_show_form(
+            step_id=step_id,
+            data_schema=schema,
+            # Where to report a storage not found (translations hold no URLs).
+            description_placeholders={"issues_url": ISSUES_URL},
+        )
 
     async def async_step_entities(
         self, user_input: dict[str, Any] | None = None

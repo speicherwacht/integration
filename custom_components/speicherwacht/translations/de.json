@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Batteriespeicher",
-        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.",
+        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nDein Speicher ist nicht dabei oder etwas fehlt? Ordne ihn selbst zu und gib gern Bescheid ([Issue]({issues_url}) mit dem „Bericht für Fehlermeldung“): Daraus wird eine Vorlage.",
         "data": {
           "name": "Name",
           "source": "Quelle"
@@ -15,7 +15,7 @@
       },
       "user_hint_goodwe": {
         "title": "Batteriespeicher",
-        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nGoodWe: Ein Wechselrichter hat keine Lebenszeit-Zähler für den Akku. Nur die ET-Familie (ET, EH, BT, BH und neuere ES/EM G2) liefert sie; ES, EM und BP zeigen nur den Ladezustand. Ordne Zähler selbst zu, z. B. mit Integral-Helfern.",
+        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nDein Speicher ist nicht dabei oder etwas fehlt? Ordne ihn selbst zu und gib gern Bescheid ([Issue]({issues_url}) mit dem „Bericht für Fehlermeldung“): Daraus wird eine Vorlage.\n\nGoodWe: Ein Wechselrichter hat keine Lebenszeit-Zähler für den Akku. Nur die ET-Familie (ET, EH, BT, BH und neuere ES/EM G2) liefert sie; ES, EM und BP zeigen nur den Ladezustand. Ordne Zähler selbst zu, z. B. mit Integral-Helfern.",
         "data": {
           "name": "Name",
           "source": "Quelle"
@@ -27,7 +27,7 @@
       },
       "user_hint_victron_gx": {
         "title": "Batteriespeicher",
-        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nVictron: Ein Akku hat keine Lebenszeit-Zähler. Sie kommen von einem Batteriemonitor (SmartShunt, BMV); Akkus mit CAN-BMS liefern sie nicht. Wähle den Batteriemonitor oder ordne Zähler selbst zu.",
+        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nDein Speicher ist nicht dabei oder etwas fehlt? Ordne ihn selbst zu und gib gern Bescheid ([Issue]({issues_url}) mit dem „Bericht für Fehlermeldung“): Daraus wird eine Vorlage.\n\nVictron: Ein Akku hat keine Lebenszeit-Zähler. Sie kommen von einem Batteriemonitor (SmartShunt, BMV); Akkus mit CAN-BMS liefern sie nicht. Wähle den Batteriemonitor oder ordne Zähler selbst zu.",
         "data": {
           "name": "Name",
           "source": "Quelle"
@@ -39,7 +39,7 @@
       },
       "user_hint_sigen": {
         "title": "Batteriespeicher",
-        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nSigenergy: Eine Anlage hat keine Lebenszeit-Zähler für den Akku. Sie brauchen Modbus-Protokoll v2.7 oder neuer (Firmware-Update). Bis dahin ordne die Zähler des Wechselrichters („Total charge/discharge energy“) selbst zu.",
+        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nDein Speicher ist nicht dabei oder etwas fehlt? Ordne ihn selbst zu und gib gern Bescheid ([Issue]({issues_url}) mit dem „Bericht für Fehlermeldung“): Daraus wird eine Vorlage.\n\nSigenergy: Eine Anlage hat keine Lebenszeit-Zähler für den Akku. Sie brauchen Modbus-Protokoll v2.7 oder neuer (Firmware-Update). Bis dahin ordne die Zähler des Wechselrichters („Total charge/discharge energy“) selbst zu.",
         "data": {
           "name": "Name",
           "source": "Quelle"
@@ -51,7 +51,7 @@
       },
       "user_hint_solax_modbus": {
         "title": "Batteriespeicher",
-        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nSolaX: Die Lebenszeit-Zähler des Akkus sind deaktiviert. Aktiviere im SolaX-Gerät „Battery Input Energy Total“ und „Battery Output Energy Total“, lade die Integration neu und starte diese Einrichtung erneut.",
+        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nDein Speicher ist nicht dabei oder etwas fehlt? Ordne ihn selbst zu und gib gern Bescheid ([Issue]({issues_url}) mit dem „Bericht für Fehlermeldung“): Daraus wird eine Vorlage.\n\nSolaX: Die Lebenszeit-Zähler des Akkus sind deaktiviert. Aktiviere im SolaX-Gerät „Battery Input Energy Total“ und „Battery Output Energy Total“, lade die Integration neu und starte diese Einrichtung erneut.",
         "data": {
           "name": "Name",
           "source": "Quelle"
@@ -63,7 +63,7 @@
       },
       "user_hint_anker_solix": {
         "title": "Batteriespeicher",
-        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nAnker SOLIX: Eine Solarbank hat keine Lebenszeit-Zähler. Sie kommen nur per MQTT mit dem Eigentümer-Konto, und die Integration legt sie erst an, wenn du die Energie-Kategorie freigibst: Anker SOLIX → Konfigurieren → „solarbank_energy“ aus den ausgeschlossenen Kategorien nehmen, MQTT einschalten.",
+        "description": "Speicherwacht liest die Zähler deines Speichers (geladen und entladen, Lebenszeit) und seinen Ladezustand aus der Langzeitstatistik. Wähle einen erkannten Speicher oder ordne die Entitäten selbst zu.\n\nDein Speicher ist nicht dabei oder etwas fehlt? Ordne ihn selbst zu und gib gern Bescheid ([Issue]({issues_url}) mit dem „Bericht für Fehlermeldung“): Daraus wird eine Vorlage.\n\nAnker SOLIX: Eine Solarbank hat keine Lebenszeit-Zähler. Sie kommen nur per MQTT mit dem Eigentümer-Konto, und die Integration legt sie erst an, wenn du die Energie-Kategorie freigibst: Anker SOLIX → Konfigurieren → „solarbank_energy“ aus den ausgeschlossenen Kategorien nehmen, MQTT einschalten.",
         "data": {
           "name": "Name",
           "source": "Quelle"
