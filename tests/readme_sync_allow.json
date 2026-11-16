@@ -1,0 +1,10 @@
+{
+  "replace": {
+    "Demo-erfundene_Daten": "Demo-sample_data",
+    "<akku_1_laden>": "<battery_1_charge>",
+    "<akku_2_laden>": "<battery_2_charge>",
+    "<HA-Adresse>": "<HA address>",
+    "screenshots/karte.png": "screenshots/card.png",
+    "mobile_app_mein_handy": "mobile_app_my_phone"
+  }
+}
