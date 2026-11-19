@@ -307,6 +307,8 @@ Geräte & Dienste → Speicherwacht → ⋮ → *Löschen*. Speicherwacht legt k
 
 ## Fehler melden
 
+Fragen, Ideen und Erfahrungen sind in den [Discussions](https://github.com/speicherwacht/integration/discussions) gut aufgehoben. Für Fehler:
+
 [Issue anlegen](https://github.com/speicherwacht/integration/issues/new/choose), mit Speichermodell, Integration und dem **Bericht für Fehlermeldung**: *Geräte & Dienste → Speicherwacht → Gerät des Speichers → Diagnose → Bericht für Fehlermeldung* drücken (nicht zu verwechseln mit der Aktion „Bericht“). Der Bericht erscheint als Benachrichtigung (Glocke unten links) zum Kopieren. Er enthält Versionen, die Zuordnung nach Rolle (Integration, Einheit, Klassen, Zustand von Lade-, Entladezähler und Ladezustand), Kapazität, Bilanzgrenze und Garantie-Durchsatz, die Vorlage, wie viele Stunden Statistik vorliegen und welche Zählerwerte verworfen wurden, welche Sensoren unbekannt sind und warum, und offene Reparaturhinweise. Entity-IDs, Namen und Bereiche stehen nicht darin. Lies ihn trotzdem vor dem Teilen und lösche, was du nicht zeigen willst. Sicherheitslücken bitte vertraulich, siehe [SECURITY.md](https://github.com/speicherwacht/integration/blob/main/SECURITY.md).
 
 ### Was steht in der Diagnose-Datei?

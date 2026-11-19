@@ -307,6 +307,8 @@ Devices & services → Speicherwacht → ⋮ → *Delete*. Speicherwacht creates
 
 ## Reporting issues
 
+Questions, ideas and experiences are welcome in the [Discussions](https://github.com/speicherwacht/integration/discussions). For bugs:
+
 [Open an issue](https://github.com/speicherwacht/integration/issues/new/choose) with the battery model, the integration and the **report for a bug report**: press *Devices & services → Speicherwacht → device of the storage → Diagnostic → Report for a bug report* (not to be confused with the action "Report"). The report shows up as a notification (bell at the bottom left) to copy. It holds the versions, the mapping by role (integration, unit, classes and state of the charge counter, discharge counter and state of charge), capacity, balance boundary and warranted throughput, the template, how many hours of statistics there are and which counter readings were rejected, which sensors are unknown and why, and open repair issues. Entity ids, names and areas are not in it. Still read it before sharing and delete what you would rather not show. Please report security issues privately, see [SECURITY.md](https://github.com/speicherwacht/integration/blob/main/SECURITY.md).
 
 ### What is in the diagnostics file?

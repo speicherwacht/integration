@@ -5,6 +5,7 @@
 ### Geändert
 
 - **Hinweis zum Melden in der Einrichtung.** Der erste Schritt sagt jetzt, wohin man sich wenden kann, wenn der eigene Speicher nicht erkannt wird oder etwas fehlt: Daraus wird eine Vorlage.
+- **README:** Fragen, Ideen und Erfahrungen gern in den neuen GitHub-Discussions; Fehler weiter als Issue.
 
 ## 0.3.1 – 2026-11-14
 
